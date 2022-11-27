@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+
+html {
+  background: linear-gradient(180deg, #292e49, #536976);
+  @apply min-h-screen;
+}
+
+* {
+  box-sizing: border-box;
+  @apply text-gray-300;
+}
+
+label {
+  @apply block text-sm font-bold opacity-75;
+}
+
+input {
+  @apply block px-1 pt-2 border-b border-slate-400 bg-transparent;
+
+  &:focus {
+    @apply outline-none border-slate-300;
+  }
+}
+
+.btn {
+  @apply font-bold text-gray-100 block px-4 py-2 rounded border border-white/20;
+
+  &.btn-default {
+    &:hover {
+      @apply border-white/30 bg-white/10;
+    }
+  }
+
+  &.btn-primary {
+    @apply bg-gradient-to-r from-[#17334e] to-[#4f362a] border-none;
+
+    &:hover {
+      @apply shadow-md;
+      @apply bg-gradient-to-r from-[#203c5a] to-[#3b4f69];
+    }
+
+    &:active {
+      @apply shadow-none;
+    }
+  }
+}
+
+select {
+  @apply bg-transparent;
+}
+
+@tailwind utilities;
