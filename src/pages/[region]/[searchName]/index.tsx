@@ -3,19 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryWithPrefetch } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
-import MatchCard from "@/components/summoner/matchCardHorizontal";
-import Modal from 'react-modal'
+import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
-import OverviewSelection from "@/components/summoner/overviewSelection";
 import api from "@/external/api/api";
-import {
-  MatchFilterForm,
-  type MatchFilterFormType,
-} from "@/components/summoner/matchFilterForm";
-import { OftenPlaysWith } from "@/components/summoner/oftenPlaysWith";
-import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
-import { SummonerCard } from "@/components/summoner/summonerCard";
-import MatchCardModal from "@/components/summoner/matchCardModal";
 
 import type { BasicMatchType } from "@/external/types";
 import { useRouter } from "next/router";
@@ -32,48 +22,30 @@ export const MODALSTYLE = {
   },
 };
 
-export function Summoner() {
+export default function Summoner() {
   const router = useRouter();
-  const { region, searchName, matchId } = router.query as {
+  const { region, searchName, match } = router.query as {
     region: string;
     searchName: string;
-    matchId: string;
+    match?: string;
   };
-  const [matchFilters, setMatchFilters] = useState<MatchFilterFormType>();
+  console.log({region, searchName})
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
-  const [isSpectateModalOpen, setIsSpectateModalOpen] = useState(false);
   const [isInitialQuery, setIsInitialQuery] = useState(true);
   const [page, setPage] = useState(1);
-  const count = 10;
+  const limit = 10;
 
-  const match_card_height = 400;
   const custom_max_width = "col l10 offset-l1 m12 s12";
-  const isMatchModalOpen = !!matchId
 
-  const filterParams = useMemo(() => {
-    const start = count * page - count;
-    const data = {
-      summoner_name: searchName || null,
-      region: region,
-      queue: matchFilters?.queue || "",
-      start,
-      limit: count,
-      sync_import: false,
-    };
-    return data;
-  }, [matchFilters, page, region, searchName]);
+  const start = limit * page - limit;
 
   const summonerQuery = useQuery(
-    ["summoner", "name", filterParams.summoner_name, filterParams.region],
-    () =>
-      api.player.getSummonerByName(
-        filterParams.summoner_name!,
-        filterParams.region
-      ),
+    ["summoner", "name", searchName, region],
+    () => api.player.getSummonerByName(searchName, region),
     {
       retry: false,
       refetchOnWindowFocus: false,
-      enabled: !!filterParams.summoner_name,
+      enabled: !!searchName && !!region,
     }
   );
   const summonerQueryRefetch = summonerQuery.refetch;
@@ -82,23 +54,38 @@ export function Summoner() {
     [
       "matches-with-sync",
       "by-summoner",
-      { ...filterParams, sync_import: true },
-    ],
-    () =>
-      api.match
-        .getMatchesBySummonerName({ ...filterParams, summoner_name: filterParams.summoner_name!, sync_import: true })
-        .then((x) => x.results),
-    [
-      "matches-with-sync",
-      "by-summoner",
-      { ...filterParams, start: filterParams.start + count, sync_import: true },
+      searchName,
+      region,
+      start,
+      limit,
+      true,
     ],
     () =>
       api.match
         .getMatchesBySummonerName({
-          ...filterParams,
-          summoner_name: filterParams.summoner_name!,
-          start: filterParams.start + count,
+          summoner_name: searchName,
+          region,
+          start,
+          limit,
+          sync_import: true,
+        })
+        .then((x) => x.results),
+    [
+      "matches-with-sync",
+      "by-summoner",
+      searchName,
+      region,
+      start + limit,
+      limit,
+      true,
+    ],
+    () =>
+      api.match
+        .getMatchesBySummonerName({
+          summoner_name: searchName,
+          region,
+          start: start + limit,
+          limit,
           sync_import: true,
         })
         .then((x) => x.results),
@@ -107,13 +94,15 @@ export function Summoner() {
       refetchOnWindowFocus: false,
       keepPreviousData: true,
       staleTime: 1000 * 60 * 3,
-      enabled: !!filterParams.summoner_name,
+      enabled: !!searchName && !!region,
       onSuccess: () => {
-        setLastRefresh(new Date().getTime());
+        setLastRefresh(Date.now());
         setIsInitialQuery(false);
       },
       onError: () => {
-        setPage((x) => x - 1);
+        if (page > 1) {
+          setPage(page - 1);
+        }
       },
     }
   );
@@ -181,26 +170,7 @@ export function Summoner() {
     }
   );
 
-  const queues = useMemo(() => {
-    const queue_elt = document.getElementById("queues");
-    const queues = JSON.parse(queue_elt?.innerHTML || "");
-    const qdict: Record<number, any> = {};
-    for (const q of queues) {
-      q.description = q.description.replace("games", "").trim();
-      qdict[q._id] = q;
-    }
-    return qdict;
-  }, []);
-
-  const closeModal = () => {
-    const pathname = window.location.pathname.split(/match\/\w+/)[0];
-    if (pathname) {
-      router.push(pathname);
-    }
-  };
-
   const matchFilterOnUpdate = useCallback((data: any) => {
-    setMatchFilters(data);
     setPage(1);
   }, []);
 
@@ -213,17 +183,17 @@ export function Summoner() {
         <button
           {...disabled}
           onClick={() => setPage((x) => Math.max(1, x - 1))}
-          className="btn-small dark"
+          className="btn btn-default inline"
         >
-          <i className="material-icons">chevron_left</i>
+          left
         </button>
         <button
           {...disabled}
           style={{ marginLeft: 8 }}
           onClick={() => setPage((x) => x + 1)}
-          className={"btn-small dark"}
+          className="btn btn-default inline"
         >
-          <i className="material-icons">chevron_right</i>
+          right
         </button>
         <div style={{ display: "inline-block", marginLeft: 8 }}>{page}</div>
         {isMatchLoading && (
@@ -258,62 +228,7 @@ export function Summoner() {
         {(matchQueryWithSync.isSuccess || matchQueryWithSync.isSuccess) &&
           summonerQuery.isSuccess && (
             <div>
-              {matches.length > 0 && summoner && (
-                <Modal
-                  isOpen={isMatchModalOpen}
-                  onRequestClose={closeModal}
-                  style={MODALSTYLE}
-                >
-                  <MatchCardModal
-                    closeModal={closeModal}
-                    matchCardHeight={match_card_height}
-                    summoner={summoner}
-                    region={region}
-                  />
-                </Modal>
-              )}
-              <div className="row" style={{ marginBottom: 0 }}>
-                <div className="col l10 offset-l1">
-                  <div
-                    style={{
-                      width: 400,
-                      display: "inline-block",
-                      marginRight: 15,
-                    }}
-                  >
-                    {summoner?.name !== undefined && region && (
-                      <SummonerCard
-                        refreshPage={refreshPage}
-                        region={region}
-                        lastRefresh={lastRefresh}
-                        positions={positionQuery.data || []}
-                        icon={icon}
-                        summoner={summoner}
-                        spectateData={spectateData}
-                        isSpectateModalOpen={isSpectateModalOpen}
-                        setIsSpectateModalOpen={setIsSpectateModalOpen}
-                      />
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      display: "inline-block",
-                      verticalAlign: "top",
-                    }}
-                  >
-                    <div
-                      style={{
-                        minWidth: 750,
-                        padding: 15,
-                      }}
-                      className={`card-panel dark`}
-                    >
-                      <OverviewSelection summoner={summoner} />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {matches.length > 0 && summoner && <div>show match ?</div>}
 
               <div className="row">
                 <div className={`${custom_max_width}`}>
@@ -326,30 +241,9 @@ export function Summoner() {
                         style={{
                           verticalAlign: "top",
                         }}
-                      >
-                        <RecentlyPlayedWith
-                          region={region}
-                          summoner={summoner}
-                          matches={matches || []}
-                        />
-                      </div>
-                      {summonerQuery.isSuccess && summoner && (
-                        <div
-                          style={{
-                            verticalAlign: "top",
-                            marginLeft: 8,
-                          }}
-                        >
-                          <h5 style={{ marginBottom: 3 }}>Often Plays With</h5>
-                          <OftenPlaysWith
-                            region={region}
-                            summoner_id={summoner.id}
-                          />
-                        </div>
-                      )}
+                      ></div>
                     </div>
                     <div className="col l8 m12">
-                      <MatchFilterForm onUpdate={matchFilterOnUpdate} />
                       {pagination()}
                       {matchQueryWithSync.isLoading && (
                         <div style={{ width: 600 }}>
@@ -362,19 +256,12 @@ export function Summoner() {
                         </div>
                       )}
                       {!matchQueryWithSync.isLoading &&
-                        summonerQuery.isSuccess &&
+                        summoner &&
                         matches.map((match: BasicMatchType, key: number) => {
                           return (
                             <MatchCard
                               key={`${key}-${match._id}`}
-                              index={key}
                               match={match}
-                              comment_count={
-                                commentQuery.data &&
-                                (commentQuery.data[match.id] || 0)
-                              }
-                              region={region}
-                              queues={queues}
                               summoner={summoner}
                             />
                           );

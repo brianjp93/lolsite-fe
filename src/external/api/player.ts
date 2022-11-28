@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig} from 'axios'
+import axios, {type AxiosRequestConfig} from 'axios'
 import * as t from 'io-ts'
 import {
   PositionBin,
@@ -10,15 +10,17 @@ import {
   User,
   NameChange,
 } from '../types'
+import { env } from '@/env/client.mjs'
 
-let version = 'v1'
+const version = 'v1'
+const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.xsrfCookieName = 'csrftoken'
 
 
 async function getMyUser() {
-  const url = `/api/${version}/player/me/`
+  const url = `${base}/me/`
   const response = await axios.get(url)
   if (response.data.email) {
     return unwrap(User.decode(response.data))
@@ -27,12 +29,12 @@ async function getMyUser() {
 }
 
 function getSummoner(data: any) {
-  let url = `/api/${version}/player/summoner/`
+  const url = `${base}/summoner/`
   return axios.post(url, data)
 }
 
 async function getSummonerByName(name: string, region: string) {
-  const url = `/api/${version}/player/summoner/${region}/by-name/${name}/`
+  const url = `${base}/summoner/${region}/by-name/${name}/`
   const response = await axios.get(url)
   return unwrap(Summoner.decode(response.data))
 }
@@ -42,44 +44,44 @@ interface GetSummonersData extends AxiosRequestConfig {
   region: string
 }
 async function getSummoners(data: GetSummonersData) {
-  const url = `/api/${version}/player/summoners/`
+  const url = `${base}/summoners/`
   const r = await axios.post(url, data)
   return unwrap(t.array(Summoner).decode(r.data.data))
 }
 
 function getPositions(data: any) {
-  let url = `/api/${version}/player/positions/`
+  const url = `${base}/positions/`
   return axios.post(url, data)
 }
 
 function signUp(data: any) {
-  let url = `/api/${version}/player/sign-up/`
+  const url = `${base}/sign-up/`
   return axios.post(url, data)
 }
 
 function login(data: any) {
-  let url = `/api/${version}/player/login/`
+  const url = `${base}/login/`
   return axios.post(url, data)
 }
 
 function verify(data: any) {
-  let url = `/api/${version}/player/verify/`
+  const url = `${base}/verify/`
   return axios.post(url, data)
 }
 
 function getChampionsOverview(data: any) {
-  let url = `/api/${version}/player/champions-overview/`
+  const url = `${base}/champions-overview/`
   return axios.post(url, data)
 }
 
 async function summonerSearch(data: any) {
-  let url = `/api/${version}/player/summoner-search/`
+  const url = `${base}/summoner-search/`
   const r = await axios.post(url, data)
   return unwrap(t.array(SummonerSearch).decode(r.data.data))
 }
 
 function isLoggedIn() {
-  let url = `/api/${version}/player/is-logged-in/`
+  const url = `${base}/is-logged-in/`
   return axios.post(url)
 }
 
@@ -91,43 +93,43 @@ interface GetRankHistoryData extends AxiosRequestConfig {
   end?: string | null
 }
 async function getRankHistory(data: GetRankHistoryData) {
-  let url = `/api/${version}/player/rank-history/`
+  const url = `${base}/rank-history/`
   const response = await axios.post(url, data)
   return unwrap(t.array(PositionBin).decode(response.data.data))
 }
 
 function getFavorites() {
-  let url = `/api/${version}/player/favorites/`
+  const url = `${base}/favorites/`
   return axios.get(url)
 }
 
 function Favorite(data: any) {
-  let url = `/api/${version}/player/favorites/`
+  const url = `${base}/favorites/`
   return axios.post(url, data)
 }
 
 function generateCode(data: any) {
-  let url = `/api/${version}/player/generate-code/`
+  const url = `${base}/generate-code/`
   return axios.post(url, data)
 }
 
 function connectAccount(data: any) {
-  let url = `/api/${version}/player/connect-account/`
+  const url = `${base}/connect-account/`
   return axios.post(url, data)
 }
 
 function connectAccountWithProfileIcon(data: any) {
-  let url = `/api/${version}/player/connect-account-with-profile-icon/`
+  const url = `${base}/connect-account-with-profile-icon/`
   return axios.post(url, data)
 }
 
 function getConnectedAccounts() {
-  let url = `/api/${version}/player/get-connected-accounts/`
+  const url = `${base}/get-connected-accounts/`
   return axios.post(url)
 }
 
 function changePassword(data: any) {
-  let url = `/api/${version}/player/change-password/`
+  const url = `${base}/change-password/`
   return axios.post(url, data)
 }
 
@@ -143,71 +145,71 @@ interface GetTopPlayedWithData extends AxiosRequestConfig {
   end?: number | null
 }
 async function getTopPlayedWith(data: GetTopPlayedWithData) {
-  let url = `/api/${version}/player/get-top-played-with/`
+  const url = `${base}/get-top-played-with/`
   const r = await axios.post(url, data)
   return unwrap(t.array(TopPlayedWithPlayer).decode(r.data.data))
 }
 
 function getComments(data: any) {
-  let url = `/api/${version}/player/comment/`
+  const url = `${base}/comment/`
   return axios.get(url, {params: data})
 }
 
 function getReplies(data: any) {
-  let url = `/api/${version}/player/comment/replies/`
+  const url = `${base}/comment/replies/`
   return axios.get(url, {params: data})
 }
 
 function createComment(data: any) {
-  let url = `/api/${version}/player/comment/`
+  const url = `${base}/comment/`
   return axios.post(url, data)
 }
 
 function deleteComment(data: any) {
-  let url = `/api/${version}/player/comment/`
+  const url = `${base}/comment/`
   return axios.delete(url, {data})
 }
 
 function likeComment(data: any) {
-  let url = `/api/${version}/player/comment/like/`
+  const url = `${base}/comment/like/`
   return axios.put(url, data)
 }
 
 function dislikeComment(data: any) {
-  let url = `/api/${version}/player/comment/dislike/`
+  const url = `${base}/comment/dislike/`
   return axios.put(url, data)
 }
 
 function getCommentCount(data: any) {
-  let url = `/api/${version}/player/comment/count/`
+  const url = `${base}/comment/count/`
   return axios.get(url, {params: data})
 }
 
 function editDefaultSummoner(data: any) {
-  let url = `/api/${version}/player/default-summoner/`
+  const url = `${base}/default-summoner/`
   return axios.post(url, data)
 }
 
 async function getReputation(summoner: number) {
-  const url = `/api/${version}/player/reputation/${summoner}/`
+  const url = `${base}/reputation/${summoner}/`
   const r = await axios.get(url)
   return unwrap(Reputation.decode(r.data))
 }
 
 async function createReputation(summoner: number, is_approve: boolean) {
-  const url = `/api/${version}/player/reputation/create/`
+  const url = `${base}/reputation/create/`
   const r = await axios.post(url, {summoner, is_approve})
   return unwrap(Reputation.decode(r.data))
 }
 
 async function updateReputation(id: number, summoner: number, is_approve: boolean) {
-  const url = `/api/${version}/player/reputation/update/${id}/`
+  const url = `${base}/reputation/update/${id}/`
   const r = await axios.put(url, {is_approve, summoner})
   return unwrap(Reputation.decode(r.data))
 }
 
 async function getNameChanges(id: number) {
-  const url = `/api/${version}/player/summoner/${id}/name-changes/`
+  const url = `${base}/summoner/${id}/name-changes/`
   const r = await axios.get(url)
   return unwrap(t.array(NameChange).decode(r.data.results))
 }
