@@ -6,6 +6,7 @@ import Orbit from "@/components/general/spinner";
 import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
+import clsx from "clsx";
 
 import type { BasicMatchType } from "@/external/types";
 import { useRouter } from "next/router";
@@ -175,25 +176,24 @@ export default function Summoner() {
   }, []);
 
   const pagination = () => {
-    const disabled = {
-      disabled: isMatchLoading,
-    };
     return (
       <div>
         <button
-          {...disabled}
           onClick={() => setPage((x) => Math.max(1, x - 1))}
-          className="btn btn-default inline"
+          className={clsx("btn btn-default inline", {disabled: isMatchLoading || page <= 1})}
         >
-          left
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
         </button>
         <button
-          {...disabled}
           style={{ marginLeft: 8 }}
           onClick={() => setPage((x) => x + 1)}
-          className="btn btn-default inline"
+          className={clsx("btn btn-default inline", {disabled: isMatchLoading})}
         >
-          right
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </button>
         <div style={{ display: "inline-block", marginLeft: 8 }}>{page}</div>
         {isMatchLoading && (
@@ -247,12 +247,7 @@ export default function Summoner() {
                       {pagination()}
                       {matchQueryWithSync.isLoading && (
                         <div style={{ width: 600 }}>
-                          <Orbit
-                            size={200}
-                            style={{
-                              margin: "auto",
-                            }}
-                          />
+                          <Orbit size={200} className='m-auto' />
                         </div>
                       )}
                       {!matchQueryWithSync.isLoading &&

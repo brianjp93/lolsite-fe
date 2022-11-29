@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import { ItemPopover } from "../components/data/item";
 import type { BasicMatchType, FullParticipantType } from "@/external/types";
 import { useItem } from "@/hooks";
+import type {BasicParticipantType} from "@/external/iotypes/match";
+import {env} from "@/env/client.mjs";
 
 export function formatDatetime(epoch: number) {
   return format(new Date(epoch), "MMM D h:mm a");
@@ -151,7 +153,7 @@ export function ParticipantItems({
   );
 }
 
-export function getMyPart(participants: FullParticipantType[], puuid: string) {
+export function getMyPart(participants: FullParticipantType[] | BasicParticipantType[], puuid: string) {
   for (const part of participants) {
     if (part.puuid === puuid) {
       return part;
@@ -210,4 +212,11 @@ export function stripHtmlFull(html: string) {
 export function ErrorField({ message }: { message?: string }) {
   if (!message) return null;
   return <div className="text-red-800 text-sm font-bold">{message}</div>;
+}
+
+export function mediaUrl(filePath: string) {
+  if (filePath.startsWith('/')) {
+    return `${env.NEXT_PUBLIC_BACKEND_URL}${filePath}`
+  }
+  return filePath
 }

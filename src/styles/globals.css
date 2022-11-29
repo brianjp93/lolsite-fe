@@ -30,6 +30,10 @@ input {
     &:hover {
       @apply border-white/30 bg-white/10;
     }
+
+    &.disabled {
+      @apply pointer-events-none bg-black/40 border-none text-gray-500;
+    }
   }
 
   &.btn-primary {
