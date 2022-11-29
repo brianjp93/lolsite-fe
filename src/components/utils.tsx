@@ -6,11 +6,11 @@ import type {BasicParticipantType} from "@/external/iotypes/match";
 import {env} from "@/env/client.mjs";
 
 export function formatDatetime(epoch: number) {
-  return format(new Date(epoch), "MMM D h:mm a");
+  return format(new Date(epoch), "MMM d h:mma");
 }
 
 export function formatDatetimeFull(epoch: number) {
-  return format(new Date(epoch), "MMM D, YYYY h:mm a");
+  return format(new Date(epoch), "MMM d, yyyy h:mma");
 }
 
 export function formatDatetimeTime(epoch: number) {

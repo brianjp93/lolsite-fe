@@ -6,7 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import numeral from "numeral";
-import { getMyPart, getTeam, mediaUrl } from "../utils";
+import {
+  formatDatetime,
+  formatDatetimeFull,
+  getMyPart,
+  getTeam,
+  mediaUrl,
+} from "../utils";
 
 export default function MatchCard({
   match,
@@ -19,12 +25,17 @@ export default function MatchCard({
   const myTeam = match.teams.filter((x) => x._id === part?.team_id)?.[0];
   const enemyTeam = match.teams.filter((x) => x._id !== part?.team_id)?.[0];
   const minutes = match.game_duration / 1000 / 60;
+  const minuteSecond = `${Math.floor(minutes)}:${numeral(
+    (match.game_duration / 1000) % 60
+  ).format("00")}`;
+  const creationFull = formatDatetimeFull(match.game_creation);
+  const creation = formatDatetime(match.game_creation);
   const isTie = minutes < 5;
   return (
     <>
       <div
         className={clsx(
-          "my-2 rounded-md bg-gradient-to-r to-zinc-900/50 p-2",
+          "my-2 w-fit rounded-md bg-gradient-to-r to-zinc-900/50 p-2",
           "overflow-x-scroll",
           {
             "from-[#60102b66]": enemyTeam?.win && !isTie,
@@ -34,22 +45,33 @@ export default function MatchCard({
         )}
       >
         <div className="flex">
-          <div className="my-auto h-full min-w-fit">
-            <ChampionClump match={match} summoner={summoner} />
+          <div className="flex flex-col">
+            <div className="flex text-xs">
+              <div className="mr-2 font-bold">{minuteSecond}</div>
+              <div title={creationFull}>{creation}</div>
+            </div>
+            <div className="flex">
+              <div className="my-auto h-full min-w-fit">
+                <ChampionClump match={match} summoner={summoner} />
+              </div>
+              {part && (
+                <div className="my-auto ml-1 h-full min-w-fit">
+                  <ItemClump part={part} />
+                </div>
+              )}
+            </div>
+            <div className='text-xs'>
+              {match.queue_id}
+            </div>
           </div>
           {part && (
-            <>
-              <div className="my-auto ml-1 h-full min-w-fit">
-                <ItemClump part={part} />
-              </div>
-              <div className="my-auto ml-1">
-                <StatClump part={part} match={match} />
-              </div>
-              <div className="my-auto ml-1">
-                <ParticipantClump match={match} summoner={summoner} />
-              </div>
-            </>
+            <div className="my-auto ml-1">
+              <StatClump part={part} match={match} />
+            </div>
           )}
+          <div className="my-auto ml-1">
+            <ParticipantClump match={match} summoner={summoner} />
+          </div>
         </div>
       </div>
     </>
@@ -84,7 +106,7 @@ function TeamClump({
   const champions = useChampions();
   const { region } = useRouter().query as { region: string };
   return (
-    <div className="w-44">
+    <div className="w-32 md:w-44">
       {team.map((teammate) => {
         const champion = champions[teammate.champion_id];
         // remove extra spaces from names
@@ -120,7 +142,7 @@ function TeamClump({
                 link
               )}
             </>
-            <div className="ml-auto mr-1 flex text-xs">
+            <div className="ml-auto mr-1 hidden text-xs md:flex">
               <div className="text-gray-400">{teammate.stats.kills}</div>
               <div className="mx-1 text-gray-500">/</div>
               <div className="text-gray-400">{teammate.stats.deaths}</div>
@@ -147,7 +169,7 @@ function StatClump({
   const dpm = part.stats.total_damage_dealt_to_champions / minutes;
   const vspm = part.stats.vision_score / minutes;
   return (
-    <div className="rounded-md bg-gray-900 px-2 py-1 leading-tight text-gray-400">
+    <div className="w-24 rounded-md bg-gray-900 px-2 py-1 leading-tight text-gray-400">
       <div className="mx-auto flex w-fit items-end">
         <div className="font-bold text-emerald-600">{part.stats.kills}</div>
         <div className="mx-1">/</div>

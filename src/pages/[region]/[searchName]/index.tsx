@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryWithPrefetch } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
@@ -10,33 +10,21 @@ import clsx from "clsx";
 
 import type { BasicMatchType } from "@/external/types";
 import { useRouter } from "next/router";
-
-export const MODALSTYLE = {
-  overlay: {
-    zIndex: 2,
-    backgroundColor: "#484848b0",
-  },
-  content: {
-    zIndex: 2,
-    backgroundColor: "#2c2d2f",
-    border: "none",
-  },
-};
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function Summoner() {
   const router = useRouter();
-  const { region, searchName, match } = router.query as {
+  const { region, searchName } = router.query as {
     region: string;
     searchName: string;
-    match?: string;
   };
-  console.log({region, searchName})
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
   const [isInitialQuery, setIsInitialQuery] = useState(true);
   const [page, setPage] = useState(1);
+  const [filterData, setFilterData] = useState<MatchFilterSchema>({});
   const limit = 10;
-
-  const custom_max_width = "col l10 offset-l1 m12 s12";
 
   const start = limit * page - limit;
 
@@ -51,6 +39,11 @@ export default function Summoner() {
   );
   const summonerQueryRefetch = summonerQuery.refetch;
 
+  useEffect(() => {
+    setIsInitialQuery(true);
+    setFilterData({});
+  }, [searchName]);
+
   const matchQueryWithSync = useQueryWithPrefetch(
     [
       "matches-with-sync",
@@ -60,6 +53,7 @@ export default function Summoner() {
       start,
       limit,
       true,
+      filterData,
     ],
     () =>
       api.match
@@ -68,6 +62,7 @@ export default function Summoner() {
           region,
           start,
           limit,
+          queue: filterData.queue,
           sync_import: true,
         })
         .then((x) => x.results),
@@ -79,6 +74,7 @@ export default function Summoner() {
       start + limit,
       limit,
       true,
+      filterData,
     ],
     () =>
       api.match
@@ -87,6 +83,7 @@ export default function Summoner() {
           region,
           start: start + limit,
           limit,
+          queue: filterData.queue,
           sync_import: true,
         })
         .then((x) => x.results),
@@ -112,7 +109,6 @@ export default function Summoner() {
   const isMatchLoading = matchQueryWithSync.isFetching;
 
   const summoner = summonerQuery.data;
-  const icon = summoner?.profile_icon;
   const matches: BasicMatchType[] = matchQueryWithSync.data || [];
   const positionQuery = useQuery(
     ["positions", summoner?._id, region],
@@ -154,9 +150,8 @@ export default function Summoner() {
       enabled: !!summoner?._id,
     }
   );
-  const spectateData = spectateQuery.isSuccess ? spectateQuery.data : undefined;
 
-  const match_ids = matches.map((x: any) => x.id);
+  const match_ids = matches.map((x) => x.id);
   const commentQuery = useQuery(
     ["comment_count", match_ids],
     () =>
@@ -171,36 +166,53 @@ export default function Summoner() {
     }
   );
 
-  const matchFilterOnUpdate = useCallback((data: any) => {
-    setPage(1);
-  }, []);
-
   const pagination = () => {
     return (
-      <div>
+      <div className="flex">
         <button
           onClick={() => setPage((x) => Math.max(1, x - 1))}
-          className={clsx("btn btn-default inline", {disabled: isMatchLoading || page <= 1})}
+          className={clsx("btn btn-default", {
+            disabled: isMatchLoading || page <= 1,
+          })}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="h-3 w-3"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 19.5L8.25 12l7.5-7.5"
+            />
           </svg>
         </button>
         <button
-          style={{ marginLeft: 8 }}
           onClick={() => setPage((x) => x + 1)}
-          className={clsx("btn btn-default inline", {disabled: isMatchLoading})}
+          className={clsx("btn btn-default ml-2", {
+            disabled: isMatchLoading,
+          })}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="h-3 w-3"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8.25 4.5l7.5 7.5-7.5 7.5"
+            />
           </svg>
         </button>
-        <div style={{ display: "inline-block", marginLeft: 8 }}>{page}</div>
-        {isMatchLoading && (
-          <div style={{ display: "inline-block", marginLeft: 10 }}>
-            <Orbit size={25} />
-          </div>
-        )}
+        <div className="mx-2">{page}</div>
+        {isMatchLoading && <Orbit size={25} />}
       </div>
     );
   };
@@ -216,59 +228,98 @@ export default function Summoner() {
                 marginTop: 100,
               }}
             >
-              <Orbit size={300} style={{ margin: "auto" }} />
+              <Orbit size={300} className="m-auto" />
             </div>
           </div>
         )}
 
-        {matchQueryWithSync.isSuccess && !summonerQuery.isSuccess && (
+        {summonerQuery.isError && !summonerQuery.isFetching && (
           <SummonerNotFound />
         )}
 
-        {(matchQueryWithSync.isSuccess || matchQueryWithSync.isSuccess) &&
+        {!isInitialQuery &&
+          matchQueryWithSync.isSuccess &&
           summonerQuery.isSuccess && (
-            <div>
-              {matches.length > 0 && summoner && <div>show match ?</div>}
-
-              <div className="row">
-                <div className={`${custom_max_width}`}>
-                  <div className="row">
-                    <div
-                      style={{ maxWidth: 415 }}
-                      className="col l4 m12 collapsible-col"
-                    >
-                      <div
-                        style={{
-                          verticalAlign: "top",
-                        }}
-                      ></div>
+            <div className="flex">
+              <div>
+                <div className="my-2 w-full">
+                  <MatchFilter onSubmit={(data) => {
+                    setFilterData(data)
+                  }} />
+                </div>
+                <div>
+                  {pagination()}
+                  {matchQueryWithSync.isLoading && (
+                    <div style={{ width: 600 }}>
+                      <Orbit size={200} className="m-auto" />
                     </div>
-                    <div className="col l8 m12">
-                      {pagination()}
-                      {matchQueryWithSync.isLoading && (
-                        <div style={{ width: 600 }}>
-                          <Orbit size={200} className='m-auto' />
-                        </div>
-                      )}
-                      {!matchQueryWithSync.isLoading &&
-                        summoner &&
-                        matches.map((match: BasicMatchType, key: number) => {
-                          return (
-                            <MatchCard
-                              key={`${key}-${match._id}`}
-                              match={match}
-                              summoner={summoner}
-                            />
-                          );
-                        })}
-                      {pagination()}
-                    </div>
-                  </div>
+                  )}
+                  {!matchQueryWithSync.isLoading &&
+                    summoner &&
+                    matches.map((match: BasicMatchType, key: number) => {
+                      return (
+                        <MatchCard
+                          key={`${key}-${match._id}`}
+                          match={match}
+                          summoner={summoner}
+                        />
+                      );
+                    })}
+                  {pagination()}
                 </div>
               </div>
             </div>
           )}
       </div>
     </Skeleton>
+  );
+}
+
+const QUEUEFILTER = {
+  420: "5v5 Ranked Solo/Duo",
+  440: "5v5 Ranked Flex",
+  400: "5v5 Norms Draft",
+  430: "5v5 Norms Blind",
+  0: "Custom Games",
+  700: "Clash",
+  450: "ARAM",
+} as const;
+
+const MatchFilterSchema = z.object({
+  queue: z.number().optional(),
+});
+type MatchFilterSchema = z.infer<typeof MatchFilterSchema>;
+
+function MatchFilter({
+  className = "",
+  onSubmit,
+}: React.PropsWithChildren<{ className?: string, onSubmit: (data: MatchFilterSchema) => void }>) {
+  const {
+    register,
+    getValues,
+  } = useForm<MatchFilterSchema>({ resolver: zodResolver(MatchFilterSchema) });
+
+  return (
+    <div className={className}>
+      <form
+        onChange={async () => {
+          onSubmit(getValues())
+        }}
+      >
+        <label htmlFor="">Queue</label>
+        <select {...register("queue")} className='w-full default px-1 rounded'>
+          <option value={undefined}>Any</option>
+          {Object.keys(QUEUEFILTER).map((x) => {
+            const queue = parseInt(x) as keyof typeof QUEUEFILTER;
+            const name = QUEUEFILTER[queue];
+            return (
+              <option key={queue} value={queue}>
+                {name}
+              </option>
+            );
+          })}
+        </select>
+      </form>
+    </div>
   );
 }

@@ -1,4 +1,6 @@
 import { type CSSProperties } from "react";
+import styles from './spinner.module.css'
+
 
 export default function Orbit({
   size = 100,
@@ -19,11 +21,11 @@ export default function Orbit({
         width: size,
         height: size,
       }}
-      className={`orbit-spinner ${className}`}
+      className={`${styles['orbit-spinner']} ${className}`}
     >
-      <div style={orbit_style} className="orbit"></div>
-      <div style={orbit_style} className="orbit"></div>
-      <div style={orbit_style} className="orbit"></div>
+      <div style={orbit_style} className={styles.orbit}></div>
+      <div style={orbit_style} className={styles.orbit}></div>
+      <div style={orbit_style} className={styles.orbit}></div>
     </div>
   );
 }
