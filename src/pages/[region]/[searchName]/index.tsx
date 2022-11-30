@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMatchList } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
@@ -32,6 +32,7 @@ export default function Summoner() {
     searchName: string;
   };
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
+  const [prevSearchName, setPrevSearchName] = useState('');
   const [page, setPage] = useQueryParam("page", withDefault(NumberParam, 1));
   const [queue, setQueue] = useQueryParam(
     "queue",
@@ -60,6 +61,7 @@ export default function Summoner() {
     limit,
     sync: true,
     queue,
+    keepPreviousData: searchName === prevSearchName,
     onSuccess: () => {
       setLastRefresh(Date.now());
     },
@@ -70,7 +72,12 @@ export default function Summoner() {
     },
   });
 
-  const isInitialQuery = !matchQuery.data && !matchQuery.isLoading;
+  useEffect(() => {
+    if (matchQuery.isSuccess) {
+      setPrevSearchName(searchName)
+    }
+  }, [searchName, matchQuery.isSuccess])
+  const isInitialQuery = !matchQuery.data
 
   const summoner = summonerQuery.data;
   const matches: BasicMatchType[] = matchQuery.data || [];
