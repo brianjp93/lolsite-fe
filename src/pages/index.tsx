@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { type NextPage } from "next";
 import api from "@/external/api/api";
 import Modal from "react-modal";
-import {SearchForm} from "@/components/general/searchForm";
+import { SearchForm } from "@/components/general/searchForm";
+import Image from "next/image";
 
 Modal.setAppElement("#__next");
 
@@ -19,7 +20,13 @@ const Home: NextPage = () => {
   return (
     <Skeleton>
       <div className="mx-auto max-w-prose">
-        <h1>HARDSTUCK CLUB</h1>
+        <Image
+          className="m-auto mt-8"
+          src="/gen/hardstuck-by-hand_2.png"
+          alt="Hardstuck large logo."
+          width={500}
+          height={300}
+        />
         <div className="mt-4">{quoteQuery.data?.message?.message}</div>
         <div className="mt-10">
           <SearchForm />
@@ -28,6 +35,5 @@ const Home: NextPage = () => {
     </Skeleton>
   );
 };
-
 
 export default Home;

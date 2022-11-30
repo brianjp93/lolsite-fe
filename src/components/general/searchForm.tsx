@@ -6,6 +6,7 @@ import { REGIONS } from "@/utils/constants";
 import { useRouter } from "next/router";
 import { useSummonerSearch } from "@/hooks";
 import clsx from "clsx";
+import { SummonerSearchType } from "@/external/types";
 
 const SearchSchema = z.object({
   search: z.string().min(1, "Please give a summoner name."),
@@ -24,12 +25,7 @@ export function SearchForm({
   inputClass?: string;
   formClass?: string;
 }) {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-  } = useForm<SearchSchema>({
+  const { register, handleSubmit, setValue, watch } = useForm<SearchSchema>({
     resolver: zodResolver(SearchSchema),
   });
   const [isOpen, setIsOpen] = useState(false);
@@ -44,10 +40,10 @@ export function SearchForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if ((query.data?.length || 0) > 0) {
+    if (name.length >= 3) {
       setIsOpen(true);
     }
-  }, [query.data]);
+  }, [name]);
 
   useEffect(() => {
     if (name.length < 3) {
@@ -67,10 +63,24 @@ export function SearchForm({
     return () => document.removeEventListener("click", handler);
   }, []);
 
+  // close dropdown after name selection
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setIsOpen(false)
+    }
+    router.events.on('routeChangeComplete', handleRouteChange)
+    return () => router.events.off('routeChangeComplete', handleRouteChange)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const onSubmit = handleSubmit((data) => {
-    setIsOpen(false)
     router.push(`/${data.region}/${data.search}/`);
-  })
+  });
+
+  const handleSelect = (x: SummonerSearchType) => {
+    setValue("search", x.name);
+    onSubmit();
+  };
 
   return (
     <form
@@ -111,11 +121,15 @@ export function SearchForm({
                 query.data.map((x) => {
                   return (
                     <div
-                      onClick={() => {
-                        setValue('search', x.name)
-                        onSubmit()
+                      tabIndex={0}
+                      role='button'
+                      onClick={() => handleSelect(x)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          handleSelect(x);
+                        }
                       }}
-                      className="flex h-fit w-full items-center rounded py-1 hover:bg-white/10 hover:cursor-pointer"
+                      className="flex h-fit w-full items-center rounded py-1 hover:cursor-pointer hover:bg-white/10"
                       key={x.name}
                     >
                       <div className="h-full w-16">

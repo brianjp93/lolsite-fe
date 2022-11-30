@@ -80,6 +80,7 @@ export default function MatchCard({
           </div>
           <div className="w-8 ml-1">
             <Link
+              title="View match details"
               className="h-full w-full btn btn-default !p-0 flex m-auto"
               href={matchRoute(region, searchName, match._id) + "?" + params}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 m-auto">
