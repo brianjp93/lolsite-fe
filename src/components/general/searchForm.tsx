@@ -1,0 +1,142 @@
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { REGIONS } from "@/utils/constants";
+import { useRouter } from "next/router";
+import { useSummonerSearch } from "@/hooks";
+import clsx from "clsx";
+
+const SearchSchema = z.object({
+  search: z.string().min(1, "Please give a summoner name."),
+  region: z.enum(REGIONS),
+});
+type SearchSchema = z.infer<typeof SearchSchema>;
+
+export function SearchForm({
+  showButton = true,
+  showLabel = true,
+  inputClass = "",
+  formClass = "",
+}: {
+  showButton?: boolean;
+  showLabel?: boolean;
+  inputClass?: string;
+  formClass?: string;
+}) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+  } = useForm<SearchSchema>({
+    resolver: zodResolver(SearchSchema),
+  });
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const name = watch("search") || "";
+  const region = watch("region") || "na";
+  const query = useSummonerSearch({
+    name,
+    region,
+  });
+  const ref = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if ((query.data?.length || 0) > 0) {
+      setIsOpen(true);
+    }
+  }, [query.data]);
+
+  useEffect(() => {
+    if (name.length < 3) {
+      setIsOpen(false);
+    }
+  }, [name]);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (event.target instanceof Element) {
+        if (!ref?.current?.contains(event.target)) {
+          setIsOpen(false);
+        }
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, []);
+
+  const onSubmit = handleSubmit((data) => {
+    setIsOpen(false)
+    router.push(`/${data.region}/${data.search}/`);
+  })
+
+  return (
+    <form
+      className={formClass}
+      ref={formRef}
+      autoComplete="off"
+      onSubmit={onSubmit}
+    >
+      {showLabel && <label htmlFor="">Search</label>}
+      <div ref={ref} className="relative flex">
+        <select {...register("region")}>
+          {REGIONS.map((item) => {
+            return (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            );
+          })}
+        </select>
+        <input
+          onFocus={() => {
+            if (query.data) setIsOpen(true);
+          }}
+          type="text"
+          className={clsx("w-full", inputClass)}
+          {...register("search")}
+        />
+        {isOpen && (
+          <div className="absolute left-0 bottom-0 z-10 h-0 w-full">
+            <div
+              className={clsx(
+                "mt-1 max-h-80 w-full overflow-y-scroll rounded",
+                "bg-gradient-to-tr from-slate-900/80",
+                "via-slate-900/90 to-zinc-900/80 p-3 shadow-md"
+              )}
+            >
+              {query.isSuccess &&
+                query.data.map((x) => {
+                  return (
+                    <div
+                      onClick={() => {
+                        setValue('search', x.name)
+                        onSubmit()
+                      }}
+                      className="flex h-fit w-full items-center rounded py-1 hover:bg-white/10 hover:cursor-pointer"
+                      key={x.name}
+                    >
+                      <div className="h-full w-16">
+                        <div className="mr-3 rounded border border-gray-300 px-0 py-1 text-center">
+                          {x.summoner_level}
+                        </div>
+                      </div>
+                      <div className="">{x.name}</div>
+                    </div>
+                  );
+                })}
+              {query.isSuccess && query.data.length === 0 && (
+                <div>No results found.</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      {showButton && (
+        <button className="btn btn-primary mt-2 w-full">Search</button>
+      )}
+    </form>
+  );
+}

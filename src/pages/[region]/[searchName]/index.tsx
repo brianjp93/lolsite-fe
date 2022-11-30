@@ -1,18 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useQueryWithPrefetch } from "@/hooks";
+import { useMatchList } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
 import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
 import clsx from "clsx";
+import { useQueryParam, NumberParam, withDefault } from "use-query-params";
 
 import type { BasicMatchType } from "@/external/types";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+export function profileRoute({
+  region,
+  name,
+}: {
+  region: string;
+  name: string;
+}) {
+  return `/${region}/${name}/`;
+}
 
 export default function Summoner() {
   const router = useRouter();
@@ -21,9 +32,11 @@ export default function Summoner() {
     searchName: string;
   };
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
-  const [isInitialQuery, setIsInitialQuery] = useState(true);
-  const [page, setPage] = useState(1);
-  const [filterData, setFilterData] = useState<MatchFilterSchema>({});
+  const [page, setPage] = useQueryParam("page", withDefault(NumberParam, 1));
+  const [queue, setQueue] = useQueryParam(
+    "queue",
+    withDefault(NumberParam, undefined)
+  );
   const limit = 10;
 
   const start = limit * page - limit;
@@ -34,82 +47,33 @@ export default function Summoner() {
     {
       retry: false,
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
       enabled: !!searchName && !!region,
+      staleTime: 1000 * 60 * 5,
     }
   );
-  const summonerQueryRefetch = summonerQuery.refetch;
 
-  useEffect(() => {
-    setIsInitialQuery(true);
-    setFilterData({});
-  }, [searchName]);
+  const matchQuery = useMatchList({
+    name: searchName,
+    region,
+    start,
+    limit,
+    sync: true,
+    queue,
+    onSuccess: () => {
+      setLastRefresh(Date.now());
+    },
+    onError: () => {
+      if (page > 1) {
+        setPage(page - 1);
+      }
+    },
+  });
 
-  const matchQueryWithSync = useQueryWithPrefetch(
-    [
-      "matches-with-sync",
-      "by-summoner",
-      searchName,
-      region,
-      start,
-      limit,
-      true,
-      filterData,
-    ],
-    () =>
-      api.match
-        .getMatchesBySummonerName({
-          summoner_name: searchName,
-          region,
-          start,
-          limit,
-          queue: filterData.queue,
-          sync_import: true,
-        })
-        .then((x) => x.results),
-    [
-      "matches-with-sync",
-      "by-summoner",
-      searchName,
-      region,
-      start + limit,
-      limit,
-      true,
-      filterData,
-    ],
-    () =>
-      api.match
-        .getMatchesBySummonerName({
-          summoner_name: searchName,
-          region,
-          start: start + limit,
-          limit,
-          queue: filterData.queue,
-          sync_import: true,
-        })
-        .then((x) => x.results),
-    {
-      retry: true,
-      refetchOnWindowFocus: false,
-      keepPreviousData: true,
-      staleTime: 1000 * 60 * 3,
-      enabled: !!searchName && !!region,
-      onSuccess: () => {
-        setLastRefresh(Date.now());
-        setIsInitialQuery(false);
-      },
-      onError: () => {
-        if (page > 1) {
-          setPage(page - 1);
-        }
-      },
-    }
-  );
-  const matchQueryWithSyncRefetch = matchQueryWithSync.refetch;
-
-  const isMatchLoading = matchQueryWithSync.isFetching;
+  const isInitialQuery = !matchQuery.data && !matchQuery.isLoading;
 
   const summoner = summonerQuery.data;
-  const matches: BasicMatchType[] = matchQueryWithSync.data || [];
+  const matches: BasicMatchType[] = matchQuery.data || [];
   const positionQuery = useQuery(
     ["positions", summoner?._id, region],
     () =>
@@ -118,26 +82,14 @@ export default function Summoner() {
             .getPositions({ summoner_id: summoner._id, region })
             .then((x) => x.data.data)
         : undefined,
-    { retry: false, refetchOnWindowFocus: false, enabled: !!summoner?._id }
+    {
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enabled: !!summoner?._id,
+      staleTime: 1000 * 60 * 3,
+    }
   );
-  const positionQueryRefetch = positionQuery.refetch;
-
-  const refreshPage = useCallback(() => {
-    setPage(1);
-    matchQueryWithSyncRefetch();
-    summonerQueryRefetch();
-    positionQueryRefetch();
-  }, [
-    setPage,
-    matchQueryWithSyncRefetch,
-    summonerQueryRefetch,
-    positionQueryRefetch,
-  ]);
-
-  // refresh page if the summoner changes
-  useEffect(() => {
-    refreshPage();
-  }, [summoner?.simple_name, refreshPage]);
 
   const spectateQuery = useQuery(
     ["spectate", region, summoner?._id],
@@ -170,9 +122,9 @@ export default function Summoner() {
     return (
       <div className="flex">
         <button
-          onClick={() => setPage((x) => Math.max(1, x - 1))}
+          onClick={() => setPage((x) => Math.max(1, (x || 1) - 1))}
           className={clsx("btn btn-default", {
-            disabled: isMatchLoading || page <= 1,
+            disabled: matchQuery.isFetching || page <= 1,
           })}
         >
           <svg
@@ -191,9 +143,9 @@ export default function Summoner() {
           </svg>
         </button>
         <button
-          onClick={() => setPage((x) => x + 1)}
+          onClick={() => setPage((x) => (x || 1) + 1)}
           className={clsx("btn btn-default ml-2", {
-            disabled: isMatchLoading,
+            disabled: matchQuery.isFetching,
           })}
         >
           <svg
@@ -212,7 +164,7 @@ export default function Summoner() {
           </svg>
         </button>
         <div className="mx-2">{page}</div>
-        {isMatchLoading && <Orbit size={25} />}
+        {matchQuery.isFetching && <Orbit size={25} />}
       </div>
     );
   };
@@ -220,7 +172,7 @@ export default function Summoner() {
   return (
     <Skeleton topPad={0}>
       <div style={{ minHeight: 1000 }}>
-        {isMatchLoading && isInitialQuery && (
+        {matchQuery.isFetching && isInitialQuery && (
           <div>
             <div
               style={{
@@ -237,39 +189,39 @@ export default function Summoner() {
           <SummonerNotFound />
         )}
 
-        {!isInitialQuery &&
-          matchQueryWithSync.isSuccess &&
-          summonerQuery.isSuccess && (
-            <div className="flex">
+        {!isInitialQuery && matchQuery.isSuccess && summonerQuery.isSuccess && (
+          <div className="flex">
+            <div>
+              <div className="my-2 w-full">
+                <MatchFilter
+                  onSubmit={(data) => {
+                    setQueue(data.queue);
+                  }}
+                />
+              </div>
               <div>
-                <div className="my-2 w-full">
-                  <MatchFilter onSubmit={(data) => {
-                    setFilterData(data)
-                  }} />
-                </div>
-                <div>
-                  {pagination()}
-                  {matchQueryWithSync.isLoading && (
-                    <div style={{ width: 600 }}>
-                      <Orbit size={200} className="m-auto" />
-                    </div>
-                  )}
-                  {!matchQueryWithSync.isLoading &&
-                    summoner &&
-                    matches.map((match: BasicMatchType, key: number) => {
-                      return (
-                        <MatchCard
-                          key={`${key}-${match._id}`}
-                          match={match}
-                          summoner={summoner}
-                        />
-                      );
-                    })}
-                  {pagination()}
-                </div>
+                {pagination()}
+                {matchQuery.isLoading && (
+                  <div style={{ width: 600 }}>
+                    <Orbit size={200} className="m-auto" />
+                  </div>
+                )}
+                {!matchQuery.isLoading &&
+                  summoner &&
+                  matches.map((match: BasicMatchType, key: number) => {
+                    return (
+                      <MatchCard
+                        key={`${key}-${match._id}`}
+                        match={match}
+                        summoner={summoner}
+                      />
+                    );
+                  })}
+                {pagination()}
               </div>
             </div>
-          )}
+          </div>
+        )}
       </div>
     </Skeleton>
   );
@@ -293,21 +245,27 @@ type MatchFilterSchema = z.infer<typeof MatchFilterSchema>;
 function MatchFilter({
   className = "",
   onSubmit,
-}: React.PropsWithChildren<{ className?: string, onSubmit: (data: MatchFilterSchema) => void }>) {
-  const {
-    register,
-    getValues,
-  } = useForm<MatchFilterSchema>({ resolver: zodResolver(MatchFilterSchema) });
+}: React.PropsWithChildren<{
+  className?: string;
+  onSubmit: (data: MatchFilterSchema) => void;
+}>) {
+  const { queue } = useRouter().query as { queue?: number };
+  const { register, getValues } = useForm<MatchFilterSchema>({
+    resolver: zodResolver(MatchFilterSchema),
+    defaultValues: { queue },
+  });
 
   return (
     <div className={className}>
       <form
         onChange={async () => {
-          onSubmit(getValues())
+          onSubmit(getValues());
         }}
       >
-        <label htmlFor="">Queue</label>
-        <select {...register("queue")} className='w-full default px-1 rounded'>
+        <label htmlFor="queue" className="w-14">
+          Queue
+        </label>
+        <select {...register("queue")} className="default w-full rounded !py-2">
           <option value={undefined}>Any</option>
           {Object.keys(QUEUEFILTER).map((x) => {
             const queue = parseInt(x) as keyof typeof QUEUEFILTER;

@@ -8,8 +8,10 @@ import {
   Frame,
   Ban,
   PaginatedResponse,
+  FullMatch,
 } from "../types";
 import * as t from "io-ts";
+import {SimpleMatch} from "../iotypes/match";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
@@ -28,7 +30,7 @@ interface ParticipantsData extends AxiosRequestConfig {
   apply_ranks: boolean;
 }
 async function participants(data: ParticipantsData) {
-  const url = `${base}/match/participants/`;
+  const url = `${base}/participants/`;
   const response = await axios.get(url, { params: data });
   return { data: unwrap(t.array(FullParticipant).decode(response.data.data)) };
 }
@@ -50,7 +52,8 @@ async function checkForLiveGame(data: any) {
 
 async function getMatch(match_id: string) {
   const url = `${base}/${match_id}/`;
-  return await axios.get(url);
+  const response = await axios.get(url);
+  return unwrap(SimpleMatch.decode(response.data))
 }
 
 async function getMatchesBySummonerName({

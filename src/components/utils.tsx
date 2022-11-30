@@ -215,6 +215,7 @@ export function ErrorField({ message }: { message?: string }) {
 }
 
 export function mediaUrl(filePath: string) {
+  if (!filePath) return ''
   if (filePath.startsWith('/')) {
     return `${env.NEXT_PUBLIC_BACKEND_URL}${filePath}`
   }

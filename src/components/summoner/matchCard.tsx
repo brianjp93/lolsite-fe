@@ -1,6 +1,7 @@
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
 import { useChampions } from "@/hooks";
+import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +22,11 @@ export default function MatchCard({
   match: BasicMatchType;
   summoner: SummonerType;
 }) {
+  const router = useRouter();
+  const { region, searchName } = router.query as {
+    region: string;
+    searchName: string;
+  };
   const part = getMyPart(match.participants, summoner.puuid);
   const myTeam = match.teams.filter((x) => x._id === part?.team_id)?.[0];
   const enemyTeam = match.teams.filter((x) => x._id !== part?.team_id)?.[0];
@@ -31,6 +37,8 @@ export default function MatchCard({
   const creationFull = formatDatetimeFull(match.game_creation);
   const creation = formatDatetime(match.game_creation);
   const isTie = minutes < 5;
+  const returnPath = window.location.pathname + window.location.search
+  const params = new URLSearchParams({returnPath})
   return (
     <>
       <div
@@ -60,9 +68,7 @@ export default function MatchCard({
                 </div>
               )}
             </div>
-            <div className='text-xs'>
-              {match.queue_id}
-            </div>
+            <div className="text-xs">{match.queue_id}</div>
           </div>
           {part && (
             <div className="my-auto ml-1">
@@ -71,6 +77,15 @@ export default function MatchCard({
           )}
           <div className="my-auto ml-1">
             <ParticipantClump match={match} summoner={summoner} />
+          </div>
+          <div className="w-8 ml-1">
+            <Link
+              className="h-full w-full btn btn-default !p-0 flex m-auto"
+              href={matchRoute(region, searchName, match._id) + "?" + params}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 m-auto">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>
