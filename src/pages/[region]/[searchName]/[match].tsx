@@ -112,8 +112,14 @@ function TeamSide({
   team: AppendParticipant[];
   match: SimpleMatchType;
 }) {
+  const isWin = !!team[0]?.stats.win;
   return (
-    <div>
+    <div
+      className={clsx("rounded", {
+        "bg-gradient-to-tr from-emerald-600/0 via-teal-700/20 to-emerald-600/30":
+          isWin,
+      })}
+    >
       {team.map((part, key) => {
         return (
           <div key={part._id} className={clsx({ "mt-1": key > 0 })}>
@@ -141,7 +147,7 @@ function ParticipantInfo({
   return (
     <div
       className={clsx("flex rounded p-2", {
-        "bg-white/10": summoner?.puuid === part.puuid,
+        "bg-white/10 shadow-md": summoner?.puuid === part.puuid,
       })}
     >
       <div className="my-auto flex h-full flex-col">
