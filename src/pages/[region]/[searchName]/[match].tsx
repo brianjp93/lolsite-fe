@@ -40,7 +40,7 @@ export default function Match() {
 
   return (
     <Skeleton topPad={0}>
-      <div className="flex">
+      <div className="flex ml-10">
         <Link
           href={
             returnPath ? returnPath : profileRoute({ region, name: searchName })
