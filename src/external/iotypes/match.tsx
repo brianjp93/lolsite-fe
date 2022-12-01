@@ -215,6 +215,21 @@ export const Stats = t.type({
   item_6_image: optional(ItemImage),
   perk_0_image_url: t.string,
   perk_sub_style_image_url: t.string,
+
+  all_in_pings: t.number,
+  assist_me_pings: t.number,
+  bait_pings: t.number,
+  basic_pings: t.number,
+  command_pings: t.number,
+  danger_pings: t.number,
+  enemy_missing_pings: t.number,
+  enemy_vision_pings: t.number,
+  get_back_pings: t.number,
+  hold_pings: t.number,
+  need_vision_pings: t.number,
+  on_my_way_pings: t.number,
+  push_pings: t.number,
+  vision_cleared_pings: t.number,
 })
 export type StatsType = t.TypeOf<typeof Stats>
 

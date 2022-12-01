@@ -1,6 +1,6 @@
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
-import { useChampions } from "@/hooks";
+import { useChampions, useQueues } from "@/hooks";
 import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
 import clsx from "clsx";
 import Image from "next/image";
@@ -13,7 +13,9 @@ import {
   getMyPart,
   getTeam,
   mediaUrl,
+  queueColor,
 } from "../utils";
+import { AppendParticipant } from "./rankParticipants";
 
 export default function MatchCard({
   match,
@@ -27,6 +29,8 @@ export default function MatchCard({
     region: string;
     searchName: string;
   };
+  const queues = useQueues().data || {};
+  const queue = queues[match.queue_id];
   const part = getMyPart(match.participants, summoner.puuid);
   const myTeam = match.teams.filter((x) => x._id === part?.team_id)?.[0];
   const enemyTeam = match.teams.filter((x) => x._id !== part?.team_id)?.[0];
@@ -37,8 +41,8 @@ export default function MatchCard({
   const creationFull = formatDatetimeFull(match.game_creation);
   const creation = formatDatetime(match.game_creation);
   const isTie = minutes < 5;
-  const returnPath = window.location.pathname + window.location.search
-  const params = new URLSearchParams({returnPath})
+  const returnPath = window.location.pathname + window.location.search;
+  const params = new URLSearchParams({ returnPath });
   return (
     <>
       <div
@@ -46,21 +50,21 @@ export default function MatchCard({
           "my-2 w-fit rounded-md bg-gradient-to-r to-zinc-900/50 p-2",
           "overflow-x-scroll",
           {
-            "from-[#60102b66]": enemyTeam?.win && !isTie,
+            "from-[#71101366]": enemyTeam?.win && !isTie,
             "from-[#1d6944ba]": myTeam?.win && !isTie,
             "from-zinc-900/50": isTie,
           }
         )}
       >
         <div className="flex">
-          <div className="flex flex-col">
+          <div className="flex flex-col min-w-fit">
             <div className="flex text-xs">
               <div className="mr-2 font-bold">{minuteSecond}</div>
               <div title={creationFull}>{creation}</div>
             </div>
             <div className="flex">
               <div className="my-auto h-full min-w-fit">
-                <ChampionClump match={match} summoner={summoner} />
+                {part && <ChampionClump part={part} />}
               </div>
               {part && (
                 <div className="my-auto ml-1 h-full min-w-fit">
@@ -68,7 +72,11 @@ export default function MatchCard({
                 </div>
               )}
             </div>
-            <div className="text-xs">{match.queue_id}</div>
+            <div
+              className={clsx("text-xs font-bold", queueColor(match.queue_id))}
+            >
+              {queue?.description || match.queue_id}
+            </div>
           </div>
           {part && (
             <div className="my-auto ml-1">
@@ -78,13 +86,25 @@ export default function MatchCard({
           <div className="my-auto ml-1">
             <ParticipantClump match={match} summoner={summoner} />
           </div>
-          <div className="w-8 ml-1">
+          <div className="ml-1 w-8">
             <Link
               title="View match details"
-              className="h-full w-full btn btn-default !p-0 flex m-auto"
-              href={matchRoute(region, searchName, match._id) + "?" + params}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 m-auto">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+              className="btn btn-default m-auto flex h-full w-full !p-0"
+              href={matchRoute(region, searchName, match._id) + "?" + params}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="m-auto h-4 w-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                />
               </svg>
             </Link>
           </div>
@@ -145,8 +165,8 @@ function TeamClump({
                 <Image
                   className="rounded"
                   src={mediaUrl(champion.image.file_15)}
-                  width={15}
-                  height={15}
+                  width={16}
+                  height={16}
                   alt={champion.name}
                 />
               )}
@@ -172,12 +192,12 @@ function TeamClump({
   );
 }
 
-function StatClump({
+export function StatClump({
   part,
   match,
 }: {
   part: BasicParticipantType;
-  match: BasicMatchType;
+  match: {game_duration: number};
 }) {
   const deaths = part.stats.deaths || 1;
   const kda = (part.stats.kills + part.stats.assists) / deaths;
@@ -209,7 +229,7 @@ function StatClump({
   );
 }
 
-function ItemClump({ part }: { part: BasicParticipantType }) {
+export function ItemClump({ part }: { part: BasicParticipantType | AppendParticipant }) {
   return (
     <div className="grid grid-cols-3">
       {[0, 1, 2, 3, 4, 5].map((i) => {
@@ -236,14 +256,11 @@ function ItemClump({ part }: { part: BasicParticipantType }) {
   );
 }
 
-function ChampionClump({
-  match,
-  summoner,
+export function ChampionClump({
+  part,
 }: {
-  match: BasicMatchType;
-  summoner: SummonerType;
+  part: AppendParticipant | BasicParticipantType;
 }) {
-  const part = getMyPart(match.participants, summoner.puuid);
   const champions = useChampions();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
   if (!champion) return null;
@@ -285,12 +302,14 @@ function ChampionClump({
           height={20}
           alt={`Spell image: ${part?.summoner_2_id}`}
         />
-        <Image
-          src={mediaUrl(part.stats.item_6_image?.file_30)}
-          width={20}
-          height={20}
-          alt={""}
-        />
+        {part.stats.item_6_image && (
+          <Image
+            src={mediaUrl(part.stats.item_6_image?.file_30)}
+            width={20}
+            height={20}
+            alt={""}
+          />
+        )}
       </div>
     </div>
   );

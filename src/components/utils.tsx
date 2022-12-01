@@ -4,6 +4,7 @@ import type { BasicMatchType, FullParticipantType } from "@/external/types";
 import { useItem } from "@/hooks";
 import type {BasicParticipantType} from "@/external/iotypes/match";
 import {env} from "@/env/client.mjs";
+import {AppendParticipant} from "./summoner/rankParticipants";
 
 export function formatDatetime(epoch: number) {
   return format(new Date(epoch), "MMM d h:mma");
@@ -153,7 +154,7 @@ export function ParticipantItems({
   );
 }
 
-export function getMyPart(participants: FullParticipantType[] | BasicParticipantType[], puuid: string) {
+export function getMyPart(participants: FullParticipantType[] | BasicParticipantType[] | AppendParticipant[], puuid: string) {
   for (const part of participants) {
     if (part.puuid === puuid) {
       return part;
@@ -220,4 +221,23 @@ export function mediaUrl(filePath: string) {
     return `${env.NEXT_PUBLIC_BACKEND_URL}${filePath}`
   }
   return filePath
+}
+
+
+export function queueColor(queue_id: number) {
+  // ranked 5v5 solo
+  if (queue_id === 420) {
+    return 'text-cyan-600'
+  }
+  // ranked 5v5 flex
+  else if (queue_id === 440) {
+    return 'text-emerald-600'
+  }
+  // aram
+  else if ([100, 450].includes(queue_id)) {
+    return 'text-red-400'
+  } else if ([900, 1010].includes(queue_id)) {
+    return 'text-black'
+  }
+  return ''
 }

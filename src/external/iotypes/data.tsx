@@ -1,33 +1,32 @@
-import * as t from 'io-ts';
-import { optional } from './base'
-
+import * as t from "io-ts";
+import { z } from "zod";
+import { optional } from "./base";
 
 export const ItemImage = t.type({
-    file: optional(t.string),
-    file_15: optional(t.string),
-    file_30: optional(t.string),
-    file_40: optional(t.string),
-})
-export type ItemImageType = t.TypeOf<typeof ItemImage>
-
+  file: optional(t.string),
+  file_15: optional(t.string),
+  file_30: optional(t.string),
+  file_40: optional(t.string),
+});
+export type ItemImageType = t.TypeOf<typeof ItemImage>;
 
 export const ChampionImage = t.type({
-    file: optional(t.string),
-    file_15: optional(t.string),
-    file_30: optional(t.string),
-    file_40: optional(t.string),
-})
-export type ChampionImageType = t.TypeOf<typeof ChampionImage>
-
+  file: optional(t.string),
+  file_15: optional(t.string),
+  file_30: optional(t.string),
+  file_40: optional(t.string),
+});
+export type ChampionImageType = t.TypeOf<typeof ChampionImage>;
 
 export const BasicChampionWithImage = t.type({
-    _id: t.string,
-    name: t.string,
-    key: t.number,
-    image: ChampionImage,
-})
-export type BasicChampionWithImageType = t.TypeOf<typeof BasicChampionWithImage>
-
+  _id: t.string,
+  name: t.string,
+  key: t.number,
+  image: ChampionImage,
+});
+export type BasicChampionWithImageType = t.TypeOf<
+  typeof BasicChampionWithImage
+>;
 
 export const Champion = t.type({
   image: ChampionImage,
@@ -43,8 +42,8 @@ export const Champion = t.type({
   lore: t.string,
   last_changed: t.string,
   created_date: t.string,
-})
-export type ChampionType = t.TypeOf<typeof Champion>
+});
+export type ChampionType = t.TypeOf<typeof Champion>;
 
 export const Rune = t.type({
   icon: t.string,
@@ -58,5 +57,12 @@ export const Rune = t.type({
   short_description: t.string,
   sort_int: t.number,
   _id: t.number,
-})
-export type RuneType = t.TypeOf<typeof Rune>
+});
+export type RuneType = t.TypeOf<typeof Rune>;
+
+export const Queue = z.object({
+  _id: z.number(),
+  _map: z.string(),
+  description: z.string(),
+});
+export type QueueType = z.infer<typeof Queue>;

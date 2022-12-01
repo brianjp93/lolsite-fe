@@ -16,6 +16,7 @@ import type {
   BasicChampionWithImageType,
 } from "@/external/types";
 import { rankParticipants } from "./components/summoner/rankParticipants";
+import type { QueueType } from "./external/iotypes/data";
 
 export function useDebounce<V>(value: V, delay: number) {
   // State and setters for debounced value
@@ -260,4 +261,48 @@ export function useTimeline({ matchId }: { matchId: string }) {
     }
   );
   return query;
+}
+
+export function useQueues() {
+  return useQuery(
+    ["queues-data"],
+    async () => {
+      const data = await api.data.getQueues();
+      const out: Record<number, QueueType> = {};
+      for (const x of data) {
+        x.description = x.description.replace("games", "").trim();
+        if (x.description === "Co-op vs. AI Intermediate Bot") {
+          x.description = "Co-op vs Bots Int";
+        }
+        out[x._id] = x;
+      }
+      return out;
+    },
+    {
+      retry: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 60,
+    }
+  );
+}
+
+export function useSummoner({
+  region,
+  name,
+}: {
+  region: string;
+  name: string;
+}) {
+  return useQuery(
+    ["summoner", "name", name, region],
+    () => api.player.getSummonerByName(name, region),
+    {
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      staleTime: 1000 * 60 * 5,
+      enabled: !!region && !!name,
+    }
+  );
 }
