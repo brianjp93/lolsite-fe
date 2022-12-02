@@ -28,9 +28,7 @@ const Home: NextPage = () => {
           height={300}
         />
         <div className="mt-4">{quoteQuery.data?.message?.message}</div>
-        <div className="mt-10">
-          <SearchForm />
-        </div>
+        <SearchForm formClass="mt-10" />
       </div>
     </Skeleton>
   );

@@ -6,7 +6,7 @@ import { REGIONS } from "@/utils/constants";
 import { useRouter } from "next/router";
 import { useSummonerSearch } from "@/hooks";
 import clsx from "clsx";
-import { SummonerSearchType } from "@/external/types";
+import type { SummonerSearchType } from "@/external/types";
 
 const SearchSchema = z.object({
   search: z.string().min(1, "Please give a summoner name."),
@@ -66,12 +66,12 @@ export function SearchForm({
   // close dropdown after name selection
   useEffect(() => {
     const handleRouteChange = () => {
-      setIsOpen(false)
-    }
-    router.events.on('routeChangeComplete', handleRouteChange)
-    return () => router.events.off('routeChangeComplete', handleRouteChange)
+      setIsOpen(false);
+    };
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => router.events.off("routeChangeComplete", handleRouteChange);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const onSubmit = handleSubmit((data) => {
     router.push(`/${data.region}/${data.search}/`);
@@ -109,12 +109,12 @@ export function SearchForm({
           {...register("search")}
         />
         {isOpen && (
-          <div className="absolute left-0 bottom-0 z-10 h-0 w-full">
+          <div className="absolute left-0 bottom-0 h-0 w-full z-10">
             <div
               className={clsx(
                 "mt-1 max-h-80 w-full overflow-y-scroll rounded",
                 "bg-gradient-to-tr from-slate-900/80",
-                "via-slate-900/90 to-zinc-900/80 p-3 shadow-md"
+                "via-slate-900/90 to-zinc-900/80 p-3 shadow-md",
               )}
             >
               {query.isSuccess &&
@@ -122,7 +122,7 @@ export function SearchForm({
                   return (
                     <div
                       tabIndex={0}
-                      role='button'
+                      role="button"
                       onClick={() => handleSelect(x)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
