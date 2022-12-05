@@ -258,6 +258,7 @@ export function useTimeline({ matchId }: { matchId: string }) {
       refetchOnWindowFocus: false,
       enabled: !!matchId,
       refetchOnMount: false,
+      staleTime: 1000 * 60 * 30,
     }
   );
   return query;

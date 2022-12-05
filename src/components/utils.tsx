@@ -2,9 +2,9 @@ import { format } from "date-fns";
 import { ItemPopover } from "../components/data/item";
 import type { BasicMatchType, FullParticipantType } from "@/external/types";
 import { useItem } from "@/hooks";
-import type {BasicParticipantType} from "@/external/iotypes/match";
-import {env} from "@/env/client.mjs";
-import {AppendParticipant} from "./summoner/rankParticipants";
+import type { BasicParticipantType } from "@/external/iotypes/match";
+import { env } from "@/env/client.mjs";
+import type { AppendParticipant } from "./summoner/rankParticipants";
 
 export function formatDatetime(epoch: number) {
   return format(new Date(epoch), "MMM d h:mma");
@@ -49,11 +49,7 @@ export function convertRank(rank: string) {
   return rank;
 }
 
-export function Item(
-  id: number,
-  image_url: string,
-  match: BasicMatchType,
-) {
+export function Item(id: number, image_url: string, match: BasicMatchType) {
   const query = useItem({ id, major: match.major, minor: match.minor });
   return (
     <ItemPopover
@@ -106,55 +102,33 @@ export function ParticipantItems({
     >
       <div style={{ width: 100 }}>
         <span>
-          {Item(
-            part.stats?.item_0,
-            part.stats?.item_0_image?.file_30,
-            match,
-          )}
+          {Item(part.stats?.item_0, part.stats?.item_0_image?.file_30, match)}
         </span>
         <span>
-          {Item(
-            part.stats?.item_1,
-            part.stats?.item_1_image?.file_30,
-            match,
-          )}
+          {Item(part.stats?.item_1, part.stats?.item_1_image?.file_30, match)}
         </span>
         <span>
-          {Item(
-            part.stats?.item_2,
-            part.stats?.item_2_image?.file_30,
-            match,
-          )}
+          {Item(part.stats?.item_2, part.stats?.item_2_image?.file_30, match)}
         </span>
       </div>
       <div style={{ width: 100 }}>
         <span>
-          {Item(
-            part.stats?.item_3,
-            part.stats?.item_3_image?.file_30,
-            match,
-          )}
+          {Item(part.stats?.item_3, part.stats?.item_3_image?.file_30, match)}
         </span>
         <span>
-          {Item(
-            part.stats?.item_4,
-            part.stats?.item_4_image?.file_30,
-            match,
-          )}
+          {Item(part.stats?.item_4, part.stats?.item_4_image?.file_30, match)}
         </span>
         <span>
-          {Item(
-            part.stats?.item_5,
-            part.stats?.item_5_image?.file_30,
-            match,
-          )}
+          {Item(part.stats?.item_5, part.stats?.item_5_image?.file_30, match)}
         </span>
       </div>
     </div>
   );
 }
 
-export function getMyPart(participants: FullParticipantType[] | BasicParticipantType[] | AppendParticipant[], puuid: string) {
+export function getMyPart<
+  T extends FullParticipantType[] | BasicParticipantType[] | AppendParticipant[]
+>(participants: T, puuid: string): T[number] | undefined {
   for (const part of participants) {
     if (part.puuid === puuid) {
       return part;
@@ -212,32 +186,31 @@ export function stripHtmlFull(html: string) {
 
 export function ErrorField({ message }: { message?: string }) {
   if (!message) return null;
-  return <div className="text-red-800 text-sm font-bold">{message}</div>;
+  return <div className="text-sm font-bold text-red-800">{message}</div>;
 }
 
 export function mediaUrl(filePath: string) {
-  if (!filePath) return ''
-  if (filePath.startsWith('/')) {
-    return `${env.NEXT_PUBLIC_BACKEND_URL}${filePath}`
+  if (!filePath) return "";
+  if (filePath.startsWith("/")) {
+    return `${env.NEXT_PUBLIC_BACKEND_URL}${filePath}`;
   }
-  return filePath
+  return filePath;
 }
-
 
 export function queueColor(queue_id: number) {
   // ranked 5v5 solo
   if (queue_id === 420) {
-    return 'text-cyan-600'
+    return "text-cyan-600";
   }
   // ranked 5v5 flex
   else if (queue_id === 440) {
-    return 'text-emerald-600'
+    return "text-emerald-600";
   }
   // aram
   else if ([100, 450].includes(queue_id)) {
-    return 'text-red-400'
+    return "text-red-400";
   } else if ([900, 1010].includes(queue_id)) {
-    return 'text-black'
+    return "text-black";
   }
-  return ''
+  return "";
 }

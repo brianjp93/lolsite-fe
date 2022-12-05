@@ -29,6 +29,8 @@
     "react-hook-form": "^7.39.5",
     "react-modal": "^3.16.1",
     "react-tiny-popover": "^7.2.0",
+    "recharts": "^2.1.16",
+    "recoil": "^0.7.6",
     "superjson": "1.9.1",
     "use-query-params": "^2.1.2",
     "zod": "^3.18.0"

@@ -8,7 +8,6 @@ import {
   Frame,
   Ban,
   PaginatedResponse,
-  FullMatch,
 } from "../types";
 import * as t from "io-ts";
 import {SimpleMatch} from "../iotypes/match";

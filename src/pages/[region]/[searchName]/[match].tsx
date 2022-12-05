@@ -1,14 +1,19 @@
 import Skeleton from "@/components/general/skeleton";
 import { useMatch, useParticipants, useSummoner, useTimeline } from "@/hooks";
 import { useRouter } from "next/router";
-import type { SimpleMatchType } from "@/external/types";
+import type { SimpleMatchType, SummonerType } from "@/external/types";
 import Orbit from "@/components/general/spinner";
 import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
 import { profileRoute } from ".";
 import type { FrameType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
-import { convertRank, convertTier, getTeam } from "@/components/utils";
+import {
+  convertRank,
+  convertTier,
+  getMyPart,
+  getTeam,
+} from "@/components/utils";
 import {
   ChampionClump,
   ItemClump,
@@ -16,6 +21,13 @@ import {
 } from "@/components/summoner/matchCard";
 import clsx from "clsx";
 import numeral from "numeral";
+import {
+  MapEvents,
+  MapEventsInner,
+} from "@/components/summoner/matchDetails/mapEvents";
+import { Timeline } from "@/components/summoner/matchDetails/gameTimeline";
+import { ChampionTimelinesInner } from "@/components/summoner/matchDetails/championTimelines";
+import {StatOverview} from "@/components/summoner/matchDetails/championStats";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -37,10 +49,12 @@ export default function Match() {
   const participantsQuery = useParticipants(matchId);
   const participants = participantsQuery.data;
   const timelineQuery = useTimeline({ matchId });
+  const summonerQ = useSummoner({ region, name: searchName });
+  const summoner = summonerQ.data;
 
   return (
     <Skeleton topPad={0}>
-      <div className="flex ml-10">
+      <div className="ml-10 flex">
         <Link
           href={
             returnPath ? returnPath : profileRoute({ region, name: searchName })
@@ -63,11 +77,12 @@ export default function Match() {
           profile
         </Link>
       </div>
-      {match && participants && (
+      {match && participants && summoner && (
         <InnerMatch
           match={match}
           participants={participants}
           timeline={timelineQuery.data}
+          summoner={summoner}
         />
       )}
       {matchQuery.isLoading && <Orbit size={50} />}
@@ -79,13 +94,16 @@ function InnerMatch({
   match,
   participants,
   timeline,
+  summoner,
 }: {
   match: SimpleMatchType;
   participants: AppendParticipant[];
   timeline?: FrameType[];
+  summoner: SummonerType;
 }) {
   const team100 = getTeam(100, participants);
   const team200 = getTeam(200, participants);
+  const mypart = getMyPart(participants, summoner.puuid);
   return (
     <div>
       <div className="flex justify-center">
@@ -100,6 +118,36 @@ function InnerMatch({
             <TeamSide team={team200} match={match} />
           </div>
         </div>
+      </div>
+      <div className={clsx(
+        "mt-2 flex flex-wrap justify-center",
+        "bg-zinc-800/40 rounded p-4 m-2"
+      )}>
+        {timeline && (
+          <MapEventsInner
+            timeline={timeline}
+            participants={participants}
+            match={{ _id: match._id }}
+          />
+        )}
+        {timeline && (
+          <Timeline
+            timeline={timeline}
+            match={match}
+            participants={participants}
+            summoner={summoner}
+          />
+        )}
+        {mypart && timeline && (
+          <ChampionTimelinesInner
+            matchId={match._id}
+            participants={participants}
+            summoner={summoner}
+            timeline={timeline}
+            expanded_width={500}
+          />
+        )}
+        {mypart && <StatOverview participants={participants} match={match} mypart={mypart} />}
       </div>
     </div>
   );
