@@ -22,12 +22,12 @@ import {
 import clsx from "clsx";
 import numeral from "numeral";
 import {
-  MapEvents,
   MapEventsInner,
 } from "@/components/summoner/matchDetails/mapEvents";
 import { Timeline } from "@/components/summoner/matchDetails/gameTimeline";
 import { ChampionTimelinesInner } from "@/components/summoner/matchDetails/championTimelines";
 import {StatOverview} from "@/components/summoner/matchDetails/championStats";
+import BuildOrder from "@/components/summoner/matchDetails/buildOrder";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -107,7 +107,7 @@ function InnerMatch({
   return (
     <div>
       <div className="flex justify-center">
-        <div className="flex w-fit overflow-x-scroll rounded bg-zinc-800/40 p-2">
+        <div className="flex w-fit overflow-x-scroll rounded bg-zinc-800/40 p-2 quiet-scroll">
           <div className="min-w-fit pr-1">
             <TeamSide team={team100} match={match} />
           </div>
@@ -147,6 +147,13 @@ function InnerMatch({
             expanded_width={500}
           />
         )}
+        <BuildOrder
+          timeline={timeline}
+          expanded_width={500}
+          participants={participants}
+          summoner={summoner}
+          match_id={match.id}
+        />
         {mypart && <StatOverview participants={participants} match={match} mypart={mypart} />}
       </div>
     </div>

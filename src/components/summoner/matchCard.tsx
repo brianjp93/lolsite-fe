@@ -15,7 +15,7 @@ import {
   mediaUrl,
   queueColor,
 } from "../utils";
-import { AppendParticipant } from "./rankParticipants";
+import { type AppendParticipant } from "./rankParticipants";
 
 export default function MatchCard({
   match,
@@ -48,7 +48,7 @@ export default function MatchCard({
       <div
         className={clsx(
           "my-2 w-fit rounded-md bg-gradient-to-r to-zinc-900/50 p-2",
-          "overflow-x-scroll",
+          "overflow-x-scroll quiet-scroll",
           {
             "from-[#71101366]": enemyTeam?.win && !isTie,
             "from-[#1d6944ba]": myTeam?.win && !isTie,

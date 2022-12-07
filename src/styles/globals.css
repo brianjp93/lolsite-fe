@@ -61,6 +61,10 @@ select {
   &.default {
     @apply bg-zinc-500/20 py-1 px-2;
   }
+
+  option {
+    @apply bg-slate-800 border-none outline-none;
+  }
 }
 
 /* LOW PROFILE SCROLLBAR */
