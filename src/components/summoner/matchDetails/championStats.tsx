@@ -111,7 +111,7 @@ export function StatOverview({
   return (
     <div className="relative min-w-fit ml-4">
       <div
-        className="quiet-scroll inline-block overflow-y-scroll"
+        className="quiet-scroll inline-block overflow-y-auto"
         style={{
           height: 420,
           width: 115,

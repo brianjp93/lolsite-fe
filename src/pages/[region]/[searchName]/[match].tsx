@@ -106,7 +106,7 @@ function InnerMatch({
   return (
     <div>
       <div className="flex justify-center">
-        <div className="quiet-scroll flex w-fit overflow-x-scroll rounded bg-zinc-800/40 p-2">
+        <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
           <div className="min-w-fit pr-1">
             <TeamSide team={team100} match={match} />
           </div>

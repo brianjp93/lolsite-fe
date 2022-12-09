@@ -112,7 +112,7 @@ export function SearchForm({
           <div className="absolute left-0 bottom-0 h-0 w-full z-10">
             <div
               className={clsx(
-                "mt-1 max-h-80 w-full overflow-y-scroll rounded",
+                "mt-1 max-h-80 w-full overflow-y-auto rounded",
                 "bg-gradient-to-tr from-slate-900/80 quiet-scroll",
                 "via-slate-900/90 to-zinc-900/80 p-3 shadow-md",
               )}

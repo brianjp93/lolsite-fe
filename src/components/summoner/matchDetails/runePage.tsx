@@ -14,7 +14,7 @@ import type { FullParticipantType, RuneType } from "@/external/types";
 import { RUNEDATA as RUNES } from "@/utils/constants";
 import { type AppendParticipant } from "../rankParticipants";
 import Image from "next/image";
-import {mediaUrl} from "@/components/utils";
+import { mediaUrl } from "@/components/utils";
 
 export function RunePage({
   mypart,
@@ -84,6 +84,11 @@ export function RunePage({
             <div
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  setSelectedPart(part);
+                }
+              }}
               style={{ ...select_style }}
             >
               NA
@@ -93,10 +98,16 @@ export function RunePage({
             <Image
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  setSelectedPart(part);
+                }
+              }}
               style={{ ...select_style }}
               tabIndex={1}
               height={30}
               width={30}
+              className="my-2"
               src={mediaUrl(champ?.image?.file_30)}
               alt="Champion"
             />
