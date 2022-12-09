@@ -84,4 +84,8 @@ select {
   scrollbar-width: thin;
 }
 
+.react-tiny-popover-container {
+  @apply bg-zinc-900/90 p-8 rounded-md max-w-md;
+}
+
 @tailwind utilities;

@@ -21,13 +21,12 @@ import {
 } from "@/components/summoner/matchCard";
 import clsx from "clsx";
 import numeral from "numeral";
-import {
-  MapEventsInner,
-} from "@/components/summoner/matchDetails/mapEvents";
+import { MapEventsInner } from "@/components/summoner/matchDetails/mapEvents";
 import { Timeline } from "@/components/summoner/matchDetails/gameTimeline";
 import { ChampionTimelinesInner } from "@/components/summoner/matchDetails/championTimelines";
-import {StatOverview} from "@/components/summoner/matchDetails/championStats";
+import { StatOverview } from "@/components/summoner/matchDetails/championStats";
 import BuildOrder from "@/components/summoner/matchDetails/buildOrder";
+import { RunePage } from "@/components/summoner/matchDetails/runePage";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -107,7 +106,7 @@ function InnerMatch({
   return (
     <div>
       <div className="flex justify-center">
-        <div className="flex w-fit overflow-x-scroll rounded bg-zinc-800/40 p-2 quiet-scroll">
+        <div className="quiet-scroll flex w-fit overflow-x-scroll rounded bg-zinc-800/40 p-2">
           <div className="min-w-fit pr-1">
             <TeamSide team={team100} match={match} />
           </div>
@@ -119,42 +118,70 @@ function InnerMatch({
           </div>
         </div>
       </div>
-      <div className={clsx(
-        "mt-2 flex flex-wrap justify-center",
-        "bg-zinc-800/40 rounded p-4 m-2"
-      )}>
+      <div
+        className={clsx(
+          "mt-2 flex flex-wrap justify-center",
+          "m-2 rounded bg-zinc-800/40 p-4"
+        )}
+      >
         {timeline && (
-          <MapEventsInner
-            timeline={timeline}
-            participants={participants}
-            match={{ _id: match._id }}
-          />
+          <div className="my-2">
+            <MapEventsInner
+              timeline={timeline}
+              participants={participants}
+              match={{ _id: match._id }}
+            />
+          </div>
         )}
         {timeline && (
-          <Timeline
-            timeline={timeline}
-            match={match}
-            participants={participants}
-            summoner={summoner}
-          />
+          <div className="my-2">
+            <Timeline
+              timeline={timeline}
+              match={match}
+              participants={participants}
+              summoner={summoner}
+            />
+          </div>
         )}
         {mypart && timeline && (
-          <ChampionTimelinesInner
-            matchId={match._id}
-            participants={participants}
-            summoner={summoner}
+          <div className="my-2">
+            <ChampionTimelinesInner
+              matchId={match._id}
+              participants={participants}
+              summoner={summoner}
+              timeline={timeline}
+              expanded_width={500}
+            />
+          </div>
+        )}
+        {mypart && (
+          <div className="my-2">
+            <StatOverview
+              participants={participants}
+              match={match}
+              mypart={mypart}
+            />
+          </div>
+        )}
+        <div className="my-2">
+          <BuildOrder
             timeline={timeline}
             expanded_width={500}
+            participants={participants}
+            summoner={summoner}
+            match_id={match.id}
           />
+        </div>
+        {mypart && (
+          <div className="my-2">
+            <RunePage
+              mypart={mypart}
+              participants={participants}
+              match={match}
+              matchCardHeight={400}
+            />
+          </div>
         )}
-        <BuildOrder
-          timeline={timeline}
-          expanded_width={500}
-          participants={participants}
-          summoner={summoner}
-          match_id={match.id}
-        />
-        {mypart && <StatOverview participants={participants} match={match} mypart={mypart} />}
       </div>
     </div>
   );

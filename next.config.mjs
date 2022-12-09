@@ -11,6 +11,11 @@ const remotePatterns = [
     protocol: 'https',
     hostname: 'ddragon.leagueoflegends.com',
     pathname: '/**',
+  },
+  {
+    protocol: 'https',
+    hostname: 'raw.communitydragon.org',
+    pathname: '/**',
   }
 ]
 if (process.env.NODE_ENV === 'development') {
