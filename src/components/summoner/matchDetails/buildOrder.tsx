@@ -1,4 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  type CSSProperties,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 import ReactDOMServer from "react-dom/server";
 import numeral from "numeral";
@@ -242,27 +248,31 @@ function BuildOrder(props: {
         );
       })}
 
-      <div style={{ marginTop: 5, marginBottom: 5 }} className="row">
-        <div className="col s6">
+      <div className="my-2 grid grid-cols-2">
+        <div>
           <label htmlFor={`${props.match_id}-build-selection`}>
             <input
+              className="inline"
               id={`${props.match_id}-build-selection`}
               onChange={useCallback(() => setDisplayPage("build"), [])}
               type="radio"
+              tabIndex={1}
               checked={display_page === "build"}
             />
-            <span>Build Order</span>
+            <div className="ml-1 inline">Build Order</div>
           </label>
         </div>
-        <div className="col s6">
+        <div>
           <label htmlFor={`${props.match_id}-skill-selection`}>
             <input
               id={`${props.match_id}-skill-selection`}
               onChange={useCallback(() => setDisplayPage("skill"), [])}
               type="radio"
               checked={display_page === "skill"}
+              tabIndex={1}
+              className="inline"
             />
-            <span>Skill Order</span>
+            <div className="ml-1 inline">Skill Order</div>
           </label>
         </div>
       </div>
@@ -273,11 +283,12 @@ function BuildOrder(props: {
           style={{ marginTop: 5, overflowY: "scroll", height: 300, width: 385 }}
         >
           {(participant_groups || []).map((group, key) => {
-            const total_seconds = Object.values(group)[0].timestamp / 1000;
+            const total_seconds =
+              (Object.values(group)[0]?.timestamp || 0) / 1000;
             const minutes = Math.floor(total_seconds / 60);
             const seconds = Math.floor(total_seconds % 60);
             count++;
-            let div_style: Record<string, any> = { display: "inline-block" };
+            let div_style: CSSProperties = { display: "inline-block" };
             if (count > lines * 9) {
               lines++;
               div_style = { display: "block" };
@@ -316,16 +327,8 @@ function BuildOrder(props: {
                         const minutes = Math.floor(total_seconds / 60);
                         const seconds = Math.floor(total_seconds % 60);
                         return (
-                          <div
-                            key={sub_key}
-                            style={{ display: "inline-block" }}
-                          >
-                            <div
-                              style={{
-                                display: "inline-block",
-                                position: "relative",
-                              }}
-                            >
+                          <div key={sub_key} className="inline-block">
+                            <div className="relative inline-block">
                               <Image
                                 data-html
                                 data-tip={ReactDOMServer.renderToString(
@@ -392,7 +395,7 @@ function BuildOrder(props: {
                       Object.values(participant_groups[key + 1]).filter(
                         (x) => x._type !== "ITEM_UNDO"
                       ).length > 0 && (
-                        <div>
+                        <div className="inline-block">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -416,13 +419,15 @@ function BuildOrder(props: {
           })}
         </div>
       )}
-      {display_page === "skill" && participant_data && (
-        <SkillLevelUp
-          skills={skills[participant_selection]}
-          selected_participant={participant_data}
-          expanded_width={props.expanded_width}
-        />
-      )}
+      {display_page === "skill" &&
+        participant_data &&
+        participant_selection !== undefined && (
+          <SkillLevelUp
+            skills={skills[participant_selection]}
+            selected_participant={participant_data}
+            expanded_width={props.expanded_width}
+          />
+        )}
     </div>
   );
 }
@@ -455,9 +460,9 @@ function ChampionImage(props: {
     };
   }
 
-  let vert_align: any = {};
+  const vert_align: CSSProperties = {};
   const champ = champions[props.participant.champion_id];
-  let champ_image = champ?.image?.file_30;
+  const champ_image = champ?.image?.file_30;
   if (champ_image === undefined) {
     vert_align.verticalAlign = "top";
   }
@@ -471,8 +476,16 @@ function ChampionImage(props: {
     >
       {champ_image === undefined && (
         <div
+          role="button"
+          tabIndex={1}
+          onKeyDown={(event) => {
+            if ((event.key === "Enter")) {
+              props.handleClick();
+            }
+          }}
+          className="inline-block"
           onClick={props.handleClick}
-          style={{ display: "inline-block", ...image_style }}
+          style={{ ...image_style }}
         >
           NA
         </div>
@@ -480,14 +493,19 @@ function ChampionImage(props: {
       {champ_image !== undefined && (
         <Image
           onClick={props.handleClick}
-          style={{
-            ...image_style,
+          role="button"
+          tabIndex={1}
+          onKeyDown={(event) => {
+            if ((event.key === "Enter")) {
+              props.handleClick();
+            }
           }}
+          style={{ ...image_style }}
           height={30}
           width={30}
           aria-label={champ?.name}
           src={mediaUrl(champ?.image?.file_30)}
-          alt=""
+          alt={`Champion Image: ${champ?.name}`}
         />
       )}
     </div>
@@ -529,8 +547,8 @@ function SkillLevelUp(props: {
   );
   const spells = useMemo(() => spellQuery.data || {}, [spellQuery.data]);
 
-  let div_width = (props.expanded_width - 65) / 18;
-  let div_height = 30;
+  const div_width = (props.expanded_width - 65) / 18;
+  const div_height = 30;
   return (
     <div>
       {props.skills !== undefined &&

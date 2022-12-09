@@ -113,7 +113,7 @@ export function SearchForm({
             <div
               className={clsx(
                 "mt-1 max-h-80 w-full overflow-y-scroll rounded",
-                "bg-gradient-to-tr from-slate-900/80",
+                "bg-gradient-to-tr from-slate-900/80 quiet-scroll",
                 "via-slate-900/90 to-zinc-900/80 p-3 shadow-md",
               )}
             >
