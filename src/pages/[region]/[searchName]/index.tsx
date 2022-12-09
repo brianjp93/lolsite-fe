@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {ProfileCardInner} from "@/components/summoner/matchDetails/profileCard";
 
 export function profileRoute({
   region,
@@ -179,6 +180,7 @@ export default function Summoner() {
   return (
     <Skeleton topPad={0}>
       <div style={{ minHeight: 1000 }}>
+        {summoner && <ProfileCardInner summoner={summoner} />}
         {matchQuery.isFetching && isInitialQuery && (
           <div>
             <div
