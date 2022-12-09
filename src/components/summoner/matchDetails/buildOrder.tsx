@@ -163,7 +163,8 @@ function BuildOrder(props: {
     } = {};
     if (props.timeline) {
       for (let i = 0; i < props.timeline.length; i++) {
-        const frame = props.timeline[i] as EventWithCount;
+        const frame = props.timeline[i];
+        if (!frame) return
         for (const event of [
           ...(frame.itempurchaseevents as EventWithCount[]),
           ...(frame.itemundoevents as EventWithCount[]),
@@ -172,7 +173,7 @@ function BuildOrder(props: {
           if (purchase[event.participant_id] === undefined) {
             purchase[event.participant_id] = {};
           }
-          if (purchase[event.participant_id][i] === undefined) {
+          if (purchase[event.participant_id]?.[i] === undefined) {
             purchase[event.participant_id][i] = [];
           }
           purchase[event.participant_id][i].push(event);
