@@ -41,6 +41,10 @@ export const QUEUEFILTER = [
     id: 700,
   },
   {
+    name: "ARAM Clash",
+    id: 720,
+  },
+  {
     name: "ARAM",
     id: 450,
   },

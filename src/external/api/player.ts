@@ -11,6 +11,7 @@ import {
   NameChange,
 } from "../types";
 import { env } from "@/env/client.mjs";
+import {Position} from "../iotypes/player";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
@@ -48,9 +49,10 @@ async function getSummoners(data: GetSummonersData) {
   return unwrap(t.array(Summoner).decode(r.data.data));
 }
 
-function getPositions(data: any) {
+async function getPositions(data: any) {
   const url = `${base}/positions/`;
-  return axios.post(url, data);
+  const response = await axios.post(url, data);
+  return unwrap(t.array(Position).decode(response.data.data))
 }
 
 function signUp(data: any) {

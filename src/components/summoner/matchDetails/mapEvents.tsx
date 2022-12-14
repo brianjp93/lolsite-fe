@@ -18,7 +18,6 @@ import { useRouter } from "next/router";
 import { mediaUrl } from "@/components/utils";
 import type { ValueOf } from "next/dist/shared/lib/constants";
 import SWORD from "@/../public/gen/sword.svg";
-import {AppendParticipant} from "../rankParticipants";
 
 function mapAssistName(name: string) {
   if (name.match(/sru.*minion/i)) {

@@ -84,12 +84,7 @@ export default function Summoner() {
   const matches: BasicMatchType[] = matchQuery.data || [];
   const positionQuery = useQuery(
     ["positions", summoner?._id, region],
-    () =>
-      summoner?._id
-        ? api.player
-            .getPositions({ summoner_id: summoner._id, region })
-            .then((x) => x.data.data)
-        : undefined,
+    () => api.player.getPositions({ summoner_id: summoner!._id, region }),
     {
       retry: false,
       refetchOnWindowFocus: false,
@@ -98,6 +93,7 @@ export default function Summoner() {
       staleTime: 1000 * 60 * 3,
     }
   );
+  const positions = positionQuery.data
 
   const spectateQuery = useQuery(
     ["spectate", region, summoner?._id],
@@ -180,7 +176,7 @@ export default function Summoner() {
   return (
     <Skeleton topPad={0}>
       <div style={{ minHeight: 1000 }}>
-        {summoner && <ProfileCardInner summoner={summoner} />}
+        {summoner && <ProfileCardInner summoner={summoner} positions={positions} />}
         {matchQuery.isFetching && isInitialQuery && (
           <div>
             <div
@@ -204,6 +200,7 @@ export default function Summoner() {
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
+                    console.log(data)
                     setQueue(data.queue);
                   }}
                 />
@@ -243,6 +240,7 @@ const QUEUEFILTER = {
   430: "5v5 Norms Blind",
   0: "Custom Games",
   700: "Clash",
+  720: "ARAM Clash",
   450: "ARAM",
 } as const;
 

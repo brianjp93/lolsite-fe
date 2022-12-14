@@ -307,3 +307,23 @@ export function useSummoner({
     }
   );
 }
+
+export function usePositions({
+  summoner_id,
+  region,
+}: {
+  summoner_id: string;
+  region: string;
+}) {
+  const query = useQuery(
+    ["positions", summoner_id, region],
+    () =>
+      summoner_id
+        ? api.player
+            .getPositions({ summoner_id, region })
+            .then((x) => x.data.data)
+        : undefined,
+    { retry: false, refetchOnWindowFocus: false, enabled: !!summoner_id }
+  );
+  return query;
+}
