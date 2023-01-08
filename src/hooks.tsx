@@ -327,3 +327,16 @@ export function usePositions({
   );
   return query;
 }
+
+export function useCsrf() {
+  const query = useQuery(
+    ["csrf-token"],
+    () => api.general.getCsrf(),
+    {
+      staleTime: 1000 * 60 * 5,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  )
+  return query
+}
