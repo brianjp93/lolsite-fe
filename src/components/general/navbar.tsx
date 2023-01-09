@@ -1,8 +1,11 @@
+import {useUser} from "@/hooks";
+import {loginPath} from "@/pages/login";
 import Image from "next/image";
 import Link from "next/link";
 import { SearchForm } from "./searchForm";
 
 export default function NavBar() {
+  const user = useUser()
   return (
     <div className="flex h-20 items-center bg-gradient-to-r from-slate-800/70 to-cyan-900/30 px-4 drop-shadow-md">
       <div>
@@ -26,7 +29,12 @@ export default function NavBar() {
         />
       </div>
 
-      <div className="ml-auto">right side</div>
+      <div className="ml-auto">
+        {user ?
+          <div>{user.email}</div>
+          : <Link href={loginPath()}>login</Link>
+        }
+      </div>
     </div>
   );
 }

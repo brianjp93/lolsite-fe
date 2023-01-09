@@ -4,6 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ErrorField } from "@/components/utils";
+import api from '@/external/api/api'
+
+export function loginPath() {
+  return '/login'
+}
 
 export default function Login() {
   const csrf = useCsrf().data;
@@ -11,7 +16,7 @@ export default function Login() {
 }
 
 const LoginSchema = z.object({
-  username: z.string().min(1),
+  email: z.string().min(1),
   password: z.string().min(1),
 });
 type LoginSchema = z.infer<typeof LoginSchema>;
@@ -24,8 +29,8 @@ function LoginInner({ csrf }: { csrf: string }) {
   } = useForm<LoginSchema>({
     resolver: zodResolver(LoginSchema),
   });
-  const onSubmit = (data: LoginSchema) => {
-    console.log(data);
+  const onSubmit = ({email, password}: LoginSchema) => {
+    api.player.login({email, password, csrf})
   };
   return (
     <div className="mx-auto max-w-prose">
@@ -34,15 +39,19 @@ function LoginInner({ csrf }: { csrf: string }) {
         <input type="hidden" name="csrfmiddlewaretoken" value={csrf} />
         <label>
           <div>email</div>
-          <input type="text" {...register("username")} />
+          <input
+            className="w-full"
+            type="text" {...register("email")} />
         </label>
-        <ErrorField message={errors.username?.message} />
-        <label>
+        <ErrorField message={errors.email?.message} />
+        <label >
           <div>password</div>
-          <input type="password" {...register("password")} />
+          <input
+            className="w-full"
+            type="password" {...register("password")} />
         </label>
         <ErrorField message={errors.password?.message} />
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary mt-2 w-full">
           Login
         </button>
       </form>

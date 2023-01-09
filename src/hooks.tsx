@@ -39,8 +39,9 @@ export function useDebounce<V>(value: V, delay: number) {
   return debouncedValue;
 }
 
+export const userKey = ['my-user']
 export function useUser(): UserType | null {
-  const userQuery = useQuery(["my-user"], api.player.getMyUser, {
+  const userQuery = useQuery(userKey, api.player.getMyUser, {
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 10,

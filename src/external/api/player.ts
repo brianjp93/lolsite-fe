@@ -60,11 +60,6 @@ function signUp(data: any) {
   return axios.post(url, data);
 }
 
-function login(data: any) {
-  const url = `${base}/login/`;
-  return axios.post(url, data);
-}
-
 function verify(data: any) {
   const url = `${base}/verify/`;
   return axios.post(url, data);
@@ -223,6 +218,18 @@ async function getNameChanges(id: number) {
   const url = `${base}/summoner/${id}/name-changes/`;
   const r = await axios.get(url);
   return unwrap(t.array(NameChange).decode(r.data.results));
+}
+
+async function login({email, password, csrf}: {email: string, password: string, csrf: string}) {
+  const url = `${base}/login/`
+  const response = await axios.get(url, {
+    headers: {'x-csrftoken': csrf},
+    data: {
+      email,
+      password,
+    }
+  })
+  return response.data
 }
 
 const exports = {
