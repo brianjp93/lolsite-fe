@@ -18,10 +18,13 @@ const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
 
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.withCredentials = true;
 
 async function getMyUser() {
   const url = `${base}/me/`;
-  const response = await axios.get(url);
+  const response = await axios.get(url, {
+    withCredentials: true
+  });
   if (response.data.email) {
     return unwrap(User.decode(response.data));
   }
@@ -222,12 +225,10 @@ async function getNameChanges(id: number) {
 
 async function login({email, password, csrf}: {email: string, password: string, csrf: string}) {
   const url = `${base}/login/`
-  const response = await axios.get(url, {
-    headers: {'x-csrftoken': csrf},
-    data: {
-      email,
-      password,
-    }
+  const response = await axios.post(url, {
+    email,
+    password,
+    csrftoken: csrf,
   })
   return response.data
 }
