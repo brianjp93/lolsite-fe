@@ -1,12 +1,11 @@
 import api from "@/external/api/api";
-import {userKey} from "@/hooks";
+import {useUser} from "@/hooks";
 import { useMutation } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function LogoutButton() {
-  const queryClient = useQueryClient()
+  const userQuery = useUser()
   const logout = useMutation(() => api.player.logout(), {
-    onSuccess: () => queryClient.invalidateQueries(userKey),
+    onSuccess: () => userQuery.refetch(),
   });
 
   return (

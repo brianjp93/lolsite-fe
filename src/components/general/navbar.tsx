@@ -6,7 +6,7 @@ import { SearchForm } from "./searchForm";
 import LogoutButton from "./logoutButton";
 
 export default function NavBar() {
-  const user = useUser()
+  const user = useUser().data
   return (
     <div className="flex h-20 items-center bg-gradient-to-r from-slate-800/70 to-cyan-900/30 px-4 drop-shadow-md">
       <div>

@@ -1,11 +1,11 @@
 import Skeleton from "@/components/general/skeleton";
-import { useCsrf, userKey } from "@/hooks";
+import { useCsrf, useUser } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ErrorField } from "@/components/utils";
 import api from "@/external/api/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
 export function loginPath() {
@@ -32,15 +32,15 @@ function LoginInner({ csrf }: { csrf: string }) {
     resolver: zodResolver(LoginSchema),
   });
 
-  const queryClient = useQueryClient();
   const router = useRouter();
+  const userQuery = useUser();
 
   const login = useMutation(
     ({ email, password }: { email: string; password: string }) =>
       api.player.login({ email, password, csrf }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(userKey);
+        userQuery.refetch();
         router.push("/");
       },
     }
