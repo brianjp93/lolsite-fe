@@ -1,13 +1,15 @@
 import Skeleton from "@/components/general/skeleton";
-import { useCsrf } from "@/hooks";
+import { useCsrf, userKey } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ErrorField } from "@/components/utils";
-import api from '@/external/api/api'
+import api from "@/external/api/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 export function loginPath() {
-  return '/login'
+  return "/login";
 }
 
 export default function Login() {
@@ -29,8 +31,22 @@ function LoginInner({ csrf }: { csrf: string }) {
   } = useForm<LoginSchema>({
     resolver: zodResolver(LoginSchema),
   });
-  const onSubmit = ({email, password}: LoginSchema) => {
-    api.player.login({email, password, csrf})
+
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const login = useMutation(
+    ({ email, password }: { email: string; password: string }) =>
+      api.player.login({ email, password, csrf }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(userKey);
+        router.push("/");
+      },
+    }
+  );
+  const onSubmit = ({ email, password }: LoginSchema) => {
+    login.mutate({ email, password });
   };
   return (
     <div className="mx-auto max-w-prose">
@@ -39,16 +55,12 @@ function LoginInner({ csrf }: { csrf: string }) {
         <input type="hidden" name="csrfmiddlewaretoken" value={csrf} />
         <label>
           <div>email</div>
-          <input
-            className="w-full"
-            type="text" {...register("email")} />
+          <input className="w-full" type="text" {...register("email")} />
         </label>
         <ErrorField message={errors.email?.message} />
-        <label >
+        <label>
           <div>password</div>
-          <input
-            className="w-full"
-            type="password" {...register("password")} />
+          <input className="w-full" type="password" {...register("password")} />
         </label>
         <ErrorField message={errors.password?.message} />
         <button type="submit" className="btn btn-primary mt-2 w-full">

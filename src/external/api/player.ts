@@ -233,6 +233,12 @@ async function login({email, password, csrf}: {email: string, password: string, 
   return response.data
 }
 
+async function logout() {
+  const url = `${base}/logout/`
+  const response = await axios.post(url)
+  return response.status
+}
+
 const exports = {
   getSummoner,
   getSummonerByName,
@@ -266,5 +272,6 @@ const exports = {
   updateReputation,
   getMyUser,
   getNameChanges,
+  logout,
 };
 export default exports;

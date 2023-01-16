@@ -3,6 +3,7 @@ import {loginPath} from "@/pages/login";
 import Image from "next/image";
 import Link from "next/link";
 import { SearchForm } from "./searchForm";
+import LogoutButton from "./logoutButton";
 
 export default function NavBar() {
   const user = useUser()
@@ -31,7 +32,7 @@ export default function NavBar() {
 
       <div className="ml-auto">
         {user ?
-          <div>{user.email}</div>
+          <div>{user.email} <LogoutButton /></div>
           : <Link href={loginPath()}>login</Link>
         }
       </div>
