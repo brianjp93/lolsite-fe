@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import numeral from "numeral";
+import { ItemPopover } from "../data/item";
 import {
   formatDatetime,
   formatDatetimeFull,
@@ -48,7 +49,7 @@ export default function MatchCard({
       <div
         className={clsx(
           "my-2 w-fit rounded-md bg-gradient-to-r to-zinc-900/50 p-2",
-          "overflow-x-auto quiet-scroll",
+          "quiet-scroll overflow-x-auto",
           {
             "from-[#71101366]": enemyTeam?.win && !isTie,
             "from-[#1d6944ba]": myTeam?.win && !isTie,
@@ -57,7 +58,7 @@ export default function MatchCard({
         )}
       >
         <div className="flex">
-          <div className="flex flex-col min-w-fit">
+          <div className="flex min-w-fit flex-col">
             <div className="flex text-xs">
               <div className="mr-2 font-bold">{minuteSecond}</div>
               <div title={creationFull}>{creation}</div>
@@ -68,7 +69,10 @@ export default function MatchCard({
               </div>
               {part && (
                 <div className="my-auto ml-1 h-full min-w-fit">
-                  <ItemClump part={part} />
+                  <ItemClump
+                    part={part}
+                    version={{ major: match.major, minor: match.minor }}
+                  />
                 </div>
               )}
             </div>
@@ -147,7 +151,7 @@ function TeamClump({
         const champion = champions[teammate.champion_id];
         // remove extra spaces from names
         let name = teammate.summoner_name.split(/\s+/).join(" ");
-        name = name.length > 11 ? name.slice(0, 9) + "..." : name;
+        name = name.length > 7 ? name.slice(0, 6) + "..." : name;
         const link = (
           <div
             className={clsx("ml-1 text-xs", {
@@ -197,7 +201,7 @@ export function StatClump({
   match,
 }: {
   part: BasicParticipantType;
-  match: {game_duration: number};
+  match: { game_duration: number };
 }) {
   const deaths = part.stats.deaths || 1;
   const kda = (part.stats.kills + part.stats.assists) / deaths;
@@ -229,29 +233,62 @@ export function StatClump({
   );
 }
 
-export function ItemClump({ part }: { part: BasicParticipantType | AppendParticipant }) {
+export function ItemClump({
+  part,
+  version,
+}: {
+  part: BasicParticipantType | AppendParticipant;
+  version: { major: number; minor: number };
+}) {
   return (
     <div className="grid grid-cols-3">
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const key = `item_${i}_image` as keyof typeof part.stats;
+        const itemId: number =
+          part.stats[`item_${i}` as keyof typeof part.stats];
+        part.stats.item_0;
         const url = part.stats?.[key]?.file_30 || "";
         return (
-          <div key={key}>
-            {url && (
-              <Image
-                className="m-[1px] rounded-md"
-                src={mediaUrl(url)}
-                alt="Item image"
-                height={30}
-                width={30}
-              />
-            )}
-            {!url && (
-              <div className="m-[1px] h-[30px] w-[30px] rounded-md border border-white/30 bg-zinc-800/30"></div>
-            )}
-          </div>
+          <ItemPart
+            key={key}
+            url={url}
+            itemId={itemId}
+            major={version.major}
+            minor={version.minor}
+          />
         );
       })}
+    </div>
+  );
+}
+
+export function ItemPart({
+  url,
+  itemId,
+  major,
+  minor,
+}: {
+  url: string;
+  itemId: number;
+  major: number;
+  minor: number;
+}) {
+  return (
+    <div>
+      {url && (
+        <ItemPopover major={major} minor={minor} item_id={itemId}>
+          <Image
+            className="m-[1px] rounded-md"
+            src={mediaUrl(url)}
+            alt="Item image"
+            height={30}
+            width={30}
+          />
+        </ItemPopover>
+      )}
+      {!url && (
+        <div className="m-[1px] h-[30px] w-[30px] rounded-md border border-white/30 bg-zinc-800/30"></div>
+      )}
     </div>
   );
 }

@@ -241,7 +241,10 @@ function ParticipantInfo({
             <ChampionClump part={part} />
           </div>
           <div className="my-auto ml-2 h-full">
-            <ItemClump part={part} />
+            <ItemClump
+              part={part}
+              version={{ major: match.major, minor: match.minor }}
+            />
           </div>
         </div>
       </div>
