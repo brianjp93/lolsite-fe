@@ -1,4 +1,4 @@
-import { SearchForm } from "@/pages";
+import { SearchForm } from "@/components/general/searchForm";
 
 export default function SummonerNotFound() {
   return (
