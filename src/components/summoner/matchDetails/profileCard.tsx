@@ -1,9 +1,16 @@
 import { mediaUrl } from "@/components/utils";
-import { type PositionType } from "@/external/iotypes/player";
-import { type SummonerType } from "@/external/types";
+import type { PositionType } from "@/external/iotypes/player";
+import type { SummonerType } from "@/external/types";
 import { usePositions, useSummoner } from "@/hooks";
 import Image from "next/image";
 import { useRouter } from "next/router";
+
+const QUEUE_CONVERT: Record<string, string> = {
+  RANKED_SOLO_5x5: 'Solo/Duo',
+  RANKED_FLEX_SR: '5v5 Flex',
+  RANKED_FLEX_TT: '3v3 Flex',
+  RANKED_TFT: 'TFT',
+} as const
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -51,9 +58,10 @@ export function ProfileCardInner({
       </div>
       <div className="mt-2">
       {positions.map((x) => {
+        const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type
         return (
           <div key={x.id}>
-            {x.queue_type}: {x.rank} {x.tier}
+            <div className="font-bold inline">{queue}</div>: {x.tier} {x.rank}
           </div>
         );
       })}

@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import ReactDOMServer from "react-dom/server";
+import { useState, useEffect, useCallback } from "react";
 import { BUILDINGS } from "@/utils/buildings";
 import { useChampions, useParticipants, useTimeline } from "@/hooks";
 import { useTimelineIndex } from "@/stores";
@@ -18,6 +17,7 @@ import { useRouter } from "next/router";
 import { mediaUrl } from "@/components/utils";
 import type { ValueOf } from "next/dist/shared/lib/constants";
 import SWORD from "@/../public/gen/sword.svg";
+import { Popover } from "react-tiny-popover";
 
 function mapAssistName(name: string) {
   if (name.match(/sru.*minion/i)) {
@@ -54,9 +54,9 @@ export function MapEvents() {
     region: string;
   };
   const timelineQ = useTimeline({ matchId });
-  const timeline = timelineQ.data
+  const timeline = timelineQ.data;
   const participantsQ = useParticipants(matchId);
-  const participants = participantsQ.data
+  const participants = participantsQ.data;
   if (!timeline || !participants) return null;
   return (
     <MapEventsInner
@@ -241,7 +241,7 @@ export function MapEventsInner({
         <Image
           height={image_size}
           width={image_size}
-          className="rounded-md min-w-fit"
+          className="min-w-fit rounded-md"
           src="/gen/map.jpg"
           alt="League Map"
         />
@@ -293,7 +293,7 @@ export function MapEventsInner({
         {displayEvents()}
       </div>
 
-      <div className="flex mt-1">
+      <div className="mt-1 flex">
         <button
           onClick={() => {
             if (index > 0) {
@@ -365,6 +365,7 @@ function EventBubble({
   part_dict: Record<number, FullParticipantType>;
 }) {
   const champions = useChampions();
+  const [isOpen, setIsOpen] = useState(false);
   const ev =
     buildingKillEvent ||
     championKillEvent ||
@@ -397,6 +398,7 @@ function EventBubble({
   const img_style = {
     height: 35,
     borderRadius: 8,
+    display: 'inline-block'
   };
 
   const div_style = {
@@ -439,19 +441,10 @@ function EventBubble({
   };
 
   return (
-    <div
+    <Popover
       key={`event-${ev.x}-${ev.y}`}
-      data-html={true}
-      style={{
-        background: bubble_color,
-        width: size,
-        height: size,
-        left: pos[0],
-        bottom: pos[1],
-        position: "absolute",
-        borderRadius: "50%",
-      }}
-      data-tip={ReactDOMServer.renderToString(
+      isOpen={isOpen}
+      content={
         <div>
           {championKillEvent && (
             <div style={div_style}>
@@ -479,7 +472,13 @@ function EventBubble({
                   margin: "0px 5px",
                 }}
               >
-                <Image style={sword_style} width={sword_style.height} height={sword_style.height} src={SWORD} alt="" />
+                <Image
+                  style={sword_style}
+                  width={sword_style.height}
+                  height={sword_style.height}
+                  src={SWORD}
+                  alt=""
+                />
               </div>
               <Image
                 style={img_style}
@@ -493,23 +492,23 @@ function EventBubble({
                 )}
                 alt=""
               />
-              <div className="row col s12">
+              <div>
                 {getKillAssists(championKillEvent.victimdamagereceived_set)
                   .sort((a, b) => b.damage - a.damage)
                   .map((item) => {
                     return (
                       <div
                         style={{ marginBottom: 0 }}
-                        className="row"
+                        className="grid grid-cols-2"
                         key={item.name}
                       >
-                        <div className="col s6">{mapAssistName(item.name)}</div>
-                        <div className="col s6">: {item.damage}</div>
+                        <div>{mapAssistName(item.name)}</div>
+                        <div>: {item.damage}</div>
                       </div>
                     );
                   })}
               </div>
-              <div className="row col s12">
+              <div>
                 <div>
                   Kill Gold:{" "}
                   <b>
@@ -526,7 +525,7 @@ function EventBubble({
           {eliteMonsterKillEvent && (
             <div style={div_style}>
               {ev.killer_id !== 0 && (
-                <React.Fragment>
+                <>
                   <Image
                     width={img_style.height}
                     height={img_style.height}
@@ -543,7 +542,7 @@ function EventBubble({
                     killed{" "}
                   </div>
                   <span>{eliteMonsterKillEvent.monster_type}</span>
-                </React.Fragment>
+                </>
               )}
               {ev.killer_id === 0 && (
                 <div style={{ display: "inline-block" }}>
@@ -578,7 +577,13 @@ function EventBubble({
                   margin: "0px 5px",
                 }}
               >
-                <Image height={sword_style.height} width={sword_style.height} style={sword_style} src={SWORD} alt="" />
+                <Image
+                  height={sword_style.height}
+                  width={sword_style.height}
+                  style={sword_style}
+                  src={SWORD}
+                  alt=""
+                />
               </div>
               <span>structure</span>
             </div>
@@ -594,14 +599,33 @@ function EventBubble({
                   margin: "0px 5px",
                 }}
               >
-                <Image height={sword_style.height} width={sword_style.height} style={sword_style} src={SWORD} alt="" />
+                <Image
+                  height={sword_style.height}
+                  width={sword_style.height}
+                  style={sword_style}
+                  src={SWORD}
+                  alt=""
+                />
               </div>
               <span>Turret Plating</span>
             </div>
           )}
         </div>
-      )}
-    ></div>
+      }
+    >
+      <div
+        onMouseOver={() => setIsOpen(true)}
+        onMouseOut={() => setIsOpen(false)}
+        className="absolute rounded-full"
+        style={{
+          background: bubble_color,
+          width: size,
+          height: size,
+          left: pos[0],
+          bottom: pos[1],
+        }}
+      ></div>
+    </Popover>
   );
 }
 

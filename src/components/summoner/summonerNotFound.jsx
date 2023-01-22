@@ -22,7 +22,7 @@ export default function SummonerNotFound() {
             for Riot&apos;s API status.
           </div>
 
-          <div style={{ marginTop: 50 }}>
+          <div className="mt-[50px]">
             <SearchForm />
           </div>
         </div>
