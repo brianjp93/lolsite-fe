@@ -10,6 +10,7 @@ const QUEUE_CONVERT: Record<string, string> = {
   RANKED_FLEX_SR: '5v5 Flex',
   RANKED_FLEX_TT: '3v3 Flex',
   RANKED_TFT: 'TFT',
+  RANKED_TFT_DOUBLE_UP: 'TFT Double Up',
 } as const
 
 export function ProfileCard({ className = "" }: { className: string }) {
