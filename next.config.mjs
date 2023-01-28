@@ -31,6 +31,11 @@ if (process.env.NODE_ENV === 'development') {
     hostname: 'app.hardstuck.club',
     pathname: '/**',
   })
+  remotePatterns.push({
+    protocol: 'https',
+    hostname: 'lolsite-static.s3-us-west-2.amazonaws.com',
+    pathname: '/**',
+  })
 }
 const config = {
   reactStrictMode: true,

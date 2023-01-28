@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useMatchList } from "@/hooks";
+import { useMatchList, usePositions } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
 import MatchCard from "@/components/summoner/matchCard";
@@ -82,17 +82,7 @@ export default function Summoner() {
 
   const summoner = summonerQuery.data;
   const matches: BasicMatchType[] = matchQuery.data || [];
-  const positionQuery = useQuery(
-    ["positions", summoner?._id, region],
-    () => api.player.getPositions({ summoner_id: summoner!._id, region }),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enabled: !!summoner?._id,
-      staleTime: 1000 * 60 * 3,
-    }
-  );
+  const positionQuery = usePositions({region, summoner_id: summoner?._id || ''})
   const positions = positionQuery.data
 
   const spectateQuery = useQuery(

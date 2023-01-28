@@ -323,7 +323,6 @@ export function usePositions({
       summoner_id
         ? api.player
             .getPositions({ summoner_id, region })
-            .then((x) => x.data.data)
         : undefined,
     { retry: false, refetchOnWindowFocus: false, enabled: !!summoner_id }
   );
