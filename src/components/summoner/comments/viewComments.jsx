@@ -485,7 +485,7 @@ export function ActionBar(props) {
               >
                 <div>
                   Are you sure you want to delete your comment? The comment will
-                  still exist, but the content will only show "deleted".
+                  still exist, but the content will only show &apos;deleted&apos;.
                 </div>
                 <div style={{ marginTop: 10 }}>
                   <button

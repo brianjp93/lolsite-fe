@@ -3,8 +3,8 @@ import {
   useEffect,
   useMemo,
   useCallback,
-  type CSSProperties,
 } from "react";
+import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ReactDOMServer from "react-dom/server";
 import numeral from "numeral";
@@ -528,11 +528,11 @@ function SkillLevelUp(props: {
           champion_id: champions[props.selected_participant.champion_id]._id,
         })
         .then((response) => {
-          let output: any = {};
-          let data = response.data.data;
+          const output: any = {};
+          const data = response.data.data;
           for (let i = 0; i < data.length; i++) {
-            let spell = data[i];
-            let letter = ["q", "w", "e", "r"][i];
+            const spell = data[i];
+            const letter = ["q", "w", "e", "r"][i];
             output[letter] = spell;
           }
           return output;
