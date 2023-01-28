@@ -128,13 +128,20 @@ function BuildOrder(props: {
     if (!participant_selection) return [];
     if (purchase_history[participant_selection] !== undefined) {
       for (const i in purchase_history[participant_selection]) {
-        const group = purchase_history[participant_selection][i];
-        groups.push(group);
+        const thing = purchase_history[participant_selection]
+        if (thing) {
+          const index = parseInt(i)
+          const group = thing[index];
+          groups.push(group);
+        }
       }
     }
 
     let groups_with_count = [];
     for (const group of groups) {
+      if (!group) {
+        continue
+      }
       const group_count: { [key: string]: EventWithCount } = {};
       for (const event of group) {
         let key: string;
@@ -143,11 +150,12 @@ function BuildOrder(props: {
         } else {
           key = `${event?.item_id}`;
         }
-        if (group_count[key] === undefined) {
+        const item = group_count[key]
+        if (item === undefined) {
           event.count = 1;
           group_count[key] = event;
         } else {
-          group_count[key].count = (group_count[key].count || 1) + 1;
+          item.count = (item.count || 1) + 1;
         }
       }
       groups_with_count.push(group_count);
@@ -188,7 +196,7 @@ function BuildOrder(props: {
     const skills: any = {};
     if (props.timeline) {
       for (let i = 0; i < props.timeline.length; i++) {
-        const frame = props.timeline[i];
+        const frame: any = props.timeline[i];
         for (const event of frame.skilllevelupevents) {
           if (skills[event.participant_id] === undefined) {
             skills[event.participant_id] = [];
