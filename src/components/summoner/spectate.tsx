@@ -1,11 +1,13 @@
-import {useEffect, useRef, useMemo, type ReactNode, useCallback} from 'react'
+import {useEffect, useRef, useMemo, useCallback} from 'react'
+import type { ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import Modal from 'react-modal'
 import numeral from 'numeral'
 import { formatDatetimeTime } from '@/components/utils'
-import {MODALSTYLE} from '@/pages/[region]/[searchName]/index'
 import api from '@/external/api/api'
+
+const MODALSTYLE = {}
 
 export function Spectate({
   region,
@@ -189,8 +191,6 @@ export function SpectateModal({
   children: ReactNode
 })  {
   const modalStyle = {
-    overlay: {...MODALSTYLE.overlay},
-    content: {...MODALSTYLE.content, display: 'flex'},
   }
   return (
     <div>

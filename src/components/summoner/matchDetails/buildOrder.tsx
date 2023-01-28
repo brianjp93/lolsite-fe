@@ -178,13 +178,14 @@ function BuildOrder(props: {
           ...(frame.itemundoevents as EventWithCount[]),
           ...(frame.itemsoldevents as EventWithCount[]),
         ]) {
-          if (purchase[event.participant_id] === undefined) {
+          const item = purchase[event.participant_id]
+          if (item === undefined) {
             purchase[event.participant_id] = {};
           }
-          if (purchase[event.participant_id]?.[i] === undefined) {
-            purchase[event.participant_id][i] = [];
+          if (item?.[i] === undefined) {
+            purchase[event.participant_id]![i] = [];
           }
-          purchase[event.participant_id][i].push(event);
+          purchase[event.participant_id]![i]!.push(event);
         }
       }
       setPurchaseHistory(purchase);
@@ -211,8 +212,13 @@ function BuildOrder(props: {
   // GET ITEMS
   useEffect(() => {
     const item_set = new Set();
-    for (const i in purchase_history[participant_selection]) {
-      const group = purchase_history[participant_selection][i];
+    if (!participant_selection) {
+      return
+    }
+    const item = purchase_history[participant_selection]
+    for (const i in item) {
+      const index = parseInt(i)
+      const group = item[index] || [];
       for (const event of group) {
         if (
           event._type !== "ITEM_UNDO" &&
@@ -302,6 +308,7 @@ function BuildOrder(props: {
               lines++;
               div_style = { display: "block" };
             }
+            const some_group = participant_groups[key + 1]
             return (
               <span key={`${props.match_id}-${key}`}>
                 <div style={div_style}></div>
@@ -401,7 +408,7 @@ function BuildOrder(props: {
                       return null;
                     })}
                     {key < participant_groups.length - 1 &&
-                      Object.values(participant_groups[key + 1]).filter(
+                      Object.values(some_group || {}).filter(
                         (x) => x._type !== "ITEM_UNDO"
                       ).length > 0 && (
                         <div className="inline-block">
@@ -533,14 +540,14 @@ function SkillLevelUp(props: {
     () =>
       api.data
         .getChampionSpells({
-          champion_id: champions[props.selected_participant.champion_id]._id,
+          champion_id: champions[props.selected_participant.champion_id]!._id,
         })
         .then((response) => {
           const output: any = {};
           const data = response.data.data;
           for (let i = 0; i < data.length; i++) {
             const spell = data[i];
-            const letter = ["q", "w", "e", "r"][i];
+            const letter = ["q", "w", "e", "r"][i] || 'q';
             output[letter] = spell;
           }
           return output;

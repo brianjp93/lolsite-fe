@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import {
   useQuery,
   useQueryClient,
-  type UseQueryOptions,
-  type QueryKey,
-  type QueryFunction,
-  type UseQueryResult,
 } from "@tanstack/react-query";
+import type {
+  UseQueryOptions,
+  QueryKey,
+  QueryFunction,
+  UseQueryResult,
+} from '@tanstack/react-query'
 import api from "@/external/api/api";
 
 import type {
   ChampionType,
-  UserType,
   RuneType,
   BasicChampionWithImageType,
 } from "@/external/types";
