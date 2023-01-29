@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useMatchList, usePositions } from "@/hooks";
+import { useMatchList, usePositions, useSummoner } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
 import MatchCard from "@/components/summoner/matchCard";
@@ -42,18 +42,12 @@ export default function Summoner() {
   const limit = 10;
 
   const start = limit * page - limit;
+  const summonerQuery = useSummoner({region, name: searchName})
+  const summoner = summonerQuery.data;
 
-  const summonerQuery = useQuery(
-    ["summoner", "name", searchName, region],
-    () => api.player.getSummonerByName(searchName, region),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enabled: !!searchName && !!region,
-      staleTime: 1000 * 60 * 5,
-    }
-  );
+  if (summoner?.summoner_level === 0) {
+    setTimeout(summonerQuery.refetch, 3000)
+  }
 
   const matchQuery = useMatchList({
     name: searchName,
@@ -80,7 +74,6 @@ export default function Summoner() {
   }, [searchName, matchQuery.isSuccess])
   const isInitialQuery = !matchQuery.data
 
-  const summoner = summonerQuery.data;
   const matches: BasicMatchType[] = matchQuery.data || [];
   const positionQuery = usePositions({region, summoner_id: summoner?._id || ''})
   const positions = positionQuery.data
