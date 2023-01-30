@@ -1,17 +1,21 @@
 import { mediaUrl } from "@/components/utils";
-import type { PositionType } from "@/external/iotypes/player";
+import type { NameChangeType, PositionType } from "@/external/iotypes/player";
 import type { SummonerType } from "@/external/types";
-import { usePositions, useSummoner } from "@/hooks";
+import { useNameChanges, usePositions, useSummoner } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import api from "@/external/api/api";
+import { Popover } from "react-tiny-popover";
+import { useState } from "react";
 
 const QUEUE_CONVERT: Record<string, string> = {
-  RANKED_SOLO_5x5: 'Solo/Duo',
-  RANKED_FLEX_SR: '5v5 Flex',
-  RANKED_FLEX_TT: '3v3 Flex',
-  RANKED_TFT: 'TFT',
-  RANKED_TFT_DOUBLE_UP: 'TFT Double Up',
-} as const
+  RANKED_SOLO_5x5: "Solo/Duo",
+  RANKED_FLEX_SR: "5v5 Flex",
+  RANKED_FLEX_TT: "3v3 Flex",
+  RANKED_TFT: "TFT",
+  RANKED_TFT_DOUBLE_UP: "TFT Double Up",
+} as const;
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -23,10 +27,16 @@ export function ProfileCard({ className = "" }: { className: string }) {
   const summoner = summonerQ.data;
   const positionQ = usePositions({ summoner_id: summoner?._id || "", region });
   const positions = positionQ.data;
+  const nameChangeQuery = useNameChanges(summoner?.id || 0);
+  const nameChanges = nameChangeQuery.data || [];
   if (!summoner) return null;
   return (
     <div className={className}>
-      <ProfileCardInner summoner={summoner} positions={positions} />
+      <ProfileCardInner
+        summoner={summoner}
+        positions={positions}
+        nameChanges={nameChanges}
+      />
     </div>
   );
 }
@@ -34,10 +44,14 @@ export function ProfileCard({ className = "" }: { className: string }) {
 export function ProfileCardInner({
   summoner,
   positions = [],
+  nameChanges = [],
 }: {
   summoner: SummonerType;
   positions?: PositionType[];
+  nameChanges?: NameChangeType[];
 }) {
+  const [isNameChangeOpen, setIsNameChangeOpen] = useState(false);
+
   return (
     <div className="flex max-w-fit flex-col rounded bg-zinc-900 p-4 shadow-lg">
       <div className="flex">
@@ -55,24 +69,43 @@ export function ProfileCardInner({
             </div>
           </div>
         </div>
-        <div className="ml-2 font-bold underline">{summoner.name}</div>
+        <div
+          onClick={() => setIsNameChangeOpen((x) => !x)}
+          className="ml-2 font-bold underline cursor-pointer"
+        >
+          <Popover
+            isOpen={isNameChangeOpen}
+            positions={["bottom"]}
+            containerStyle={{ zIndex: "11" }}
+            content={
+              <div>
+                <h1 className="underline">Old Names</h1>
+                {nameChanges.map((item, key) => {
+                  return <div key={key}>{item.old_name}</div>;
+                })}
+              </div>
+            }
+          >
+            <div>{summoner.name}</div>
+          </Popover>
+        </div>
       </div>
       <div className="mt-2">
-      {positions.map((x) => {
-        const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type
-        return (
-          <div key={x.id}>
-            <div className="flex">
-              <div className="mr-8">
-                <div className="font-bold inline">{queue}:</div>
-              </div>
-              <div className="ml-auto">
-                {x.tier} {x.rank} {x.league_points}LP
+        {positions.map((x) => {
+          const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type;
+          return (
+            <div key={x.id}>
+              <div className="flex">
+                <div className="mr-8">
+                  <div className="inline font-bold">{queue}:</div>
+                </div>
+                <div className="ml-auto">
+                  {x.tier} {x.rank} {x.league_points}LP
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
       </div>
     </div>
   );

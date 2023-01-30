@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useMatchList, usePositions, useSummoner } from "@/hooks";
+import {
+  useMatchList,
+  useNameChanges,
+  usePositions,
+  useSummoner,
+} from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
 import MatchCard from "@/components/summoner/matchCard";
@@ -14,7 +19,7 @@ import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {ProfileCardInner} from "@/components/summoner/matchDetails/profileCard";
+import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
 
 export function profileRoute({
   region,
@@ -33,7 +38,7 @@ export default function Summoner() {
     searchName: string;
   };
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
-  const [prevSearchName, setPrevSearchName] = useState('');
+  const [prevSearchName, setPrevSearchName] = useState("");
   const [page, setPage] = useQueryParam("page", withDefault(NumberParam, 1));
   const [queue, setQueue] = useQueryParam(
     "queue",
@@ -42,11 +47,11 @@ export default function Summoner() {
   const limit = 10;
 
   const start = limit * page - limit;
-  const summonerQuery = useSummoner({region, name: searchName})
+  const summonerQuery = useSummoner({ region, name: searchName });
   const summoner = summonerQuery.data;
 
   if (summoner?.summoner_level === 0) {
-    setTimeout(summonerQuery.refetch, 3000)
+    setTimeout(summonerQuery.refetch, 3000);
   }
 
   const matchQuery = useMatchList({
@@ -69,14 +74,20 @@ export default function Summoner() {
 
   useEffect(() => {
     if (matchQuery.isSuccess) {
-      setPrevSearchName(searchName)
+      setPrevSearchName(searchName);
     }
-  }, [searchName, matchQuery.isSuccess])
-  const isInitialQuery = !matchQuery.data
+  }, [searchName, matchQuery.isSuccess]);
+  const isInitialQuery = !matchQuery.data;
 
   const matches: BasicMatchType[] = matchQuery.data || [];
-  const positionQuery = usePositions({region, summoner_id: summoner?._id || ''})
-  const positions = positionQuery.data
+  const positionQuery = usePositions({
+    region,
+    summoner_id: summoner?._id || "",
+  });
+  const positions = positionQuery.data;
+
+  const nameChangeQuery = useNameChanges(summoner?.id || 0);
+  const nameChanges = nameChangeQuery.data || [];
 
   const spectateQuery = useQuery(
     ["spectate", region, summoner?._id],
@@ -159,7 +170,13 @@ export default function Summoner() {
   return (
     <Skeleton topPad={0}>
       <div style={{ minHeight: 1000 }}>
-        {summoner && <ProfileCardInner summoner={summoner} positions={positions} />}
+        {summoner && (
+          <ProfileCardInner
+            summoner={summoner}
+            positions={positions}
+            nameChanges={nameChanges}
+          />
+        )}
         {matchQuery.isFetching && isInitialQuery && (
           <div>
             <div
@@ -183,7 +200,7 @@ export default function Summoner() {
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
-                    console.log(data)
+                    console.log(data);
                     setQueue(data.queue);
                   }}
                 />

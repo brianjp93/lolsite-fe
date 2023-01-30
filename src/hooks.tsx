@@ -329,6 +329,19 @@ export function usePositions({
   return query;
 }
 
+export function useNameChanges(summoner_id: number) {
+  return useQuery(
+    ['name-change', summoner_id],
+    () => api.player.getNameChanges(summoner_id),
+    {
+      enabled: !!summoner_id,
+      retry: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  )
+}
+
 export function useCsrf() {
   const query = useQuery(
     ["csrf-token"],
@@ -341,3 +354,5 @@ export function useCsrf() {
   )
   return query
 }
+
+
