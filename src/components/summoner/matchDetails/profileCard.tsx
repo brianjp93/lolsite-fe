@@ -62,7 +62,14 @@ export function ProfileCardInner({
         const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type
         return (
           <div key={x.id}>
-            <div className="font-bold inline">{queue}</div>: {x.tier} {x.rank}
+            <div className="flex">
+              <div className="mr-8">
+                <div className="font-bold inline">{queue}:</div>
+              </div>
+              <div className="ml-auto">
+                {x.tier} {x.rank} {x.league_points}LP
+              </div>
+            </div>
           </div>
         );
       })}
