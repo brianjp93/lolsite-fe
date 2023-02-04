@@ -13,8 +13,7 @@ export function loginPath() {
 }
 
 export default function Login() {
-  const csrf = useCsrf().data;
-  return <Skeleton>{csrf && <LoginInner csrf={csrf} />}</Skeleton>;
+  return <Skeleton>{<LoginInner />}</Skeleton>;
 }
 
 const LoginSchema = z.object({
@@ -23,7 +22,7 @@ const LoginSchema = z.object({
 });
 type LoginSchema = z.infer<typeof LoginSchema>;
 
-function LoginInner({ csrf }: { csrf: string }) {
+function LoginInner() {
   const {
     register,
     handleSubmit,
@@ -37,7 +36,7 @@ function LoginInner({ csrf }: { csrf: string }) {
 
   const login = useMutation(
     ({ email, password }: { email: string; password: string }) =>
-      api.player.login({ email, password, csrf }),
+      api.player.login({ email, password }),
     {
       onSuccess: () => {
         userQuery.refetch();
@@ -52,7 +51,6 @@ function LoginInner({ csrf }: { csrf: string }) {
     <div className="mx-auto max-w-prose">
       <h1>Login</h1>
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-        <input type="hidden" name="csrfmiddlewaretoken" value={csrf} />
         <label>
           <div>email</div>
           <input className="w-full" type="text" {...register("email")} />

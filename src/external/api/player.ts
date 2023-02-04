@@ -224,12 +224,11 @@ async function getNameChanges(id: number) {
   return unwrap(t.array(NameChange).decode(r.data.results));
 }
 
-async function login({email, password, csrf}: {email: string, password: string, csrf: string}) {
+async function login({email, password}: {email: string, password: string}) {
   const url = `${base}/login/`
   const response = await axios.post(url, {
     email,
     password,
-    csrftoken: csrf,
   })
   return response.data
 }

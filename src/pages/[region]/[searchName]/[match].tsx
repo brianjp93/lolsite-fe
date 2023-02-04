@@ -1,18 +1,26 @@
 import Skeleton from "@/components/general/skeleton";
-import { useMatch, useParticipants, useSummoner, useTimeline } from "@/hooks";
+import {
+  useBans,
+  useChampions,
+  useMatch,
+  useParticipants,
+  useSummoner,
+  useTimeline,
+} from "@/hooks";
 import { useRouter } from "next/router";
 import type { SimpleMatchType, SummonerType } from "@/external/types";
 import Orbit from "@/components/general/spinner";
 import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
 import { profileRoute } from ".";
-import type { FrameType } from "@/external/iotypes/match";
+import type { BanType, FrameType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
   convertRank,
   convertTier,
   getMyPart,
   getTeam,
+  mediaUrl,
 } from "@/components/utils";
 import {
   ChampionClump,
@@ -27,6 +35,7 @@ import { ChampionTimelinesInner } from "@/components/summoner/matchDetails/champ
 import { StatOverview } from "@/components/summoner/matchDetails/championStats";
 import BuildOrder from "@/components/summoner/matchDetails/buildOrder";
 import { RunePage } from "@/components/summoner/matchDetails/runePage";
+import Image from "next/image";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -50,6 +59,7 @@ export default function Match() {
   const timelineQuery = useTimeline({ matchId });
   const summonerQ = useSummoner({ region, name: searchName });
   const summoner = summonerQ.data;
+  const bans = useBans(matchId).data?.results || [];
 
   return (
     <Skeleton topPad={0}>
@@ -82,6 +92,7 @@ export default function Match() {
           participants={participants}
           timeline={timelineQuery.data}
           summoner={summoner}
+          bans={bans}
         />
       )}
       {matchQuery.isLoading && <Orbit size={50} />}
@@ -94,27 +105,31 @@ function InnerMatch({
   participants,
   timeline,
   summoner,
+  bans,
 }: {
   match: SimpleMatchType;
   participants: AppendParticipant[];
   timeline?: FrameType[];
   summoner: SummonerType;
+  bans: BanType[];
 }) {
   const team100 = getTeam(100, participants);
   const team200 = getTeam(200, participants);
   const mypart = getMyPart(participants, summoner.puuid);
+  const team100Bans = bans.filter((x) => x.team === 100);
+  const team200Bans = bans.filter((x) => x.team === 200);
   return (
     <div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
           <div className="min-w-fit pr-1">
-            <TeamSide team={team100} match={match} />
+            <TeamSide team={team100} match={match} bans={team100Bans} />
           </div>
           <div className="my-auto rounded-full bg-gradient-to-r from-cyan-700 to-rose-700 p-3 font-bold">
             VS
           </div>
           <div className="min-w-fit pl-1">
-            <TeamSide team={team200} match={match} />
+            <TeamSide team={team200} match={match} bans={team200Bans} />
           </div>
         </div>
       </div>
@@ -190,23 +205,55 @@ function InnerMatch({
 function TeamSide({
   team,
   match,
+  bans,
 }: {
   team: AppendParticipant[];
   match: SimpleMatchType;
+  bans: BanType[];
 }) {
   const isWin = !!team[0]?.stats.win;
   return (
-    <div
-      className={clsx("rounded", {
-        "bg-gradient-to-tr from-emerald-600/0 via-teal-700/20 to-emerald-600/30":
-          isWin,
-      })}
-    >
-      {team.map((part, key) => {
+    <div>
+      <div
+        className={clsx("rounded", {
+          "bg-gradient-to-tr from-emerald-600/0 via-teal-700/20 to-emerald-600/30":
+            isWin,
+        })}
+      >
+        {team.map((part, key) => {
+          return (
+            <div key={part._id} className={clsx({ "mt-1": key > 0 })}>
+              <ParticipantInfo part={part} match={match} />
+            </div>
+          );
+        })}
+      </div>
+      <div className="text-center">
+        <div className="font-bold text-lg mt-2">Bans</div>
+        <BanList bans={bans} />
+      </div>
+    </div>
+  );
+}
+
+function BanList({ bans }: { bans: BanType[] }) {
+  const champions = useChampions();
+  return (
+    <div className="flex justify-around">
+      {bans.map((ban) => {
+        const url = mediaUrl(champions[ban.champion_id]?.image?.file_40);
         return (
-          <div key={part._id} className={clsx({ "mt-1": key > 0 })}>
-            <ParticipantInfo part={part} match={match} />
-          </div>
+          <>
+            {!!url && (
+              <Image
+                alt={champions[ban.champion_id]?.name || ""}
+                key={ban.champion_id}
+                src={url}
+                height={40}
+                width={40}
+              />
+            )}
+          </>
         );
       })}
     </div>

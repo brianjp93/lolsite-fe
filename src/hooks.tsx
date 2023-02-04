@@ -342,17 +342,15 @@ export function useNameChanges(summoner_id: number) {
   )
 }
 
-export function useCsrf() {
-  const query = useQuery(
-    ["csrf-token"],
-    () => api.general.getCsrf(),
+const banQueryKey = (match_id: string) => ['match-bans', match_id]
+export function useBans(match_id: string) {
+  return useQuery(
+    banQueryKey(match_id),
+    () => api.match.bans(match_id),
     {
-      staleTime: 1000 * 60 * 5,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 60,
     }
   )
-  return query
 }
-
-
