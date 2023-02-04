@@ -13,14 +13,7 @@ function demoLogin(data) {
     return axios.post(url, data)
 }
 
-async function getCsrf() {
-    let url = `${base}/get-csrf/`
-    const response = await axios.get(url)
-    return response.data
-}
-
 const exports = {
     demoLogin,
-    getCsrf,
 }
 export default exports

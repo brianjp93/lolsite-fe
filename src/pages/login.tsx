@@ -1,5 +1,5 @@
 import Skeleton from "@/components/general/skeleton";
-import { useCsrf, useUser } from "@/hooks";
+import { useUser } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
