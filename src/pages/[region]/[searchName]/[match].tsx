@@ -6,6 +6,7 @@ import {
   useParticipants,
   useSummoner,
   useTimeline,
+  useQueues,
 } from "@/hooks";
 import { useRouter } from "next/router";
 import type { SimpleMatchType, SummonerType } from "@/external/types";
@@ -36,6 +37,7 @@ import { StatOverview } from "@/components/summoner/matchDetails/championStats";
 import BuildOrder from "@/components/summoner/matchDetails/buildOrder";
 import { RunePage } from "@/components/summoner/matchDetails/runePage";
 import Image from "next/image";
+import { formatDatetimeFull } from "@/components/utils";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -118,8 +120,26 @@ function InnerMatch({
   const mypart = getMyPart(participants, summoner.puuid);
   const team100Bans = bans.filter((x) => x.team === 100);
   const team200Bans = bans.filter((x) => x.team === 200);
+  const queues = useQueues().data || {};
   return (
     <div>
+      <div className="flex justify-center">
+        <div className="font-bold mr-2">
+          {queues[match.queue_id]?.description || 'Unknown Game Type'}
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <div className="font-bold mr-2">
+          Game Version:
+        </div>
+        <div>{match.game_version}</div>
+      </div>
+      <div className="flex justify-center">
+        <div className="font-bold mr-2">
+          Played At:
+        </div>
+        <div>{formatDatetimeFull(match.game_creation) }</div>
+      </div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
           <div className="min-w-fit pr-1">

@@ -2,20 +2,12 @@ import { mediaUrl } from "@/components/utils";
 import type { NameChangeType, PositionType } from "@/external/iotypes/player";
 import type { SummonerType } from "@/external/types";
 import { useNameChanges, usePositions, useSummoner } from "@/hooks";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import api from "@/external/api/api";
 import { Popover } from "react-tiny-popover";
 import { useState } from "react";
+import { QUEUE_CONVERT } from "@/utils/constants";
 
-const QUEUE_CONVERT: Record<string, string> = {
-  RANKED_SOLO_5x5: "Solo/Duo",
-  RANKED_FLEX_SR: "5v5 Flex",
-  RANKED_FLEX_TT: "3v3 Flex",
-  RANKED_TFT: "TFT",
-  RANKED_TFT_DOUBLE_UP: "TFT Double Up",
-} as const;
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();

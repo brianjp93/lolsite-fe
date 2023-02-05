@@ -18,6 +18,7 @@ export const SimpleMatch = t.type({
   major: optional(t.number),
   minor: optional(t.number),
   patch: optional(t.number),
+  queue_id: t.number,
 })
 export type SimpleMatchType = t.TypeOf<typeof SimpleMatch>
 

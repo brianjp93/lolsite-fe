@@ -50,6 +50,14 @@ export const QUEUEFILTER = [
   },
 ];
 
+export const QUEUE_CONVERT: Record<string, string> = {
+  RANKED_SOLO_5x5: "Solo/Duo",
+  RANKED_FLEX_SR: "5v5 Flex",
+  RANKED_FLEX_TT: "3v3 Flex",
+  RANKED_TFT: "TFT",
+  RANKED_TFT_DOUBLE_UP: "TFT Double Up",
+} as const;
+
 function getStatModImageUrl({ patch = "latest", key = "" }) {
   return `https://raw.communitydragon.org/${patch}/game/assets/perks/statmods/${key}.png`;
 }
