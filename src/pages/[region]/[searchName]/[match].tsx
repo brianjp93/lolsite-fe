@@ -38,6 +38,7 @@ import BuildOrder from "@/components/summoner/matchDetails/buildOrder";
 import { RunePage } from "@/components/summoner/matchDetails/runePage";
 import Image from "next/image";
 import { formatDatetimeFull } from "@/components/utils";
+import {PingStats} from "@/components/summoner/matchDetails/pingStats";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -214,6 +215,14 @@ function InnerMatch({
               participants={participants}
               match={match}
               matchCardHeight={400}
+            />
+          </div>
+        )}
+        {mypart && (
+          <div className="my-2">
+            <PingStats
+              mypart={mypart}
+              participants={participants}
             />
           </div>
         )}
