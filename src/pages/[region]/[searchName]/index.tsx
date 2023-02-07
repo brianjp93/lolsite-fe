@@ -280,8 +280,6 @@ function MatchFilter({
     onSubmit(getValues())
   }, [getValues, onSubmit])
 
-  console.log('rendering')
-
   return (
     <div className={className}>
       <form onSubmit={handleSubmit(() => null)}>
