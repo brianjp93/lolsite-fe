@@ -61,12 +61,14 @@ async function getMatchesBySummonerName({
   region,
   queue,
   sync_import,
+  playedWith,
   start = 0,
   limit = 10,
 }: {
   summoner_name: string;
   region: string;
   sync_import?: boolean;
+  playedWith?: string;
   start?: number;
   limit?: number;
   queue?: number | string;
@@ -79,6 +81,7 @@ async function getMatchesBySummonerName({
     start,
     limit,
     queue,
+    playedWith,
     sync_import,
   };
   const response = await axios.get(url, { params });

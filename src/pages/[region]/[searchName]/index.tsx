@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   useMatchList,
@@ -12,7 +12,12 @@ import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
 import clsx from "clsx";
-import { useQueryParam, NumberParam, withDefault } from "use-query-params";
+import {
+  useQueryParam,
+  NumberParam,
+  withDefault,
+  StringParam,
+} from "use-query-params";
 
 import type { BasicMatchType } from "@/external/types";
 import { useRouter } from "next/router";
@@ -40,6 +45,10 @@ export default function Summoner() {
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
   const [prevSearchName, setPrevSearchName] = useState("");
   const [page, setPage] = useQueryParam("page", withDefault(NumberParam, 1));
+  const [playedWith, setPlayedWith] = useQueryParam(
+    "playedWith",
+    withDefault(StringParam, "")
+  );
   const [queue, setQueue] = useQueryParam(
     "queue",
     withDefault(NumberParam, undefined)
@@ -61,6 +70,7 @@ export default function Summoner() {
     limit,
     sync: true,
     queue,
+    playedWith,
     keepPreviousData: searchName === prevSearchName,
     onSuccess: () => {
       setLastRefresh(Date.now());
@@ -200,8 +210,8 @@ export default function Summoner() {
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
-                    console.log(data);
                     setQueue(data.queue);
+                    setPlayedWith(data.playedWith);
                   }}
                 />
               </div>
@@ -246,6 +256,7 @@ const QUEUEFILTER = {
 
 const MatchFilterSchema = z.object({
   queue: z.number().optional(),
+  playedWith: z.string().optional().default(""),
 });
 type MatchFilterSchema = z.infer<typeof MatchFilterSchema>;
 
@@ -256,23 +267,31 @@ function MatchFilter({
   className?: string;
   onSubmit: (data: MatchFilterSchema) => void;
 }>) {
-  const { queue } = useRouter().query as { queue?: number };
-  const { register, getValues } = useForm<MatchFilterSchema>({
+  const { queue, playedWith } = useRouter().query as {
+    queue?: number;
+    playedWith?: string;
+  };
+  const { register, getValues, handleSubmit } = useForm<MatchFilterSchema>({
     resolver: zodResolver(MatchFilterSchema),
-    defaultValues: { queue },
+    defaultValues: { queue, playedWith },
   });
+
+  const onChange = useCallback(async () => {
+    onSubmit(getValues())
+  }, [getValues, onSubmit])
+
+  console.log('rendering')
 
   return (
     <div className={className}>
-      <form
-        onChange={async () => {
-          onSubmit(getValues());
-        }}
-      >
+      <form onSubmit={handleSubmit(() => null)}>
         <label htmlFor="queue" className="w-14">
           Queue
         </label>
-        <select {...register("queue")} className="default w-full rounded !py-2">
+        <select
+          {...register("queue", { onChange })}
+          className="default w-full rounded !py-2"
+        >
           <option value={undefined}>Any</option>
           {Object.keys(QUEUEFILTER).map((x) => {
             const queue = parseInt(x) as keyof typeof QUEUEFILTER;
@@ -284,6 +303,14 @@ function MatchFilter({
             );
           })}
         </select>
+        <label className="my-2">
+          <div>Played With (comma separated list of names)</div>
+          <input
+            className="w-full"
+            type="text"
+            {...register("playedWith", { onBlur: onChange })}
+          />
+        </label>
       </form>
     </div>
   );

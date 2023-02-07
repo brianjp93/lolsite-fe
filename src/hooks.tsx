@@ -193,6 +193,7 @@ export function useMatchList({
   limit,
   sync,
   queue,
+  playedWith,
   onSuccess,
   onError,
   onSettled,
@@ -204,6 +205,7 @@ export function useMatchList({
   limit: number;
   sync: boolean;
   queue?: number;
+  playedWith?: string;
   onSuccess: () => void;
   onError: () => void;
   onSettled?: () => void;
@@ -219,6 +221,7 @@ export function useMatchList({
       limit,
       sync,
       queue,
+      playedWith,
     ],
     () =>
       api.match
@@ -228,6 +231,7 @@ export function useMatchList({
           start,
           limit,
           queue,
+          playedWith,
           sync_import: sync,
         })
         .then((x) => x.results),
