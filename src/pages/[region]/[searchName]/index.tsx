@@ -210,8 +210,8 @@ export default function Summoner() {
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
-                    setQueue(data.queue);
-                    setPlayedWith(data.playedWith);
+                    setTimeout(() => setQueue(data.queue))
+                    setTimeout(() => setPlayedWith(data.playedWith))
                   }}
                 />
               </div>
