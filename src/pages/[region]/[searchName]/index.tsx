@@ -26,16 +26,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
 
-export function profileRoute({
-  region,
-  name,
-}: {
-  region: string;
-  name: string;
-}) {
-  return `/${region}/${name}/`;
-}
-
 export default function Summoner() {
   const router = useRouter();
   const { region, searchName } = router.query as {

@@ -41,6 +41,7 @@ export {
   Reputation,
   User,
   NameChange,
+  Favorite,
 } from './iotypes/player'
 export type {
   SummonerType,

@@ -10,9 +10,11 @@ import {
   Reputation,
   User,
   NameChange,
+  Favorite,
 } from "../types";
 import { env } from "@/env/client.mjs";
 import {Position} from "../iotypes/player";
+import { z } from "zod";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
@@ -104,12 +106,13 @@ async function getRankHistory(data: GetRankHistoryData) {
   return unwrap(t.array(PositionBin).decode(response.data.data));
 }
 
-function getFavorites() {
+async function getFavorites() {
   const url = `${base}/favorites/`;
-  return axios.get(url);
+  const response = await axios.get(url);
+  return z.array(Favorite).parse(response.data.data)
 }
 
-function Favorite(data: any) {
+function setFavorite(data: any) {
   const url = `${base}/favorites/`;
   return axios.post(url, data);
 }
@@ -252,7 +255,7 @@ const exports = {
   isLoggedIn,
   getRankHistory,
   getFavorites,
-  Favorite,
+  setFavorite,
   generateCode,
   connectAccount,
   connectAccountWithProfileIcon,

@@ -13,7 +13,7 @@ import type { SimpleMatchType, SummonerType } from "@/external/types";
 import Orbit from "@/components/general/spinner";
 import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
-import { profileRoute } from ".";
+import { profileRoute } from "@/routes";
 import type { BanType, FrameType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {

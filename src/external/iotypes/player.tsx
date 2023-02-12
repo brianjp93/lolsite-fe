@@ -93,3 +93,10 @@ export const Reputation = t.type({
   is_approve: t.boolean,
 })
 export type ReputationType = t.TypeOf<typeof Reputation>
+
+export const Favorite = z.object({
+  name: z.string(),
+  region: z.string(),
+  sort_int: z.number(),
+})
+export type Favorite = z.infer<typeof Favorite>

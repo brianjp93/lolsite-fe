@@ -358,3 +358,15 @@ export function useBans(match_id: string) {
     }
   )
 }
+
+export function useFavorites() {
+  return useQuery(
+    ['favorites'],
+    () => api.player.getFavorites(),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 60,
+    }
+  )
+}
