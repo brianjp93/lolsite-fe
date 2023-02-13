@@ -6,7 +6,7 @@ import { SearchForm } from "./searchForm";
 import LogoutButton from "./logoutButton";
 import { useState } from "react";
 import { Dropdown } from "./dropdown";
-import {profileRoute} from "@/routes";
+import { profileRoute } from "@/routes";
 
 export default function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -66,15 +66,15 @@ export default function NavBar() {
                 {favorites.map((fav) => {
                   return (
                     <Link
-                      href={profileRoute({region: fav.region, name: fav.name})}
+                      href={profileRoute({
+                        region: fav.region,
+                        name: fav.name,
+                      })}
                       className="flex px-2 py-1"
-                      key={`${fav.region} ${fav.name}`}>
-                      <div className="mr-2 font-bold">
-                        {fav.region}
-                      </div>
-                      <div>
-                        {fav.name}
-                      </div>
+                      key={`${fav.puuid}`}
+                    >
+                      <div className="mr-2 font-bold">{fav.region}</div>
+                      <div>{fav.name}</div>
                     </Link>
                   );
                 })}
@@ -86,7 +86,10 @@ export default function NavBar() {
           </div>
         ) : (
           <div className="flex h-full items-center">
-            <Link href={loginPath()} className="btn btn-default w-24 text-center">
+            <Link
+              href={loginPath()}
+              className="btn btn-default w-24 text-center"
+            >
               login
             </Link>
           </div>
