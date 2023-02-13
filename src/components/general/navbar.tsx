@@ -85,7 +85,11 @@ export default function NavBar() {
             </Dropdown>
           </div>
         ) : (
-          <Link href={loginPath()}>login</Link>
+          <div className="flex h-full items-center">
+            <Link href={loginPath()} className="btn btn-default w-24 text-center">
+              login
+            </Link>
+          </div>
         )}
       </div>
     </div>
