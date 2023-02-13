@@ -4,7 +4,8 @@ export function Dropdown({
   children,
   isOpen,
   close,
-}: React.PropsWithChildren<{ isOpen: boolean; close: () => void }>) {
+  className="",
+}: React.PropsWithChildren<{ isOpen: boolean; close: () => void, className?: string }>) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: any) {
@@ -21,7 +22,7 @@ export function Dropdown({
     return null;
   }
   return (
-    <div ref={ref} className="absolute bottom-0 h-full w-full">
+    <div ref={ref} className={`absolute bottom-0 h-full ${className}`}>
       <div className="h-full bottom-0"></div>
       <div className="w-full rounded-md bg-black p-3 text-white">
         {children}

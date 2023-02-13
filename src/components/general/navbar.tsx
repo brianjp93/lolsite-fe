@@ -61,6 +61,7 @@ export default function NavBar() {
             <Dropdown
               isOpen={isDropdownOpen}
               close={() => setIsDropdownOpen(false)}
+              className="right-0 w-60 max-w-screen-sm"
             >
               <>
                 {favorites.map((fav) => {
