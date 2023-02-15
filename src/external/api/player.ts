@@ -117,6 +117,12 @@ function setFavorite(data: any) {
   return axios.post(url, data);
 }
 
+async function setFavoriteOrder(favorites: string[]) {
+  const url = `${base}/favorites/`
+  const response = await axios.post(url, {verb: 'order', favorite_ids: favorites})
+  return response.status
+}
+
 function generateCode(data: any) {
   const url = `${base}/generate-code/`;
   return axios.post(url, data);
@@ -276,5 +282,6 @@ const exports = {
   getMyUser,
   getNameChanges,
   logout,
+  setFavoriteOrder,
 };
 export default exports;

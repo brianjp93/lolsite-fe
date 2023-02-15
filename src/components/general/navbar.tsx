@@ -7,6 +7,7 @@ import LogoutButton from "./logoutButton";
 import { useState } from "react";
 import { Dropdown } from "./dropdown";
 import { profileRoute } from "@/routes";
+import { FavoriteList } from "./favoriteList";
 
 export default function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -39,46 +40,34 @@ export default function NavBar() {
 
       <div className="ml-auto flex h-full">
         {user ? (
-          <div
-            onClick={() => setIsDropdownOpen((x) => !x)}
-            className="relative flex h-full cursor-pointer items-center"
-          >
-            {user.email}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="ml-2 h-4 w-4"
+          <div className="relative flex h-full">
+            <div
+              onClick={() => setIsDropdownOpen((x) => !x)}
+              className="flex h-full cursor-pointer items-center"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5"
-              />
-            </svg>
+              {user.email}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="ml-2 h-4 w-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </div>
             <Dropdown
               isOpen={isDropdownOpen}
               close={() => setIsDropdownOpen(false)}
               className="right-0 w-60 max-w-screen-sm"
             >
               <>
-                {favorites.map((fav) => {
-                  return (
-                    <Link
-                      href={profileRoute({
-                        region: fav.region,
-                        name: fav.name,
-                      })}
-                      className="flex px-2 py-1"
-                      key={`${fav.puuid}`}
-                    >
-                      <div className="mr-2 font-bold">{fav.region}</div>
-                      <div>{fav.name}</div>
-                    </Link>
-                  );
-                })}
+                <FavoriteList favorites={favorites} />
                 <div>
                   <LogoutButton className="w-full" />
                 </div>

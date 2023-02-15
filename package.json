@@ -19,6 +19,7 @@
     "clsx": "^1.2.1",
     "date-fns": "^2.29.3",
     "fp-ts": "^2.13.1",
+    "framer-motion": "^9.0.2",
     "io-ts": "^2.2.19",
     "io-ts-reporters": "^2.0.1",
     "next": "13.0.2",
