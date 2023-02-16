@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { Popover } from "react-tiny-popover";
 import { useState } from "react";
 import { QUEUE_CONVERT } from "@/utils/constants";
-
+import numeral from "numeral";
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -63,7 +63,7 @@ export function ProfileCardInner({
         </div>
         <div
           onClick={() => setIsNameChangeOpen((x) => !x)}
-          className="ml-2 font-bold underline cursor-pointer"
+          className="ml-2 cursor-pointer font-bold underline"
         >
           <Popover
             isOpen={isNameChangeOpen}
@@ -85,14 +85,20 @@ export function ProfileCardInner({
       <div className="mt-2">
         {positions.map((x) => {
           const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type;
+          const total = x.wins + x.losses || 1;
+          const percentage = numeral(x.wins / total).format("0.0%");
           return (
             <div key={x.id}>
-              <div className="flex">
-                <div className="mr-8">
+              <div className="grid grid-cols-3 mt-1">
+                <div className="mr-2">
                   <div className="inline font-bold">{queue}:</div>
                 </div>
-                <div className="ml-auto">
+                <div className="text-right">
                   {x.tier} {x.rank} {x.league_points}LP
+                </div>
+                <div className="flex ml-auto">
+                  {x.wins}/{x.losses}
+                  <div className="font-bold ml-2">{percentage}</div>
                 </div>
               </div>
             </div>
