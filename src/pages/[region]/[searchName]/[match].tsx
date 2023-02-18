@@ -38,13 +38,17 @@ import BuildOrder from "@/components/summoner/matchDetails/buildOrder";
 import { RunePage } from "@/components/summoner/matchDetails/runePage";
 import Image from "next/image";
 import { formatDatetimeFull } from "@/components/utils";
-import {PingStats} from "@/components/summoner/matchDetails/pingStats";
+import { PingStats } from "@/components/summoner/matchDetails/pingStats";
+import type { GetServerSidePropsContext } from "next";
+import api from "@/external/api/api";
+import type { MetaHead } from "@/external/iotypes/base";
+import Head from "next/head";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
 };
 
-export default function Match() {
+export default function Match({ meta }: { meta: MetaHead }) {
   const router = useRouter();
   const {
     searchName,
@@ -66,6 +70,13 @@ export default function Match() {
 
   return (
     <Skeleton topPad={0}>
+      <Head>
+        <meta property="og:type" content={meta.type} />
+        <meta property="og:url" content={meta.url} />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
+        <meta property="og:image" content={meta.image} />
+      </Head>
       <div className="ml-10 flex">
         <Link
           href={
@@ -125,21 +136,17 @@ function InnerMatch({
   return (
     <div>
       <div className="flex justify-center">
-        <div className="font-bold mr-2">
-          {queues[match.queue_id]?.description || 'Unknown Game Type'}
+        <div className="mr-2 font-bold">
+          {queues[match.queue_id]?.description || "Unknown Game Type"}
         </div>
       </div>
       <div className="flex justify-center">
-        <div className="font-bold mr-2">
-          Game Version:
-        </div>
+        <div className="mr-2 font-bold">Game Version:</div>
         <div>{match.game_version}</div>
       </div>
       <div className="flex justify-center">
-        <div className="font-bold mr-2">
-          Played At:
-        </div>
-        <div>{formatDatetimeFull(match.game_creation) }</div>
+        <div className="mr-2 font-bold">Played At:</div>
+        <div>{formatDatetimeFull(match.game_creation)}</div>
       </div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
@@ -220,10 +227,7 @@ function InnerMatch({
         )}
         {mypart && (
           <div className="my-2">
-            <PingStats
-              mypart={mypart}
-              participants={participants}
-            />
+            <PingStats mypart={mypart} participants={participants} />
           </div>
         )}
       </div>
@@ -258,7 +262,7 @@ function TeamSide({
         })}
       </div>
       <div className="text-center">
-        <div className="font-bold text-lg mt-2">Bans</div>
+        <div className="mt-2 text-lg font-bold">Bans</div>
         <BanList bans={bans} />
       </div>
     </div>
@@ -269,14 +273,14 @@ function BanList({ bans }: { bans: BanType[] }) {
   const champions = useChampions();
   return (
     <div className="flex justify-around">
-      {bans.map((ban) => {
+      {bans.map((ban, key) => {
         const url = mediaUrl(champions[ban.champion_id]?.image?.file_40);
         return (
           <>
             {!!url && (
               <Image
                 alt={champions[ban.champion_id]?.name || ""}
-                key={ban.champion_id}
+                key={key}
                 src={url}
                 height={40}
                 width={40}
@@ -379,4 +383,22 @@ function SecondaryStatClump({
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { region, searchName, match } = context.query as {
+    region: string;
+    searchName: string;
+    match: string;
+  };
+  const meta = await api.general.getMatchMetaData({
+    name: searchName,
+    region,
+    matchId: match,
+  });
+  return {
+    props: {
+      meta,
+    },
+  };
 }

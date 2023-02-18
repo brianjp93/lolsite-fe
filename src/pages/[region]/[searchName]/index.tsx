@@ -25,8 +25,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
+import Head from "next/head";
+import type { GetServerSidePropsContext } from "next";
+import type { MetaHead } from "@/external/iotypes/base";
 
-export default function Summoner() {
+export default function Summoner({ meta }: { meta: MetaHead }) {
   const router = useRouter();
   const { region, searchName } = router.query as {
     region: string;
@@ -169,6 +172,14 @@ export default function Summoner() {
 
   return (
     <Skeleton topPad={0}>
+      <Head>
+        <title>Summoner Page</title>
+        <meta property="og:type" content={meta.type} />
+        <meta property="og:url" content={meta.url} />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
+        <meta property="og:image" content={meta.image} />
+      </Head>
       <div style={{ minHeight: 1000 }}>
         {summoner && (
           <ProfileCardInner
@@ -200,8 +211,8 @@ export default function Summoner() {
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
-                    setTimeout(() => setQueue(data.queue))
-                    setTimeout(() => setPlayedWith(data.playedWith))
+                    setTimeout(() => setQueue(data.queue));
+                    setTimeout(() => setPlayedWith(data.playedWith));
                   }}
                 />
               </div>
@@ -267,8 +278,8 @@ function MatchFilter({
   });
 
   const onChange = useCallback(async () => {
-    onSubmit(getValues())
-  }, [getValues, onSubmit])
+    onSubmit(getValues());
+  }, [getValues, onSubmit]);
 
   return (
     <div className={className}>
@@ -302,4 +313,20 @@ function MatchFilter({
       </form>
     </div>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { region, searchName } = context.query as {
+    region: string;
+    searchName: string;
+  };
+  const meta = await api.general.getSummonerMetaData({
+    name: searchName,
+    region,
+  });
+  return {
+    props: {
+      meta,
+    },
+  };
 }
