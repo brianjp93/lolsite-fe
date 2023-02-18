@@ -29,7 +29,7 @@ import Head from "next/head";
 import type { GetServerSidePropsContext } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
 
-export default function Summoner({ meta }: { meta: MetaHead }) {
+export default function Summoner({ meta }: { meta: MetaHead|null }) {
   const router = useRouter();
   const { region, searchName } = router.query as {
     region: string;
@@ -174,11 +174,15 @@ export default function Summoner({ meta }: { meta: MetaHead }) {
     <Skeleton topPad={0}>
       <Head>
         <title>Summoner Page</title>
-        <meta property="og:type" content={meta.type} />
-        <meta property="og:url" content={meta.url} />
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:image" content={meta.image} />
+        {meta &&
+          <>
+            <meta property="og:type" content={meta.type} />
+            <meta property="og:url" content={meta.url} />
+            <meta property="og:title" content={meta.title} />
+            <meta property="og:description" content={meta.description} />
+            <meta property="og:image" content={meta.image} />
+          </>
+        }
       </Head>
       <div style={{ minHeight: 1000 }}>
         {summoner && (

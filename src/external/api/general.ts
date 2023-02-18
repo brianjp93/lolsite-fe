@@ -22,8 +22,13 @@ async function getSummonerMetaData({
   region: string;
 }) {
   const url = `${base}/summoner-metadata/${region}/${name}/`;
-  const response = await axios.get(url);
-  return MetaHead.parse(response.data);
+  try {
+    const response = await axios.get(url);
+    return MetaHead.parse(response.data);
+  } catch (error) {
+    console.log(error)
+    return null
+  }
 }
 
 
@@ -37,8 +42,13 @@ async function getMatchMetaData({
   matchId: string;
 }) {
   const url = `${base}/match-metadata/${region}/${name}/${matchId}/`;
-  const response = await axios.get(url);
-  return MetaHead.parse(response.data);
+  try {
+    const response = await axios.get(url);
+    return MetaHead.parse(response.data);
+  } catch (error) {
+    console.log(error)
+    return null
+  }
 }
 
 const exports = {

@@ -48,7 +48,7 @@ export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
 };
 
-export default function Match({ meta }: { meta: MetaHead }) {
+export default function Match({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
   const {
     searchName,
@@ -71,11 +71,15 @@ export default function Match({ meta }: { meta: MetaHead }) {
   return (
     <Skeleton topPad={0}>
       <Head>
-        <meta property="og:type" content={meta.type} />
-        <meta property="og:url" content={meta.url} />
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:image" content={meta.image} />
+        {meta && (
+          <>
+            <meta property="og:type" content={meta.type} />
+            <meta property="og:url" content={meta.url} />
+            <meta property="og:title" content={meta.title} />
+            <meta property="og:description" content={meta.description} />
+            <meta property="og:image" content={meta.image} />
+          </>
+        )}
       </Head>
       <div className="ml-10 flex">
         <Link
