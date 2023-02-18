@@ -6,13 +6,12 @@ import { SearchForm } from "./searchForm";
 import LogoutButton from "./logoutButton";
 import { useState } from "react";
 import { Dropdown } from "./dropdown";
-import { profileRoute } from "@/routes";
 import { FavoriteList } from "./favoriteList";
 
 export default function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const user = useUser().data;
-  const favoritesQuery = useFavorites();
+  const favoritesQuery = useFavorites({enabled: !!user});
   const favorites = favoritesQuery.data || [];
 
   return (

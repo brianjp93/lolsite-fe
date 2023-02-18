@@ -8,7 +8,7 @@ import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 
 export function FavoriteList({ favorites }: { favorites: Favorite[] }) {
-  const favoritesQuery = useFavorites();
+  const favoritesQuery = useFavorites({});
   const [order, setOrder] = useState(favorites);
 
   const mutation = useMutation(

@@ -359,7 +359,7 @@ export function useBans(match_id: string) {
   )
 }
 
-export function useFavorites() {
+export function useFavorites({enabled=true}: {enabled?: boolean}) {
   return useQuery(
     ['favorites'],
     () => api.player.getFavorites(),
@@ -367,6 +367,7 @@ export function useFavorites() {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 60,
+      enabled,
     }
   )
 }
