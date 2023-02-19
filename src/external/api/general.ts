@@ -24,7 +24,7 @@ async function getSummonerMetaData({
   const url = `${base}/summoner-metadata/${region}/${name}/`;
   try {
     const response = await axios.get(url);
-    console.log(response.data)
+    console.log(JSON.stringify(response.data))
     return MetaHead.parse(response.data);
   } catch (error) {
     console.log(error)
@@ -45,7 +45,7 @@ async function getMatchMetaData({
   const url = `${base}/match-metadata/${region}/${name}/${matchId}/`;
   try {
     const response = await axios.get(url);
-    console.log(response.data)
+    console.log(JSON.stringify(response.data))
     return MetaHead.parse(response.data);
   } catch (error) {
     console.log(error)
