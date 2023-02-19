@@ -173,7 +173,7 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
   return (
     <Skeleton topPad={0}>
       <Head>
-        <title>Summoner Page</title>
+        <title>{searchName.trim()} | hardstuck.club</title>
         {meta &&
           <>
             <meta property="og:type" content={meta.type} />

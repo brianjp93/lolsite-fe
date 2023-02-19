@@ -71,6 +71,7 @@ export default function Match({ meta }: { meta: MetaHead | null }) {
   return (
     <Skeleton topPad={0}>
       <Head>
+        <title>Match Details | hardstuck.club</title>
         {meta && (
           <>
             <meta property="og:type" content={meta.type} />
