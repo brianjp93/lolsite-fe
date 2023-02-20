@@ -11,7 +11,7 @@ import { FavoriteList } from "./favoriteList";
 export default function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const user = useUser().data;
-  const favoritesQuery = useFavorites({enabled: !!user});
+  const favoritesQuery = useFavorites({ enabled: !!user });
   const favorites = favoritesQuery.data || [];
 
   return (
@@ -66,7 +66,10 @@ export default function NavBar() {
               className="right-0 w-60 max-w-screen-sm"
             >
               <>
-                <FavoriteList favorites={favorites} />
+                <FavoriteList
+                  onClick={() => setIsDropdownOpen(false)}
+                  favorites={favorites}
+                />
                 <div>
                   <LogoutButton className="w-full" />
                 </div>

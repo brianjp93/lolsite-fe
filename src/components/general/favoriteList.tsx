@@ -7,7 +7,13 @@ import { useFavorites } from "@/hooks";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 
-export function FavoriteList({ favorites }: { favorites: Favorite[] }) {
+export function FavoriteList({
+  favorites,
+  onClick,
+}: {
+  favorites: Favorite[];
+  onClick?: () => void;
+}) {
   const favoritesQuery = useFavorites({});
   const [order, setOrder] = useState(favorites);
 
@@ -27,6 +33,7 @@ export function FavoriteList({ favorites }: { favorites: Favorite[] }) {
       {order.map((fav) => {
         return (
           <FavoriteItem
+            onClick={onClick}
             key={fav.puuid}
             fav={fav}
             onPointerUp={() => mutation.mutate(order.map((x) => x.puuid))}
@@ -40,9 +47,11 @@ export function FavoriteList({ favorites }: { favorites: Favorite[] }) {
 function FavoriteItem({
   fav,
   onPointerUp,
+  onClick,
 }: {
   fav: Favorite;
   onPointerUp: () => void;
+  onClick?: () => void;
 }) {
   const controls = useDragControls();
 
@@ -75,6 +84,7 @@ function FavoriteItem({
           </svg>
         </div>
         <Link
+          onClick={() => onClick && onClick()}
           href={profileRoute({
             region: fav.region,
             name: fav.name,

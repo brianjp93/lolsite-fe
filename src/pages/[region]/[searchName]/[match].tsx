@@ -138,12 +138,18 @@ function InnerMatch({
   const team100Bans = bans.filter((x) => x.team === 100);
   const team200Bans = bans.filter((x) => x.team === 200);
   const queues = useQueues().data || {};
+  const minutes = Math.round(match.game_duration / 60_000)
+  const seconds = (match.game_duration % 60_000) / 1000
   return (
     <div>
       <div className="flex justify-center">
         <div className="mr-2 font-bold">
           {queues[match.queue_id]?.description || "Unknown Game Type"}
         </div>
+      </div>
+      <div className="flex justify-center">
+        <div className="mr-2 font-bold">Duration:</div>
+        <div>{minutes}:{seconds}</div>
       </div>
       <div className="flex justify-center">
         <div className="mr-2 font-bold">Game Version:</div>

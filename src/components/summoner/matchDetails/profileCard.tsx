@@ -89,16 +89,16 @@ export function ProfileCardInner({
           const percentage = numeral(x.wins / total).format("0.0%");
           return (
             <div key={x.id}>
-              <div className="flex mt-1">
+              <div className="mt-1 flex">
                 <div className="mr-3">
-                  <div className="inline font-bold">{queue}:</div>
+                  <div className="font-bold">{queue}:</div>
                 </div>
                 <div className="ml-auto mr-3">
                   {x.tier} {x.rank} {x.league_points}LP
                 </div>
-                <div className="flex ml-auto">
+                <div className="ml-auto flex">
                   {x.wins}/{x.losses}
-                  <div className="font-bold ml-2">{percentage}</div>
+                  <div className="ml-2 font-bold">{percentage}</div>
                 </div>
               </div>
             </div>
