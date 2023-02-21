@@ -23,7 +23,7 @@ export function Dropdown({
   }
   return (
     <div ref={ref} className={`absolute bottom-0 h-full ${className}`}>
-      <div className="h-full bottom-0"></div>
+      <div onClick={() => close()} className="h-full bottom-0 hover:cursor-pointer"></div>
       <div className="w-full rounded-md bg-black p-3 text-white">
         {children}
       </div>

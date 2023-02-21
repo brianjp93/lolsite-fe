@@ -371,3 +371,16 @@ export function useFavorites({enabled=true}: {enabled?: boolean}) {
     }
   )
 }
+
+export function useConnectedSummoners() {
+  return useQuery(
+    ['connected-summoners'],
+    () => api.player.getConnectedAccounts(),
+    {
+      retry: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 60,
+    }
+  )
+}

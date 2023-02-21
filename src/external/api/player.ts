@@ -112,9 +112,16 @@ async function getFavorites() {
   return z.array(Favorite).parse(response.data.data)
 }
 
-function setFavorite(data: any) {
+async function setFavorite(summoner_id: number) {
   const url = `${base}/favorites/`;
-  return axios.post(url, data);
+  const response = await axios.post(url, {verb: 'set', summoner_id});
+  return response.status
+}
+
+async function removeFavorite(summoner_id: number) {
+  const url = `${base}/favorites/`;
+  const response = await axios.post(url, {verb: 'remove', summoner_id});
+  return response.status
 }
 
 async function setFavoriteOrder(favorites: string[]) {
@@ -138,9 +145,10 @@ function connectAccountWithProfileIcon(data: any) {
   return axios.post(url, data);
 }
 
-function getConnectedAccounts() {
+async function getConnectedAccounts() {
   const url = `${base}/get-connected-accounts/`;
-  return axios.post(url);
+  const response = await axios.get(url);
+  return unwrap(t.array(Summoner).decode(response.data.data))
 }
 
 function changePassword(data: any) {
@@ -262,6 +270,7 @@ const exports = {
   getRankHistory,
   getFavorites,
   setFavorite,
+  removeFavorite,
   generateCode,
   connectAccount,
   connectAccountWithProfileIcon,
