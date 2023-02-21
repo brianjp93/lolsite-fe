@@ -1,18 +1,13 @@
 import {useState} from 'react'
 import {CreateComment} from './createComment'
 import {ViewComments} from './viewComments'
-import {useQuery} from '@tanstack/react-query'
-import api from '@/external/api/api'
+import {useConnectedSummoners} from '@/hooks'
 
 export function Comments({match}: {match: any}) {
   const [view, setView] = useState<'view' | 'create'>('view')
   const [reply_comment, setReplyComment] = useState({})
 
-  const query = useQuery(
-    ['connected-accounts'],
-    () => api.player.getConnectedAccounts().then(response => response.data.data),
-    {refetchOnMount: false, retry: false}
-  )
+  const query = useConnectedSummoners()
 
   return (
     <div>
