@@ -90,7 +90,6 @@ export function ProfileCardInner({
   positions?: PositionType[];
   nameChanges?: NameChangeType[];
 }) {
-  const user = useUser().data;
   const [isNameChangeOpen, setIsNameChangeOpen] = useState(false);
 
   return (
