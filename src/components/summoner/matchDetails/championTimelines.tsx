@@ -306,19 +306,19 @@ function ChampionImage(props: any) {
   }
 
   const vert_align: React.CSSProperties = {};
-  if (props.participant.champion?.image?.file_30) {
+  if (props.participant.champion?.image?.image_url) {
     vert_align.verticalAlign = "top";
   }
 
   return (
     <div style={{ padding: "0px 10px" }}>
-      {mediaUrl(champions[props.participant.champion_id]?.image.file_30) ===
+      {mediaUrl(champions[props.participant.champion_id]?.image.image_url || '') ===
         "" && (
         <div onClick={props.handleClick} style={{ ...image_style }}>
           NA
         </div>
       )}
-      {champions?.[props.participant?.champion_id]?.image?.file_30 && (
+      {champions?.[props.participant?.champion_id]?.image?.image_url && (
         <Image
           role="button"
           tabIndex={1}
@@ -332,7 +332,7 @@ function ChampionImage(props: any) {
           width={30}
           style={{ ...image_style }}
           src={mediaUrl(
-            champions?.[props.participant.champion_id]?.image?.file_30
+            champions?.[props.participant.champion_id]?.image?.image_url || ''
           )}
           alt={
             champions?.[props.participant.champion_id]?.name || "Champion Image"

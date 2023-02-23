@@ -80,7 +80,7 @@ export function RunePage({
       }
       return (
         <div key={`${match.id}-${part.id}-rune-champ-image`}>
-          {champ?.image?.file_30 === "" && (
+          {champ?.image?.image_url === "" && (
             <div
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
@@ -94,7 +94,7 @@ export function RunePage({
               NA
             </div>
           )}
-          {champ?.image?.file_30 !== "" && (
+          {champ?.image?.image_url !== "" && (
             <Image
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
@@ -108,7 +108,7 @@ export function RunePage({
               height={30}
               width={30}
               className="my-2"
-              src={mediaUrl(champ?.image?.file_30)}
+              src={mediaUrl(champ?.image?.image_url)}
               alt="Champion"
             />
           )}

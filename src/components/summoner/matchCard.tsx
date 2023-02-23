@@ -168,7 +168,7 @@ function TeamClump({
               {champion && (
                 <Image
                   className="rounded"
-                  src={mediaUrl(champion.image.file_15)}
+                  src={mediaUrl(champion.image.image_url)}
                   width={16}
                   height={16}
                   alt={champion.name}
@@ -306,7 +306,7 @@ export function ChampionClump({
     <div className="flex">
       <div>
         <Image
-          src={mediaUrl(champion.image.file_40)}
+          src={mediaUrl(champion.image.image_url)}
           height={40}
           width={40}
           alt={`Champion Image: ${champion.name}`}

@@ -46,7 +46,6 @@ const config = {
   },
   images: {
     remotePatterns,
-    unoptimized: true,
   },
 };
 export default config;

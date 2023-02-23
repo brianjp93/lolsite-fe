@@ -282,7 +282,7 @@ export function MapEventsInner({
                     border: `2px solid ${border_color}`,
                   }}
                   src={mediaUrl(
-                    champions[player.part.champion_id]?.image?.file_30
+                    champions[player.part.champion_id]?.image?.image_url || ''
                   )}
                   alt="participant bubble"
                 />
@@ -457,7 +457,7 @@ function EventBubble({
                     src={mediaUrl(
                       champions?.[
                         part_dict[ev.killer_id]?.champion_id || 10000000
-                      ]?.image?.file_40
+                      ]?.image?.image_url || ''
                     )}
                     alt=""
                   />
@@ -488,7 +488,7 @@ function EventBubble({
                   champions?.[
                     part_dict?.[championKillEvent.victim_id]?.champion_id ||
                       1000000
-                  ]?.image?.file_40
+                  ]?.image?.image_url || ''
                 )}
                 alt=""
               />
@@ -533,7 +533,7 @@ function EventBubble({
                     src={mediaUrl(
                       champions?.[
                         part_dict[ev.killer_id]?.champion_id || 1000000
-                      ]?.image?.file_40
+                      ]?.image?.image_url || ''
                     )}
                     alt=""
                   />
@@ -561,7 +561,7 @@ function EventBubble({
                   style={img_style}
                   src={mediaUrl(
                     champions?.[part_dict[ev.killer_id]?.champion_id || 1000000]
-                      ?.image?.file_40
+                      ?.image?.image_url || ''
                   )}
                   alt=""
                 />

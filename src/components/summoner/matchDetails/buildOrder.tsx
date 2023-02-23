@@ -478,7 +478,7 @@ function ChampionImage(props: {
 
   const vert_align: CSSProperties = {};
   const champ = champions[props.participant.champion_id];
-  const champ_image = champ?.image?.file_30;
+  const champ_image = champ?.image?.image_url;
   if (champ_image === undefined) {
     vert_align.verticalAlign = "top";
   }
@@ -520,7 +520,7 @@ function ChampionImage(props: {
           height={30}
           width={30}
           aria-label={champ?.name}
-          src={mediaUrl(champ?.image?.file_30)}
+          src={mediaUrl(champ?.image?.image_url || '')}
           alt={`Champion Image: ${champ?.name}`}
         />
       )}
