@@ -445,7 +445,7 @@ function Timeline(props: {
                           height={15}
                           width={15}
                           src={mediaUrl(
-                            champions[part1.champion_id]?.image?.image_url || ''
+                            champions[part1.champion_id]?.image?.file_30
                           )}
                           alt="champion image"
                         />
@@ -460,7 +460,7 @@ function Timeline(props: {
                           height={15}
                           width={15}
                           src={mediaUrl(
-                            champions[part2?.champion_id]?.image?.image_url || ''
+                            champions[part2?.champion_id]?.image?.file_30
                           )}
                           alt="champion image"
                         />
@@ -477,7 +477,7 @@ function Timeline(props: {
                             height={15}
                             width={15}
                             src={mediaUrl(
-                              champions[part1?.champion_id]?.image?.image_url || ''
+                              champions[part1?.champion_id]?.image?.file_30
                             )}
                             alt=""
                           />
@@ -521,7 +521,7 @@ function Timeline(props: {
                           height={15}
                           width={15}
                           src={mediaUrl(
-                            champions[part1?.champion_id]?.image?.image_url || ''
+                            champions[part1?.champion_id]?.image?.file_30
                           )}
                           alt="champion image"
                         />

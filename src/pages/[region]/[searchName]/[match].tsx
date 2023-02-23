@@ -285,7 +285,7 @@ function BanList({ bans }: { bans: BanType[] }) {
   return (
     <div className="flex justify-around">
       {bans.map((ban, key) => {
-        const url = mediaUrl(champions[ban.champion_id]?.image?.image_url || '');
+        const url = mediaUrl(champions[ban.champion_id]?.image?.file_40);
         return (
           <>
             {!!url && (

@@ -241,7 +241,7 @@ export function StatOverview({
                 title={part.summoner_name}
                 width={20}
                 height={20}
-                src={mediaUrl(champions?.[part.champion_id]?.image.image_url || '')}
+                src={mediaUrl(champions?.[part.champion_id]?.image.file_30)}
                 alt={champions?.[part.champion_id]?.name || "Champion Image"}
               />
             </div>

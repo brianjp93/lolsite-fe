@@ -118,7 +118,7 @@ export function ChampionSelection({
                   }
                 }}
                 alt={champions[part.champion_id]?.name || ""}
-                src={mediaUrl(champions[part.champion_id]?.image?.image_url || '')}
+                src={mediaUrl(champions[part.champion_id]?.image?.file_40)}
                 width={30}
                 height={30}
               />

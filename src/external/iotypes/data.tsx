@@ -11,7 +11,6 @@ export const ItemImage = t.type({
 export type ItemImageType = t.TypeOf<typeof ItemImage>;
 
 export const ChampionImage = t.type({
-  image_url: t.string,
   file: optional(t.string),
   file_15: optional(t.string),
   file_30: optional(t.string),
