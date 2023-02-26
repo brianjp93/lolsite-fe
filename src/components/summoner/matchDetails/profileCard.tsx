@@ -122,7 +122,7 @@ export function ProfileCardInner({
         </div>
         <div
           onClick={() => setIsNameChangeOpen((x) => !x)}
-          className="ml-2 cursor-pointer font-bold underline"
+          className="ml-2 mr-4 cursor-pointer font-bold underline"
         >
           <Popover
             isOpen={isNameChangeOpen}
