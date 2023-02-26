@@ -149,7 +149,7 @@ function InnerMatch({
       </div>
       <div className="flex justify-center">
         <div className="mr-2 font-bold">Duration:</div>
-        <div>{minutes}:{seconds}</div>
+        <div>{minutes}:{numeral(seconds).format('00')}</div>
       </div>
       <div className="flex justify-center">
         <div className="mr-2 font-bold">Game Version:</div>
