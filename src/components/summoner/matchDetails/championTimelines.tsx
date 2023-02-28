@@ -28,7 +28,45 @@ type GraphType =
   | "level"
   | "total_damage_done_to_champions"
   | "time_enemy_spent_controlled"
-  | "gold_per_second";
+  | "gold_per_second"
+  | "current_gold"
+  | 'ability_haste'
+  | 'ability_power'
+  | 'armor'
+  | 'armor_pen'
+  | 'armor_pen_percent'
+  | 'attack_damage'
+  | 'attack_speed'
+  | 'bonus_armor_pen_percent'
+  | 'bonus_magic_pen_percent'
+  | 'cc_reduction'
+  | 'cooldown_reduction'
+  | 'health'
+  | 'health_max'
+  | 'health_regen'
+  | 'lifesteal'
+  | 'magic_pen'
+  | 'magic_pen_percent'
+  | 'magic_resist'
+  | 'movement_speed'
+  | 'omnivamp'
+  | 'physical_vamp'
+  | 'power'
+  | 'power_max'
+  | 'power_regen'
+  | 'spell_vamp'
+  | 'magic_damage_done'
+  | 'magic_damage_done_to_champions'
+  | 'magic_damage_taken'
+  | 'physical_damage_done'
+  | 'physical_damage_done_to_champions'
+  | 'physical_damage_taken'
+  | 'total_damage_done'
+  | 'total_damage_done_to_champions'
+  | 'total_damage_taken'
+  | 'true_damage_done'
+  | 'true_damage_done_to_champions'
+  | 'true_damage_taken'
 interface AugmentedParticipantFrame extends ParticipantFrameType {
   cs: number;
 }
@@ -259,11 +297,15 @@ export function ChampionTimelinesInner({
       </div>
 
       <div className="grid grid-cols-3" style={{ marginLeft: 20, marginRight: 15 }}>
-        {getGraphBubbleInput("total_gold", "Gold")}
+        {getGraphBubbleInput("total_gold", "Total Gold")}
+        {getGraphBubbleInput("current_gold", "Current Gold")}
         {getGraphBubbleInput("cs", "CS")}
         {getGraphBubbleInput("xp", "XP")}
         {getGraphBubbleInput("level", "Level")}
         {getGraphBubbleInput("total_damage_done_to_champions", "Champ DMG")}
+        {getGraphBubbleInput("true_damage_done_to_champions", "True DMG")}
+        {getGraphBubbleInput("magic_damage_done_to_champions", "Magic DMG")}
+        {getGraphBubbleInput("physical_damage_done_to_champions", "Physical DMG")}
         {getGraphBubbleInput(
           "time_enemy_spent_controlled",
           "CC Time",
@@ -274,6 +316,21 @@ export function ChampionTimelinesInner({
           "Gold/Sec",
           "Passive gold generation from support items?"
         )}
+        {getGraphBubbleInput("armor", "Armor")}
+        {getGraphBubbleInput("magic_resist", "Magic Resist")}
+        {getGraphBubbleInput("magic_pen", "Magic Pen")}
+        {getGraphBubbleInput("magic_pen_percent", "Magic Pen %")}
+        {getGraphBubbleInput("armor_pen", "Armor Pen")}
+        {getGraphBubbleInput("armor_pen_percent", "Armor Pen %")}
+        {getGraphBubbleInput("ability_power", "Ability Power")}
+        {getGraphBubbleInput("attack_damage", "Attack Damage")}
+        {getGraphBubbleInput("attack_speed", "Attack Speed")}
+        {getGraphBubbleInput("health", "Health")}
+        {getGraphBubbleInput("lifesteal", "Lifesteal")}
+        {getGraphBubbleInput("total_damage_taken", "Total Damage Taken")}
+        {getGraphBubbleInput("physical_damage_taken", "Physical Damage Taken")}
+        {getGraphBubbleInput("magic_damage_taken", "Magic Damage Taken")}
+        {getGraphBubbleInput("true_damage_taken", "True Damage Taken")}
       </div>
     </div>
   );
