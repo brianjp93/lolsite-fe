@@ -326,6 +326,7 @@ export function ChampionTimelinesInner({
         {getGraphBubbleInput("attack_damage", "Attack Damage")}
         {getGraphBubbleInput("attack_speed", "Attack Speed")}
         {getGraphBubbleInput("health", "Health")}
+        {getGraphBubbleInput("health_max", "Max Health")}
         {getGraphBubbleInput("lifesteal", "Lifesteal")}
         {getGraphBubbleInput("total_damage_taken", "Total Damage Taken")}
         {getGraphBubbleInput("physical_damage_taken", "Physical Damage Taken")}
