@@ -186,7 +186,7 @@ export function stripHtmlFull(html: string) {
 
 export function ErrorField({ message }: { message?: string }) {
   if (!message) return null;
-  return <div className="text-sm font-bold text-red-800">{message}</div>;
+  return <div className="text-sm font-bold text-red-600 my-1">{message}</div>;
 }
 
 export function mediaUrl(filePath: string) {

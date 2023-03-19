@@ -8,3 +8,6 @@ export function profileRoute({
   return `/${region}/${name}/`;
 }
 
+export function signUpRoute() {
+  return '/signup/'
+}

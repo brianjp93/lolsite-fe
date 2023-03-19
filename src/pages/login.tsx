@@ -7,13 +7,15 @@ import { ErrorField } from "@/components/utils";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import {signUpRoute} from "@/routes";
 
 export function loginPath() {
   return "/login";
 }
 
 export default function Login() {
-  return <Skeleton>{<LoginInner />}</Skeleton>;
+  return <Skeleton><LoginInner /></Skeleton>;
 }
 
 const LoginSchema = z.object({
@@ -48,8 +50,8 @@ function LoginInner() {
     login.mutate({ email, password });
   };
   return (
-    <div className="mx-auto max-w-prose">
-      <h1>Login</h1>
+    <div className="mx-auto max-w-prose mt-11">
+      <div className="text-xl font-bold underline w-full mb-3">Login</div>
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
         <label>
           <div>email</div>
@@ -65,6 +67,13 @@ function LoginInner() {
           Login
         </button>
       </form>
+
+      <div className="flex mt-3">
+        <div className="text-lg my-auto">
+          No account?
+        </div>
+        <Link className="btn btn-link ml-2 inline" href={signUpRoute()}>Sign Up</Link>
+      </div>
     </div>
   );
 }

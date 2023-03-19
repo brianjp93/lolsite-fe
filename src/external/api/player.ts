@@ -61,14 +61,15 @@ async function getPositions(data: any) {
   return unwrap(t.array(Position).decode(response.data.data))
 }
 
-function signUp(data: any) {
+function signUp({email, password}: {email: string, password: string}) {
+  const data = {email, password}
   const url = `${base}/sign-up/`;
   return axios.post(url, data);
 }
 
-function verify(data: any) {
+function verify(code: string) {
   const url = `${base}/verify/`;
-  return axios.post(url, data);
+  return axios.post(url, {code});
 }
 
 function getChampionsOverview(data: any) {
