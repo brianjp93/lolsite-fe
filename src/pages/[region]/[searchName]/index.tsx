@@ -48,6 +48,10 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
   );
   const limit = 10;
 
+  function resetPage() {
+    setPage(1)
+  }
+
   const start = limit * page - limit;
   const summonerQuery = useSummoner({ region, name: searchName });
   const summoner = summonerQuery.data;
@@ -164,7 +168,12 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
             />
           </svg>
         </button>
-        <div className="mx-2">{page}</div>
+        <div className="mx-2 my-auto">{page}</div>
+        {page !== 1 &&
+          <div>
+            <button onClick={resetPage} className="btn btn-link">reset</button>
+          </div>
+        }
         {matchQuery.isFetching && <Orbit size={25} />}
       </div>
     );
