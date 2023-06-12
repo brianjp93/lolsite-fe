@@ -194,6 +194,8 @@ export const Stats = t.type({
   total_minions_killed: t.number,
   total_time_crowd_control_dealt: t.number,
   total_units_healed: t.number,
+  total_ally_jungle_minions_killed: t.number,
+  total_enemy_jungle_minions_killed: t.number,
   triple_kills: t.number,
   true_damage_dealt: t.number,
   true_damage_dealt_to_champions: t.number,
