@@ -28,8 +28,9 @@ import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard
 import Head from "next/head";
 import type { GetServerSidePropsContext } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
+import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 
-export default function Summoner({ meta }: { meta: MetaHead|null }) {
+export default function Summoner({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
   const { region, searchName } = router.query as {
     region: string;
@@ -49,7 +50,7 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
   const limit = 10;
 
   function resetPage() {
-    setPage(1)
+    setPage(1);
   }
 
   const start = limit * page - limit;
@@ -169,11 +170,13 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
           </svg>
         </button>
         <div className="mx-2 my-auto">{page}</div>
-        {page !== 1 &&
+        {page !== 1 && (
           <div>
-            <button onClick={resetPage} className="btn btn-link">reset</button>
+            <button onClick={resetPage} className="btn btn-link">
+              reset
+            </button>
           </div>
-        }
+        )}
         {matchQuery.isFetching && <Orbit size={25} />}
       </div>
     );
@@ -183,7 +186,7 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
     <Skeleton topPad={0}>
       <Head>
         <title>{searchName.trim()} | hardstuck.club</title>
-        {meta &&
+        {meta && (
           <>
             <meta property="og:type" content={meta.type} />
             <meta property="og:url" content={meta.url} />
@@ -191,7 +194,7 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
             <meta property="og:description" content={meta.description} />
             <meta property="og:image" content={meta.image} />
           </>
-        }
+        )}
       </Head>
       <div style={{ minHeight: 1000 }}>
         {summoner && (
@@ -236,17 +239,30 @@ export default function Summoner({ meta }: { meta: MetaHead|null }) {
                     <Orbit size={200} className="m-auto" />
                   </div>
                 )}
-                {!matchQuery.isLoading &&
-                  summoner &&
-                  matches.map((match: BasicMatchType, key: number) => {
-                    return (
-                      <MatchCard
-                        key={`${key}-${match._id}`}
-                        match={match}
-                        summoner={summoner}
-                      />
-                    );
-                  })}
+                {!matchQuery.isLoading && summoner && (
+                  <div className="flex">
+                    <div>
+                      {matches.map((match: BasicMatchType, key: number) => {
+                        return (
+                          <MatchCard
+                            key={`${key}-${match._id}`}
+                            match={match}
+                            summoner={summoner}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div>
+                      <div className="ml-2 hidden rounded-md bg-zinc-800 md:block">
+                        <RecentlyPlayedWith
+                          summoner={summoner}
+                          matches={matches}
+                          region={region}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {pagination()}
               </div>
             </div>

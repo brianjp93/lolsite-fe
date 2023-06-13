@@ -72,7 +72,7 @@ export class RecentlyPlayedWith extends Component {
                     <td style={td_style}>
                       <Link
                         target="_blank"
-                        to={`/${this.props.region}/${data.summoner_name}/`}
+                        href={`/${this.props.region}/${data.summoner_name}/`}
                       >
                         {data.summoner_name}
                       </Link>
@@ -89,7 +89,6 @@ export class RecentlyPlayedWith extends Component {
   }
 }
 RecentlyPlayedWith.propTypes = {
-  store: PropTypes.object,
   summoner: PropTypes.object,
   matches: PropTypes.array,
   region: PropTypes.string,
