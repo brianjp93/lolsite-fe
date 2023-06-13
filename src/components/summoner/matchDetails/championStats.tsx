@@ -216,6 +216,8 @@ export function StatOverview({
 
           {getBarGraphStat("Total CS", "Total CS", "cs")}
           {getBarGraphStat("CS / Min", "CS Per Minute", "cspm")}
+          {getBarGraphStat("Ally JG CS", "Ally Jungle Minions Killed", "total_ally_jungle_minions_killed")}
+          {getBarGraphStat("Enemy JG CS", "Enemy Jungle Minions Killed", "total_enemy_jungle_minions_killed")}
         </div>
 
         <div style={{ marginBottom: 80 }}></div>
