@@ -1,11 +1,11 @@
-import { useState, useMemo, useCallback, type CSSProperties } from "react";
+import { useState, useMemo, useCallback} from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import numeral from "numeral";
 import { useChampions } from "@/hooks";
-import type { FullParticipantType, BasicMatchType } from "@/external/types";
+import type { FullParticipantType } from "@/external/types";
 import Image from "next/image";
 import { mediaUrl } from "@/components/utils";
-import { AppendParticipant } from "../rankParticipants";
+import type { AppendParticipant } from "../rankParticipants";
 
 const CONVERT = {
   total_damage_dealt_to_champions: "total",
