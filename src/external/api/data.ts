@@ -8,7 +8,7 @@ import {
 import { Queue } from "../iotypes/data";
 import * as t from "io-ts";
 import { env } from "@/env/client.mjs";
-import {z} from "zod";
+import { z } from "zod";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/data`;
@@ -16,16 +16,24 @@ const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/data`;
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-
 async function getQueues() {
   const url = `${base}/queues/`;
-  const response = (await axios.get(url));
-  return z.array(Queue).parse(response.data)
+  const response = await axios.get(url);
+  return z.array(Queue).parse(response.data);
 }
 
 function getItem(data: any) {
   const url = `${base}/item/`;
   return axios.post(url, data);
+}
+
+function getSimpleItem(
+  _id: number,
+  major: number | string,
+  minor: number | string
+) {
+  const url = `${base}/item/${_id}/${major}/${minor}/`;
+  return axios.get(url);
 }
 
 function items(data: any) {
@@ -76,6 +84,7 @@ async function getMediaUrl() {
 
 const exports = {
   getItem,
+  getSimpleItem,
   getRunes,
   items,
   getCurrentSeason,

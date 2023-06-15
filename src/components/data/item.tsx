@@ -1,4 +1,4 @@
-import {useItem} from '@/hooks'
+import {useSimpleItem} from '@/hooks'
 import {useState} from 'react'
 import {Popover} from 'react-tiny-popover'
 
@@ -23,7 +23,7 @@ export function Item(props: any) {
 
 export function ItemPopover({major, minor, item_id, style, children}: React.PropsWithChildren<any>) {
   const [isOpen, setIsOpen] = useState(false)
-  const query = useItem({id: item_id, major, minor})
+  const query = useSimpleItem({id: item_id, major, minor})
   const item = query.data
 
   const toggle = () => setIsOpen(x => !x)

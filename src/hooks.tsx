@@ -73,6 +73,30 @@ export function useItem({
   );
 }
 
+
+export function useSimpleItem({
+  id,
+  major,
+  minor,
+}: {
+  id: number;
+  major: number | string;
+  minor: number | string;
+}) {
+  return useQuery(
+    ["item", id, major, minor],
+    () =>
+      api.data
+        .getSimpleItem(id, major, minor)
+        .then((response) => response.data),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 10,
+    }
+  );
+}
+
 export function useChampions(): Record<number, ChampionType> {
   const championQuery = useQuery(
     ["champions"],
