@@ -26,7 +26,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
 import Head from "next/head";
-import type { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext, NextPageContext } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 
@@ -344,7 +344,7 @@ function MatchFilter({
   );
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+Summoner.getInitialProps = async (context: NextPageContext) => {
   const { region, searchName } = context.query as {
     region: string;
     searchName: string;
