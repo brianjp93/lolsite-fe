@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactDOMServer from "react-dom/server";
 import numeral from "numeral";
 import api from "@/external/api/api";
-import { useBasicChampions } from "@/hooks";
+import { useBasicChampions, useMatch, useSimpleItem } from "@/hooks";
 import type {
   FrameType,
   FullParticipantType,
@@ -20,6 +20,7 @@ import type {
 } from "@/external/types";
 import { getMyPart, mediaUrl } from "@/components/utils";
 import Image from "next/image";
+import {ItemPopover} from "@/components/data/item";
 
 type EventWithCount = (
   | ItemPurchasedEventType
@@ -38,7 +39,7 @@ function BuildOrder(props: {
   expanded_width: number;
   participants: FullParticipantType[];
   summoner: SummonerType;
-  match_id: number;
+  match_id: string;
 }) {
   const my_part = getMyPart(props.participants, props.summoner.puuid);
   const [participant_selection, setParticipantSelection] = useState(
@@ -46,7 +47,7 @@ function BuildOrder(props: {
   );
   const [purchase_history, setPurchaseHistory] = useState<PurchaseHistory>({});
   const [skills, setSkillsHistory] = useState<any>({});
-  const [items, setItems] = useState<any>({});
+  const match = useMatch(props.match_id.toString()).data;
 
   // build or skill
   const [display_page, setDisplayPage] = useState("build");
@@ -209,38 +210,6 @@ function BuildOrder(props: {
     }
   }, [props.timeline]);
 
-  // GET ITEMS
-  useEffect(() => {
-    const item_set = new Set();
-    if (!participant_selection) {
-      return
-    }
-    const item = purchase_history[participant_selection]
-    for (const i in item) {
-      const index = parseInt(i)
-      const group = item[index] || [];
-      for (const event of group) {
-        if (
-          event._type !== "ITEM_UNDO" &&
-          items[event?.item_id] === undefined &&
-          typeof event?.item_id === "number"
-        ) {
-          item_set.add(event.item_id);
-        }
-      }
-    }
-    const item_list = [...item_set];
-    if (item_list.length > 0) {
-      api.data.getItem({ item_list: item_list }).then((response) => {
-        const new_items: any = { ...items };
-        for (const item of response.data.data) {
-          new_items[item._id] = item;
-        }
-        setItems(new_items);
-      });
-    }
-  }, [participant_selection, purchase_history, items]);
-
   let count = 0;
   let lines = 1;
   return (
@@ -321,68 +290,12 @@ function BuildOrder(props: {
                   )}
                   <div>
                     {Object.values(group).map((event, sub_key) => {
-                      if (
-                        event._type !== "ITEM_UNDO" &&
-                        items[event.item_id] !== undefined
-                      ) {
-                        let image_style = {};
-                        let action = "purchased";
-                        if (event._type === "ITEM_SOLD") {
-                          action = "sold";
-                          image_style = {
-                            ...image_style,
-                            opacity: 0.3,
-                            borderWidth: 3,
-                            borderStyle: "solid",
-                            borderColor: "darkred",
-                          };
-                        }
+                      if (event._type !== "ITEM_UNDO") {
                         count++;
-                        const item_data = items[event.item_id];
-                        const total_seconds = event.timestamp / 1000;
-                        const minutes = Math.floor(total_seconds / 60);
-                        const seconds = Math.floor(total_seconds % 60);
                         return (
                           <div key={sub_key} className="inline-block">
                             <div className="relative inline-block">
-                              <Image
-                                data-html
-                                data-tip={ReactDOMServer.renderToString(
-                                  <>
-                                    <h4
-                                      style={{ marginBottom: 0, marginTop: 0 }}
-                                    >
-                                      {item_data.name}
-                                    </h4>
-
-                                    <div style={{ marginBottom: 15 }}>
-                                      {action} at {minutes}:
-                                      {numeral(seconds).format("00")}.
-                                    </div>
-
-                                    <div
-                                      className="item-description-tt"
-                                      style={{
-                                        maxWidth: 500,
-                                        wordBreak: "normal",
-                                        whiteSpace: "normal",
-                                        marginBottom: 0,
-                                      }}
-                                      dangerouslySetInnerHTML={{
-                                        __html: item_data.description,
-                                      }}
-                                    ></div>
-                                  </>
-                                )}
-                                style={{
-                                  borderRadius: 5,
-                                  ...image_style,
-                                }}
-                                height={30}
-                                width={30}
-                                src={mediaUrl(item_data.image.file_30)}
-                                alt=""
-                              />
+                              <ItemImage major={match?.major} minor={match?.minor} item_id={event.item_id} event_type={event._type}/>
                               {(event.count || 1) > 1 && (
                                 <div
                                   style={{
@@ -446,6 +359,35 @@ function BuildOrder(props: {
         )}
     </div>
   );
+}
+
+function ItemImage({major, minor, item_id, event_type}: {major: number, minor: number, item_id: number, event_type: string}) {
+  const item = useSimpleItem({id: item_id, major, minor}).data
+  let image_style = {};
+  if (event_type === "ITEM_SOLD") {
+    image_style = {
+      ...image_style,
+      opacity: 0.3,
+      borderWidth: 3,
+      borderStyle: "solid",
+      borderColor: "darkred",
+    };
+  }
+  if (!item) return null
+  return (
+    <ItemPopover major={major} minor={minor} item_id={item_id} >
+      <Image
+        style={{
+          borderRadius: 5,
+          ...image_style,
+        }}
+        height={30}
+        width={30}
+        src={mediaUrl(item.image.file_30)}
+        alt=""
+      />
+    </ItemPopover>
+  )
 }
 
 function ChampionImage(props: {

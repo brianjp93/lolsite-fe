@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Skeleton from "@/components/general/skeleton";
 import {
   useBans,
@@ -138,8 +139,8 @@ function InnerMatch({
   const team100Bans = bans.filter((x) => x.team === 100);
   const team200Bans = bans.filter((x) => x.team === 200);
   const queues = useQueues().data || {};
-  const minutes = Math.round(match.game_duration / 60_000)
-  const seconds = (match.game_duration % 60_000) / 1000
+  const minutes = Math.round(match.game_duration / 60_000);
+  const seconds = (match.game_duration % 60_000) / 1000;
   return (
     <div>
       <div className="flex justify-center">
@@ -149,7 +150,9 @@ function InnerMatch({
       </div>
       <div className="flex justify-center">
         <div className="mr-2 font-bold">Duration:</div>
-        <div>{minutes}:{numeral(seconds).format('00')}</div>
+        <div>
+          {minutes}:{numeral(seconds).format("00")}
+        </div>
       </div>
       <div className="flex justify-center">
         <div className="mr-2 font-bold">Game Version:</div>
@@ -223,7 +226,7 @@ function InnerMatch({
             expanded_width={500}
             participants={participants}
             summoner={summoner}
-            match_id={match.id}
+            match_id={match._id}
           />
         </div>
         {mypart && (
@@ -287,7 +290,7 @@ function BanList({ bans }: { bans: BanType[] }) {
       {bans.map((ban, key) => {
         const url = mediaUrl(champions[ban.champion_id]?.image?.file_40);
         return (
-          <>
+          <Fragment key={`${ban.team}-${ban.pick_turn}`}>
             {!!url && (
               <Image
                 alt={champions[ban.champion_id]?.name || ""}
@@ -297,7 +300,7 @@ function BanList({ bans }: { bans: BanType[] }) {
                 width={40}
               />
             )}
-          </>
+          </Fragment>
         );
       })}
     </div>
