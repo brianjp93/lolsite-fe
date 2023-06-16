@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { BUILDINGS } from "@/utils/buildings";
-import { useChampions, useParticipants, useTimeline } from "@/hooks";
+import { useBasicChampions, useParticipants, useTimeline } from "@/hooks";
 import { useTimelineIndex } from "@/stores";
 
 import type {
@@ -84,7 +84,7 @@ export function MapEventsInner({
     Record<number, FullParticipantType>
   >({});
   const [players, setPlayers] = useState<any>([]);
-  const champions = useChampions();
+  const champions = useBasicChampions();
   const [outerTimelineIndex, setOuterTimelineIndex] = useTimelineIndex(
     match._id
   );
@@ -364,7 +364,7 @@ function EventBubble({
   pos: [number, number];
   part_dict: Record<number, FullParticipantType>;
 }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   const [isOpen, setIsOpen] = useState(false);
   const ev =
     buildingKillEvent ||

@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import numeral from "numeral";
 import { getMyPart, mediaUrl } from "@/components/utils";
-import { useChampions } from "@/hooks";
+import { useBasicChampions } from "@/hooks";
 import { useTimelineIndex } from "@/stores";
 
 import type {
@@ -46,7 +46,7 @@ function Timeline(props: {
   const [timeline, setTimeline] = useState<AugmentedFrameType[]>([]);
   const participants = props.participants;
   const match = props.match;
-  const champions = useChampions();
+  const champions = useBasicChampions();
 
   const [mypart, setMypart] = useState<AppendParticipant>();
   const big_events = timelineIndex !== null ? getBigEvents(timelineIndex) : [];

@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback} from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import numeral from "numeral";
-import { useChampions } from "@/hooks";
+import { useBasicChampions } from "@/hooks";
 import type { FullParticipantType } from "@/external/types";
 import Image from "next/image";
 import { mediaUrl } from "@/components/utils";
@@ -41,7 +41,7 @@ export function StatOverview({
   const [selected, setSelected] = useState<Set<keyof typeof CONVERT>>(
     new Set(["total_damage_dealt_to_champions"])
   );
-  const champions = useChampions();
+  const champions = useBasicChampions();
 
   const toggle = (value: keyof typeof CONVERT) => {
     const select = new Set(selected);

@@ -1,5 +1,5 @@
 import { mediaUrl } from "@/components/utils";
-import { useChampions } from "@/hooks";
+import { useBasicChampions } from "@/hooks";
 import clsx from "clsx";
 import Image from "next/image";
 import { useState } from "react";
@@ -97,7 +97,7 @@ export function ChampionSelection({
   onClick: (participantId: number) => void;
   className?: string;
 }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   return (
     <div className={className}>
       <div className="flex h-full flex-col justify-around">

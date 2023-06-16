@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactDOMServer from "react-dom/server";
 import numeral from "numeral";
 import api from "@/external/api/api";
-import { useChampions } from "@/hooks";
+import { useBasicChampions } from "@/hooks";
 import type {
   FrameType,
   FullParticipantType,
@@ -456,7 +456,7 @@ function ChampionImage(props: {
   padding_pixels: number;
   handleClick: () => void;
 }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   let image_style: any = {
     cursor: "pointer",
     width: 30,
@@ -533,7 +533,7 @@ function SkillLevelUp(props: {
   expanded_width: number;
   skills: any;
 }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
 
   const spellQuery = useQuery(
     ["spells", props.selected_participant.champion_id],

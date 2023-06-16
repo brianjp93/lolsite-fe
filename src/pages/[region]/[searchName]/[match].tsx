@@ -1,12 +1,12 @@
 import Skeleton from "@/components/general/skeleton";
 import {
   useBans,
-  useChampions,
   useMatch,
   useParticipants,
   useSummoner,
   useTimeline,
   useQueues,
+  useBasicChampions,
 } from "@/hooks";
 import { useRouter } from "next/router";
 import type { SimpleMatchType, SummonerType } from "@/external/types";
@@ -281,7 +281,7 @@ function TeamSide({
 }
 
 function BanList({ bans }: { bans: BanType[] }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   return (
     <div className="flex justify-around">
       {bans.map((ban, key) => {

@@ -1,18 +1,13 @@
-import {
-  useState,
-  useEffect,
-  type ReactNode,
-  type CSSProperties,
-  useRef,
-} from "react";
+import { useState, useEffect, useRef } from "react";
+import type { ReactNode, CSSProperties } from "react";
 import { Popover } from "react-tiny-popover";
 import numeral from "numeral";
 import { StatModTable } from "./statMod";
-import { useRunes, useChampions } from "@/hooks";
+import { useRunes, useBasicChampions } from "@/hooks";
 import type { FullParticipantType, RuneType } from "@/external/types";
+import type { AppendParticipant } from "../rankParticipants";
 
 import { RUNEDATA as RUNES } from "@/utils/constants";
-import { type AppendParticipant } from "../rankParticipants";
 import Image from "next/image";
 import { mediaUrl } from "@/components/utils";
 
@@ -32,7 +27,7 @@ export function RunePage({
   >();
   const version = `${match.major}.${match.minor}`;
   const runes = useRunes(version);
-  const champions = useChampions();
+  const champions = useBasicChampions();
 
   const getPerks = (part: FullParticipantType) => {
     const perks: { id: string; var1: string; var2: string; var3: string }[] =

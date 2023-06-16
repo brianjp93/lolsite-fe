@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import { useChampions } from "@/hooks";
+import { useBasicChampions } from "@/hooks";
 import numeral from "numeral";
 import type {
   SummonerType,
@@ -92,7 +92,7 @@ export function ChampionTimelinesInner({
     participants.map((item) => item._id)
   );
   const [graph_type, setGraphType] = useState<GraphType>("total_gold");
-  const champions = useChampions();
+  const champions = useBasicChampions();
   const [timelineIndex, setTimelineIndex] = useTimelineIndex(matchId);
 
   const image_width = 30;
@@ -347,7 +347,7 @@ function getParticipant(participants: AppendParticipant[], id: number) {
 }
 
 function ChampionImage(props: any) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   let image_style: any = {
     borderStyle: "solid",
     borderWidth: 2,

@@ -1,6 +1,6 @@
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
-import { useChampions, useQueues } from "@/hooks";
+import { useBasicChampions, useQueues } from "@/hooks";
 import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
 import clsx from "clsx";
 import Image from "next/image";
@@ -143,7 +143,7 @@ function TeamClump({
   team: BasicParticipantType[];
   part?: BasicParticipantType;
 }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   const { region } = useRouter().query as { region: string };
   return (
     <div className="w-32 md:w-44">
@@ -298,7 +298,7 @@ export function ChampionClump({
 }: {
   part: AppendParticipant | BasicParticipantType;
 }) {
-  const champions = useChampions();
+  const champions = useBasicChampions();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
   if (!champion) return null;
   if (!part) return null;
