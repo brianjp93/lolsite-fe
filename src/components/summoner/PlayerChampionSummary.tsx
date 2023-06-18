@@ -1,4 +1,4 @@
-import { useBasicChampions, usePlayerSummary, useQueues } from "@/hooks";
+import { useBasicChampions, usePlayerSummary } from "@/hooks";
 import type { PlayerChampionSummaryResponse } from "@/external/iotypes/player";
 import Orbit from "@/components/general/spinner";
 import Image from "next/image";
