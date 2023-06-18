@@ -13,7 +13,7 @@ import {
   Favorite,
 } from "../types";
 import { env } from "@/env/client.mjs";
-import {Position} from "../iotypes/player";
+import {PlayerChampionSummaryResponse, Position} from "../iotypes/player";
 import { z } from "zod";
 
 const version = "v1";
@@ -72,9 +72,13 @@ function verify(code: string) {
   return axios.post(url, {code});
 }
 
-function getChampionsOverview(data: any) {
+async function getChampionsOverview(data: any) {
   const url = `${base}/champions-overview/`;
-  return axios.post(url, data);
+  const response = await axios.get(url, {params: data});
+  return z.object({
+    count: z.number(),
+    data: z.array(PlayerChampionSummaryResponse)
+  }).parse(response.data)
 }
 
 async function summonerSearch(params: {

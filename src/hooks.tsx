@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
-import {
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   UseQueryOptions,
   QueryKey,
   QueryFunction,
   UseQueryResult,
-} from '@tanstack/react-query'
+} from "@tanstack/react-query";
 import api from "@/external/api/api";
 
 import type {
@@ -40,14 +37,14 @@ export function useDebounce<V>(value: V, delay: number) {
   return debouncedValue;
 }
 
-export const userKey = ['my-user']
+export const userKey = ["my-user"];
 export function useUser() {
   const userQuery = useQuery(userKey, api.player.getMyUser, {
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 10,
   });
-  return userQuery
+  return userQuery;
 }
 
 export function useItem({
@@ -72,7 +69,6 @@ export function useItem({
     }
   );
 }
-
 
 export function useSimpleItem({
   id,
@@ -349,8 +345,7 @@ export function usePositions({
     ["positions", summoner_id, region],
     () =>
       summoner_id
-        ? api.player
-            .getPositions({ summoner_id, region })
+        ? api.player.getPositions({ summoner_id, region })
         : undefined,
     { retry: false, refetchOnWindowFocus: false, enabled: !!summoner_id }
   );
@@ -359,7 +354,7 @@ export function usePositions({
 
 export function useNameChanges(summoner_id: number) {
   return useQuery(
-    ['name-change', summoner_id],
+    ["name-change", summoner_id],
     () => api.player.getNameChanges(summoner_id),
     {
       enabled: !!summoner_id,
@@ -367,38 +362,53 @@ export function useNameChanges(summoner_id: number) {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
     }
-  )
+  );
 }
 
-const banQueryKey = (match_id: string) => ['match-bans', match_id]
+const banQueryKey = (match_id: string) => ["match-bans", match_id];
 export function useBans(match_id: string) {
-  return useQuery(
-    banQueryKey(match_id),
-    () => api.match.bans(match_id),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 60,
-    }
-  )
+  return useQuery(banQueryKey(match_id), () => api.match.bans(match_id), {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60,
+  });
 }
 
-export function useFavorites({enabled=true}: {enabled?: boolean}) {
+export function useFavorites({ enabled = true }: { enabled?: boolean }) {
+  return useQuery(["favorites"], () => api.player.getFavorites(), {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60,
+    enabled,
+  });
+}
+
+export function usePlayerSummary({
+  puuid,
+  start = 0,
+  stop = 5,
+  order_by = '-count',
+}: {
+  puuid: string;
+  start?: number;
+  stop?: number;
+  order_by?: string;
+}) {
   return useQuery(
-    ['favorites'],
-    () => api.player.getFavorites(),
+    ["player-summary", puuid, start, stop],
+    () => api.player.getChampionsOverview({ puuid, start, stop, order_by }),
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 60,
-      enabled,
+      enabled: !!puuid,
     }
-  )
+  );
 }
 
 export function useConnectedSummoners() {
   return useQuery(
-    ['connected-summoners'],
+    ["connected-summoners"],
     () => api.player.getConnectedAccounts(),
     {
       retry: false,
@@ -406,5 +416,5 @@ export function useConnectedSummoners() {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 60,
     }
-  )
+  );
 }

@@ -26,9 +26,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
 import Head from "next/head";
-import type { GetServerSidePropsContext, NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
+import {PlayerChampionSummary} from "@/components/summoner/PlayerChampionSummary";
 
 export default function Summoner({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
@@ -224,6 +225,11 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
         {!isInitialQuery && matchQuery.isSuccess && summonerQuery.isSuccess && (
           <div className="flex">
             <div>
+              {summoner &&
+                <div className="my-2 w-full">
+                  <PlayerChampionSummary puuid={summoner.puuid} />
+                </div>
+              }
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
