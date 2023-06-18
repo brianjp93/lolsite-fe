@@ -197,7 +197,7 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
           </>
         )}
       </Head>
-      <div style={{ minHeight: 1000 }}>
+      <div style={{ minHeight: 1000 }} className="flex-col mx-auto">
         {summoner && (
           <ProfileCardInner
             summoner={summoner}
@@ -226,7 +226,7 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
           <div className="flex">
             <div>
               {summoner &&
-                <div className="my-2 w-full">
+                <div className="my-2 bg-zinc-800 rounded-md p-4 max-w-[950px] w-full">
                   <PlayerChampionSummary puuid={summoner.puuid} />
                 </div>
               }

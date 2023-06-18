@@ -386,17 +386,35 @@ export function useFavorites({ enabled = true }: { enabled?: boolean }) {
 export function usePlayerSummary({
   puuid,
   start = 0,
-  stop = 5,
-  order_by = '-count',
+  end = 5,
+  order_by = "-count",
+  start_datetime,
+  end_datetime,
+  season,
+  queue_in,
 }: {
   puuid: string;
   start?: number;
-  stop?: number;
+  end?: number;
   order_by?: string;
+  start_datetime?: Date;
+  end_datetime?: Date;
+  season?: number;
+  queue_in?: number[],
 }) {
   return useQuery(
-    ["player-summary", puuid, start, stop],
-    () => api.player.getChampionsOverview({ puuid, start, stop, order_by }),
+    ["player-summary", puuid, start, end, start_datetime, end_datetime, season, queue_in ? queue_in.join(','): queue_in],
+    () =>
+      api.player.getChampionsOverview({
+        puuid,
+        start,
+        end,
+        order_by,
+        start_datetime,
+        end_datetime,
+        season,
+        queue_in,
+      }),
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
