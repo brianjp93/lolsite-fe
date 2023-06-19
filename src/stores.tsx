@@ -1,4 +1,4 @@
-import {atomFamily, useRecoilState} from 'recoil';
+import {atom, atomFamily, useRecoilState} from 'recoil';
 
 const timelineIndex = atomFamily({
   key: 'TimelineIndex',
@@ -7,4 +7,10 @@ const timelineIndex = atomFamily({
 
 export const useTimelineIndex = (gameId: string) => {
   return useRecoilState(timelineIndex(gameId));
+}
+
+const pickTurnHover = atom<undefined|number>({key: 'pickTurnHover', default: undefined})
+
+export const usePickTurn = () => {
+  return useRecoilState(pickTurnHover)
 }

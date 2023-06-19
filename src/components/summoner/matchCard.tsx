@@ -2,6 +2,7 @@ import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
 import { useBasicChampions, useQueues } from "@/hooks";
 import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
+import {usePickTurn} from "@/stores";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -299,6 +300,7 @@ export function ChampionClump({
   part: AppendParticipant | BasicParticipantType;
 }) {
   const champions = useBasicChampions();
+  const [pickTurn, setPickTurn] = usePickTurn();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
   if (!champion) return null;
   if (!part) return null;
@@ -306,6 +308,7 @@ export function ChampionClump({
     <div className="flex">
       <div>
         <Image
+          onMouseOver={() => setPickTurn(part._id)}
           src={mediaUrl(champion.image.file_40)}
           height={40}
           width={40}

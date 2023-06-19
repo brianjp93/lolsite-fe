@@ -44,6 +44,7 @@ import type { GetServerSidePropsContext } from "next";
 import api from "@/external/api/api";
 import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
+import {usePickTurn} from "@/stores";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -285,6 +286,7 @@ function TeamSide({
 
 function BanList({ bans }: { bans: BanType[] }) {
   const champions = useBasicChampions();
+  const [pickTurn, setPickTurn] = usePickTurn();
   return (
     <div className="flex justify-around">
       {bans.map((ban, key) => {
@@ -293,6 +295,7 @@ function BanList({ bans }: { bans: BanType[] }) {
           <Fragment key={`${ban.team}-${ban.pick_turn}`}>
             {!!url && (
               <Image
+                onMouseOver={() => setPickTurn(ban.pick_turn)}
                 alt={champions[ban.champion_id]?.name || ""}
                 key={key}
                 src={url}
