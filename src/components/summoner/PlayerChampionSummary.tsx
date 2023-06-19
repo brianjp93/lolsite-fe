@@ -142,7 +142,7 @@ export function PlayerChampionSummary({ puuid }: { puuid: string }) {
           All
         </label>
       </div>
-      <div className="flex max-h-96 flex-wrap justify-around overflow-y-scroll mt-2">
+      <div className="flex max-h-96 flex-wrap justify-around overflow-y-scroll quiet-scroll mt-2">
         <PlayerChampionSummaryDisplay summaries={summaries.data} />
       </div>
       {!isShowAll && summaries.count > summaries.data.length && (
