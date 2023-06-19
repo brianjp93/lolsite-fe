@@ -98,18 +98,6 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
   const nameChangeQuery = useNameChanges(summoner?.id || 0);
   const nameChanges = nameChangeQuery.data || [];
 
-  const spectateQuery = useQuery(
-    ["spectate", region, summoner?._id],
-    () =>
-      api.match
-        .getSpectate({ region, summoner_id: summoner!._id })
-        .then((x) => x.data),
-    {
-      retry: false,
-      enabled: !!summoner?._id,
-    }
-  );
-
   const match_ids = matches.map((x) => x.id);
   const commentQuery = useQuery(
     ["comment_count", match_ids],

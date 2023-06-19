@@ -4,10 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import Modal from 'react-modal'
 import numeral from 'numeral'
-import { formatDatetimeTime } from '@/components/utils'
+import { formatDatetimeTime, mediaUrl } from '@/components/utils'
 import api from '@/external/api/api'
-
-const MODALSTYLE = {}
+import Image from 'next/image'
 
 export function Spectate({
   region,
@@ -85,29 +84,30 @@ export function Spectate({
     return (
       <div key={part.summonerId}>
         <hr />
-        <div>
-          <div style={{display: 'inline-block'}}>
-            <img style={{height: 40, borderRadius: 4}} src={champion.image?.file_40} alt="" />
-            <div>
-              <small style={{}}>
-                {summoner_id === part.summonerId && (
-                  <span style={{verticalAlign: 'top'}}>{part.summonerName}</span>
-                )}
-                {summoner_id !== part.summonerId && (
-                  <Link
-                    target="_blank"
-                    style={{verticalAlign: 'top'}}
-                    className="dark"
-                    href={`/${region}/${part.summonerName}/`}
-                  >
-                    {part.summonerName}
-                  </Link>
-                )}
-              </small>{' '}
-            </div>
+        <div className="flex h-24">
+          <Image
+            height={40}
+            width={40}
+            className="rounded-md max-h-[40px]"
+            src={mediaUrl(champion.image?.file_40)} alt="" />
+          <div className="ml-2">
+            <small>
+              {summoner_id === part.summonerId && (
+                <span className="align-top font-bold">{part.summonerName}</span>
+              )}
+              {summoner_id !== part.summonerId && (
+                <Link
+                  target="_blank"
+                  className="dark align-top"
+                  href={`/${region}/${part.summonerName}/`}
+                >
+                  {part.summonerName}
+                </Link>
+              )}
+            </small>{' '}
           </div>
           {pos !== null && (
-            <div style={{float: 'right', display: 'inline-block', textAlign: 'right'}}>
+            <div className="ml-auto text-right">
               <small className="dark pill">
                 {pos.tier} {pos.rank}
               </small>
@@ -149,14 +149,13 @@ export function Spectate({
             Match started at {formatDatetimeTime(spectateData.gameStartTime)} |{' '}
             <span style={{width: 50, display: 'inline-block'}} ref={matchtime}></span>
           </span>
-          <div style={{height: 10}}></div>
-          <div>
-            <div style={{width: 350, display: 'inline-block'}}>
+          <div className="flex mt-2">
+            <div style={{width: 350}}>
               {team100.map((part) => {
                 return participantLine(part)
               })}
             </div>
-            <div style={{width: 350, display: 'inline-block', paddingLeft: 15}}>
+            <div className="ml-2" style={{width: 350}}>
               {team200.map((part) => {
                 return participantLine(part)
               })}
@@ -190,14 +189,12 @@ export function SpectateModal({
   summoner_id: string
   children: ReactNode
 })  {
-  const modalStyle = {
-  }
   return (
     <div>
       <Modal
-        style={modalStyle}
         isOpen={isSpectateModalOpen}
         onRequestClose={() => setIsSpectateModalOpen(false)}
+        ariaHideApp={false}
       >
         <Spectate
           closeModal={() => setIsSpectateModalOpen(false)}

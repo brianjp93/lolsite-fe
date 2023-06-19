@@ -5,6 +5,7 @@ import {
   useFavorites,
   useNameChanges,
   usePositions,
+  useQueues,
   useSummoner,
   useUser,
 } from "@/hooks";
@@ -15,7 +16,8 @@ import { useState } from "react";
 import { QUEUE_CONVERT } from "@/utils/constants";
 import numeral from "numeral";
 import api from "@/external/api/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { SpectateModal } from "../spectate";
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -102,6 +104,21 @@ export function ProfileCardInner({
   nameChanges?: NameChangeType[];
 }) {
   const [isNameChangeOpen, setIsNameChangeOpen] = useState(false);
+  const [isSpectateModalOpen, setIsSpectateModalOpen] = useState(false);
+
+  const spectateQuery = useQuery(
+    ["spectate", summoner.region, summoner?._id],
+    () =>
+      api.match
+        .getSpectate({ region: summoner.region, summoner_id: summoner!._id })
+        .then((x) => x.data),
+    {
+      retry: false,
+      enabled: !!summoner?._id,
+    }
+  );
+  const spectate = spectateQuery.data;
+  const queues = useQueues().data || {};
 
   return (
     <div className="flex max-w-fit flex-col rounded bg-zinc-900 p-4 shadow-lg">
@@ -120,25 +137,42 @@ export function ProfileCardInner({
             </div>
           </div>
         </div>
-        <div
-          onClick={() => setIsNameChangeOpen((x) => !x)}
-          className="ml-2 mr-4 cursor-pointer font-bold underline"
-        >
-          <Popover
-            isOpen={isNameChangeOpen}
-            positions={["bottom"]}
-            containerStyle={{ zIndex: "11" }}
-            content={
-              <div>
-                <h1 className="underline">Old Names</h1>
-                {nameChanges.map((item, key) => {
-                  return <div key={key}>{item.old_name}</div>;
-                })}
+        <div className="ml-2 mr-4">
+          <div>
+            <Popover
+              isOpen={isNameChangeOpen}
+              positions={["bottom"]}
+              containerStyle={{ zIndex: "11" }}
+              content={
+                <div>
+                  <h1 className="underline">Old Names</h1>
+                  {nameChanges.map((item, key) => {
+                    return <div key={key}>{item.old_name}</div>;
+                  })}
+                </div>
+              }
+            >
+              <div
+                onClick={() => setIsNameChangeOpen((x) => !x)}
+                className="cursor-pointer font-bold underline"
+              >
+                {summoner.name}
               </div>
-            }
-          >
-            <div>{summoner.name}</div>
-          </Popover>
+            </Popover>
+            {spectate ? (
+              <SpectateModal
+                region={summoner.region}
+                summoner_id={summoner._id}
+                queueConvert={queues}
+                isSpectateModalOpen={isSpectateModalOpen}
+                setIsSpectateModalOpen={setIsSpectateModalOpen}
+              >
+                <div className="text-sm hover:cursor-pointer">Live Game</div>
+              </SpectateModal>
+            ) : (
+              <div className="text-sm">Not in game</div>
+            )}
+          </div>
         </div>
         <div className="ml-auto">
           <FavoriteButton summoner={summoner} />

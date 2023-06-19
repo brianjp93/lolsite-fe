@@ -96,4 +96,12 @@ select {
   @apply bg-zinc-900/90 p-8 rounded-md max-w-md;
 }
 
+.ReactModal__Content {
+  @apply !bg-zinc-800 !border-2 !border-zinc-900 !rounded-lg;
+}
+
+.ReactModal__Overlay {
+  @apply !bg-zinc-900/75;
+}
+
 @tailwind utilities;
