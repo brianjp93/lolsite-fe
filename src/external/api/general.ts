@@ -46,7 +46,6 @@ async function getMatchMetaData({
   try {
     const res = await fetch(url);
     const response = await res.json()
-    console.log(JSON.stringify(response))
     return MetaHead.parse(response);
   } catch (error) {
     console.log(error)
