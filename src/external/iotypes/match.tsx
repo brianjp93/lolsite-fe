@@ -68,6 +68,7 @@ export const BasicParticipant = t.type({
   summoner_2_image: t.string,
   champion_id: t.number,
   stats: BasicStats,
+  team_position: t.string,
 })
 export type BasicParticipantType = t.TypeOf<typeof BasicParticipant>
 
