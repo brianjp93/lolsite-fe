@@ -182,7 +182,7 @@ function MatchListSummary({
                 <div
                   title={`${x.kills} kills / ${x.deaths} deaths / ${x.assists} assists`}
                 >
-                  KDA: {kda}
+                  KDA: {numeral(kda).format("0.00")}
                 </div>
               </div>
             );
