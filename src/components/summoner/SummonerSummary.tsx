@@ -162,7 +162,7 @@ function MatchListSummary({
         <div className="ml-2 flex w-full justify-between">
           {champData.slice(0, 3).map((x) => {
             const ch = basicChamp[parseInt(x.champId)];
-            const kda = x.kills + x.assists / (x.deaths || 1);
+            const kda = (x.kills + x.assists) / (x.deaths || 1);
             return (
               <div key={x.champId} className="mx-2">
                 {ch && (
