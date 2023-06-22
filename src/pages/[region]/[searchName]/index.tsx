@@ -29,7 +29,10 @@ import Head from "next/head";
 import type { NextPageContext } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
-import {PlayerChampionSummary} from "@/components/summoner/PlayerChampionSummary";
+import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSummary";
+import {
+  MatchListSummary,
+} from "@/components/summoner/SummonerSummary";
 
 export default function Summoner({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
@@ -185,7 +188,7 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
           </>
         )}
       </Head>
-      <div style={{ minHeight: 1000 }} className="flex-col mx-auto">
+      <div style={{ minHeight: 1000 }} className="mx-auto flex-col">
         {summoner && (
           <ProfileCardInner
             summoner={summoner}
@@ -213,11 +216,13 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
         {!isInitialQuery && matchQuery.isSuccess && summonerQuery.isSuccess && (
           <div className="flex">
             <div>
-              {summoner &&
-                <div className="my-2 bg-zinc-800 rounded-md p-4 max-w-[950px] w-full">
-                  <PlayerChampionSummary puuid={summoner.puuid} />
-                </div>
-              }
+              {summoner && (
+                <>
+                  <div className="my-2 w-full max-w-[950px] rounded-md bg-zinc-800 p-4">
+                    <PlayerChampionSummary puuid={summoner.puuid} />
+                  </div>
+                </>
+              )}
               <div className="my-2 w-full">
                 <MatchFilter
                   onSubmit={(data) => {
@@ -236,6 +241,9 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
                 {!matchQuery.isLoading && summoner && (
                   <div className="flex">
                     <div>
+                      <div className="my-2 w-full">
+                        <MatchListSummary matches={matches} summoner={summoner} champCount={5} />
+                      </div>
                       {matches.map((match: BasicMatchType, key: number) => {
                         return (
                           <MatchCard
@@ -352,4 +360,4 @@ Summoner.getInitialProps = async (context: NextPageContext) => {
       meta,
     },
   };
-}
+};

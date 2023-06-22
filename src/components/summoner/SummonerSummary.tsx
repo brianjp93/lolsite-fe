@@ -108,17 +108,20 @@ function getChampionStats(matches: BasicMatchType[], puuid: string) {
       champs[part.champion_id]!.losses += 1;
     }
     champs[part.champion_id]!.kills += part.stats.kills;
-    champs[part.champion_id]!.deaths += part.stats.assists;
+    champs[part.champion_id]!.deaths += part.stats.deaths;
+    champs[part.champion_id]!.assists += part.stats.assists;
   }
   return { wins, losses, champs, roles };
 }
 
-function MatchListSummary({
+export function MatchListSummary({
   matches,
   summoner,
+  champCount = 3,
 }: {
   matches: BasicMatchType[];
   summoner: SummonerType;
+  champCount?: number;
 }) {
   const { wins, losses, champs, roles } = getChampionStats(
     matches,
@@ -137,7 +140,7 @@ function MatchListSummary({
   const basicChamp = useBasicChampions();
   return (
     <>
-      <div className="flex rounded-md border p-2">
+      <div className="flex rounded-md border border-zinc-800 bg-zinc-800/30 p-2">
         <div>
           <div className="mb-2 min-w-[120px]">
             <TwoPartBar leftAmount={wins} rightAmount={losses} />
@@ -159,8 +162,8 @@ function MatchListSummary({
           </div>
         </div>
 
-        <div className="ml-2 flex w-full justify-between">
-          {champData.slice(0, 3).map((x) => {
+        <div className="ml-2 flex w-full">
+          {champData.slice(0, champCount).map((x) => {
             const ch = basicChamp[parseInt(x.champId)];
             const kda = (x.kills + x.assists) / (x.deaths || 1);
             return (
@@ -176,8 +179,8 @@ function MatchListSummary({
                     <div className="ml-1 text-sm font-bold">{ch.name}</div>
                   </div>
                 )}
-                <div>
-                  {x.wins} / {x.losses}
+                <div className="my-1">
+                  <TwoPartBar leftAmount={x.wins} rightAmount={x.losses} />
                 </div>
                 <div
                   title={`${x.kills} kills / ${x.deaths} deaths / ${x.assists} assists`}
@@ -193,7 +196,7 @@ function MatchListSummary({
   );
 }
 
-function TwoPartBar({
+export function TwoPartBar({
   leftAmount,
   rightAmount,
 }: {
@@ -207,7 +210,7 @@ function TwoPartBar({
     <div className="flex h-4 w-full">
       <div
         style={{ width: `${leftP}%` }}
-        title={`${numeral(leftP).format("0.0")}%`}
+        title={`${numeral(leftP).format("0.0")}% (${leftAmount})`}
         className={clsx(
           "h-full rounded-l-md bg-gradient-to-r from-green-700/50 to-green-400/70",
           {
@@ -217,7 +220,7 @@ function TwoPartBar({
       ></div>
       <div
         style={{ width: `${rightP}%` }}
-        title={`${numeral(rightP).format("0.0")}%`}
+        title={`${numeral(rightP).format("0.0")}% (${rightAmount})`}
         className={clsx(
           "h-full rounded-r-md bg-gradient-to-r from-red-400/70 to-red-700/70",
           {
