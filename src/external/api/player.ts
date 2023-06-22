@@ -135,7 +135,7 @@ async function setFavoriteOrder(favorites: string[]) {
   return response.status
 }
 
-function generateCode(data: any) {
+function generateCode(data: {action: string, summoner_name?: string, region?: string}) {
   const url = `${base}/generate-code/`;
   return axios.post(url, data);
 }

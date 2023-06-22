@@ -66,6 +66,10 @@ export default function NavBar() {
               className="right-0 w-60 max-w-screen-sm"
             >
               <>
+                <div className="flex w-full">
+                  <Link className="w-full text-center" href="/account">My Account</Link>
+                </div>
+                <hr className="mb-3 mt-1" />
                 <FavoriteList
                   onClick={() => setIsDropdownOpen(false)}
                   favorites={favorites}
