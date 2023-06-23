@@ -70,6 +70,28 @@ export function useItem({
   );
 }
 
+export function useAllItems({
+  major,
+  minor,
+  patch,
+  map_id,
+}: {
+  major?: number;
+  minor?: number;
+  patch?: number;
+  map_id?: number;
+}) {
+  return useQuery(
+    ["all-items"],
+    () => api.data.items({ major, minor, patch, map_id }),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 10,
+    }
+  );
+}
+
 export function useSimpleItem({
   id,
   major,
@@ -400,10 +422,19 @@ export function usePlayerSummary({
   start_datetime?: Date;
   end_datetime?: Date;
   season?: number;
-  queue_in?: number[],
+  queue_in?: number[];
 }) {
   return useQuery(
-    ["player-summary", puuid, start, end, start_datetime, end_datetime, season, queue_in ? queue_in.join(','): queue_in],
+    [
+      "player-summary",
+      puuid,
+      start,
+      end,
+      start_datetime,
+      end_datetime,
+      season,
+      queue_in ? queue_in.join(",") : queue_in,
+    ],
     () =>
       api.player.getChampionsOverview({
         puuid,

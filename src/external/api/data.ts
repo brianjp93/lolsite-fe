@@ -5,7 +5,7 @@ import {
   BasicChampionWithImage,
   PaginatedResponse,
 } from "@/external/types";
-import { Queue } from "../iotypes/data";
+import { Item, Queue } from "../iotypes/data";
 import * as t from "io-ts";
 import { env } from "@/env/client.mjs";
 import { z } from "zod";
@@ -36,9 +36,27 @@ function getSimpleItem(
   return axios.get(url);
 }
 
-function items(data: any) {
+async function items({
+  major,
+  minor,
+  patch,
+  map_id,
+}: {
+  major?: number;
+  minor?: number;
+  patch?: number;
+  map_id?: number;
+}) {
   const url = `${base}/items/`;
-  return axios.post(url, data);
+  const r = await axios.get(url, { params: { major, minor, patch, map_id } });
+  return unwrap(
+    t
+      .type({
+        data: t.array(Item),
+        version: t.string,
+      })
+      .decode(r.data)
+  );
 }
 
 async function getRunes(data: any) {
