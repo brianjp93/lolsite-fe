@@ -3,9 +3,10 @@ import { profileRoute } from "@/routes";
 import Link from "next/link";
 import { Reorder, useDragControls } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useFavorites, useQueues, useSimpleSpectate, useSummoner } from "@/hooks";
+import { useFavorites, useQueues, useSimpleSpectate } from "@/hooks";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
+import numeral from "numeral";
 
 export function FavoriteList({
   favorites,
@@ -58,21 +59,7 @@ function FavoriteItem({
   onClick?: () => void;
 }) {
   const controls = useDragControls();
-  const summoner = useSummoner({region: fav.region, name: fav.name}).data
-  const spectate = useSimpleSpectate(summoner?._id || "", summoner?.region || "").data
-  const queues = useQueues().data;
-  let minutes = 0;
-  let seconds = 0;
-  let queue = "";
-  if (spectate && spectate !== 'not found') {
-    queue = queues?.[spectate?.gameQueueConfigId || -1]?.description || "";
-    spectate?.gameStartTime
-    const now = new Date().getTime();
-    const ms = now - spectate?.gameStartTime || 0;
-    const total_seconds = Math.round(ms / 1000);
-    minutes = Math.floor(total_seconds / 60);
-    seconds = total_seconds % 60;
-  }
+  const spectate = useSimpleSpectate(fav.summoner_id, fav.region).data
 
   return (
     <Reorder.Item
@@ -112,14 +99,30 @@ function FavoriteItem({
           key={`${fav.puuid}`}
         >
           <div className="mr-2 font-bold">{fav.region}</div>
-          {spectate && spectate !== 'not found' &&
-            <div className="flex h-full mr-1" title={`In game: ${queue} ${minutes}:${seconds}`}>
-              <div className="rounded-full bg-green-600/70 border-green-400/70 border-2 h-3 w-3 my-auto"/>
-            </div>
+          {spectate &&
+            <InGameDot queueId={spectate.gameQueueConfigId} startTime={spectate.gameStartTime} />
           }
           <div>{fav.name}</div>
         </Link>
       </div>
     </Reorder.Item>
   );
+}
+
+export function InGameDot({queueId, startTime}: {queueId: number, startTime: number}) {
+  const queues = useQueues().data
+  const queue = queues?.[queueId || -1]?.description || "";
+  const now = new Date().getTime();
+  const ms = now - startTime || 0;
+  const total_seconds = Math.round(ms / 1000);
+  const minutes = Math.floor(total_seconds / 60);
+  const seconds = total_seconds % 60;
+
+  return (
+    <>
+      <div className="flex h-full mr-1" title={`In game: ${queue} ${minutes}:${numeral(seconds).format("00")}`}>
+        <div className="rounded-full bg-green-700/70 border-green-300/80 border-2 h-4 w-4 my-auto"/>
+      </div>
+    </>
+  )
 }

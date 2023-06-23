@@ -98,6 +98,7 @@ export const Favorite = z.object({
   region: z.string(),
   sort_int: z.number(),
   puuid: z.string(),
+  summoner_id: z.string(),
 });
 export type Favorite = z.infer<typeof Favorite>;
 

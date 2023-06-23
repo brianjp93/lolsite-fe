@@ -8,6 +8,7 @@ import {
   useTimeline,
   useQueues,
   useBasicChampions,
+  useSimpleSpectate,
 } from "@/hooks";
 import { useRouter } from "next/router";
 import type { SimpleMatchType, SummonerType } from "@/external/types";
@@ -45,6 +46,7 @@ import api from "@/external/api/api";
 import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
 import {usePickTurn} from "@/stores";
+import {InGameDot} from "@/components/general/favoriteList";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -323,6 +325,8 @@ function ParticipantInfo({
   };
   const summoner = useSummoner({ region, name: searchName }).data;
   const name = part.summoner_name.split(/\s+/).join(" ");
+  const spectate = useSimpleSpectate(part.summoner_id, region).data
+
   return (
     <div
       className={clsx("flex rounded p-2", {
@@ -335,7 +339,14 @@ function ParticipantInfo({
         </div>
         <div className="flex">
           <div className="my-auto h-full">
-            <ChampionClump part={part} />
+            <div className="relative">
+              <ChampionClump part={part} />
+              {spectate &&
+                <div className="absolute -top-2 -left-2">
+                  <InGameDot queueId={spectate.gameQueueConfigId} startTime={spectate.gameStartTime} />
+                </div>
+              }
+            </div>
           </div>
           <div className="my-auto ml-2 h-full">
             <ItemClump

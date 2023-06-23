@@ -457,8 +457,14 @@ export function usePlayerSummary({
 
 export function useSimpleSpectate(summoner_id: string, region: string) {
   return useQuery(
-    ['simple-spectate', summoner_id, region],
-    () => api.match.checkForLiveGame({summoner_id, region}),
+    ["simple-spectate", summoner_id, region],
+    () =>
+      api.match.checkForLiveGame({ summoner_id, region }).then((response) => {
+        if (response === "not found") {
+          return null;
+        }
+        return response;
+      }),
     {
       refetchInterval: 1000 * 60,
       refetchOnMount: false,
@@ -466,7 +472,7 @@ export function useSimpleSpectate(summoner_id: string, region: string) {
       retry: false,
       enabled: !!(summoner_id && region),
     }
-  )
+  );
 }
 
 export function useConnectedSummoners() {
