@@ -328,6 +328,23 @@ export const SpectateParticipant = t.type({
 })
 export type SpectateParticipantType = t.TypeOf<typeof SpectateParticipant>
 
+export const SimpleSpectateParticipant = t.type({
+  "teamId": t.number,
+  "spell1Id": t.number,
+  "spell2Id": t.number,
+  "championId": t.number,
+  "profileIconId": t.number,
+  "summonerName": t.string,
+  "bot": t.boolean,
+  "summonerId": t.string,
+  "gameCustomizationObjects": t.array(t.unknown),
+  "perks": t.type({
+      "perkIds": t.array(t.number),
+      "perkStyle": t.number,
+      "perkSubStyle": t.number
+  }),
+})
+
 export const SpectateMatch = t.type({
   bannedChampions: t.array(BannedChampion),
   gameId: t.number,
@@ -344,6 +361,23 @@ export const SpectateMatch = t.type({
   platformId: t.string,
 })
 export type SpectateMatchType = t.TypeOf<typeof SpectateMatch>
+
+export const SimpleSpectate = t.type({
+  bannedChampions: t.array(BannedChampion),
+  gameId: t.number,
+  gameLength: t.number,
+  gameMode: t.string,
+  gameQueueConfigId: t.number,
+  gameStartTime: t.number,
+  gameType: t.string,
+  mapId: t.number,
+  observers: t.type({
+    encryptionKey: t.string,
+  }),
+  participants: t.array(SimpleSpectateParticipant),
+  platformId: t.string,
+})
+export type SimpleSpectate = t.TypeOf<typeof SimpleSpectate>;
 
 export const ParticipantFrame = t.type({
   participant_id: t.number,

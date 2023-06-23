@@ -3,7 +3,7 @@ import { profileRoute } from "@/routes";
 import Link from "next/link";
 import { Reorder, useDragControls } from "framer-motion";
 import { useState } from "react";
-import { useFavorites } from "@/hooks";
+import { useFavorites, useQueues, useSimpleSpectate, useSummoner } from "@/hooks";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 
@@ -54,6 +54,21 @@ function FavoriteItem({
   onClick?: () => void;
 }) {
   const controls = useDragControls();
+  const summoner = useSummoner({region: fav.region, name: fav.name}).data
+  const spectate = useSimpleSpectate(summoner?._id || "", summoner?.region || "").data
+  const queues = useQueues().data;
+  let minutes = 0;
+  let seconds = 0;
+  let queue = "";
+  if (spectate && spectate !== 'not found') {
+    queue = queues?.[spectate?.gameQueueConfigId || -1]?.description || "";
+    spectate?.gameStartTime
+    const now = new Date().getTime();
+    const ms = now - spectate?.gameStartTime || 0;
+    const total_seconds = Math.round(ms / 1000);
+    minutes = Math.floor(total_seconds / 60);
+    seconds = total_seconds % 60;
+  }
 
   return (
     <Reorder.Item
@@ -93,6 +108,11 @@ function FavoriteItem({
           key={`${fav.puuid}`}
         >
           <div className="mr-2 font-bold">{fav.region}</div>
+          {spectate && spectate !== 'not found' &&
+            <div className="flex h-full mr-1" title={`In game: ${queue} ${minutes}:${seconds}`}>
+              <div className="rounded-full bg-green-600/70 border-green-400/70 border-2 h-3 w-3 my-auto"/>
+            </div>
+          }
           <div>{fav.name}</div>
         </Link>
       </div>

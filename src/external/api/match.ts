@@ -11,7 +11,7 @@ import {
   PaginatedResponse,
 } from "../types";
 import * as t from "io-ts";
-import {SimpleMatch} from "../iotypes/match";
+import {SimpleMatch, SimpleSpectate} from "../iotypes/match";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
@@ -45,9 +45,11 @@ async function getSpectate(data: GetSpectateData) {
   return { data: unwrap(SpectateMatch.decode(response.data.data)) };
 }
 
-async function checkForLiveGame(data: any) {
+async function checkForLiveGame(data: {summoner_id: string, region: string}) {
   const url = `${base}/check-for-live-game/`;
-  return await axios.post(url, data);
+  const r =  await axios.get(url, {params: data});
+  return unwrap(t.union([SimpleSpectate, t.literal("not found")]).decode(r.data))
+  // return unwrap(SimpleSpectate.decode(r.data))
 }
 
 async function getMatch(match_id: string) {
