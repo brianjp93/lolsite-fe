@@ -70,10 +70,12 @@ export default function NavBar() {
                   <Link className="w-full text-center" href="/account">My Account</Link>
                 </div>
                 <hr className="mb-3 mt-1" />
-                <FavoriteList
-                  onClick={() => setIsDropdownOpen(false)}
-                  favorites={favorites}
-                />
+                <div className="max-h-[50vh] overflow-y-scroll quiet-scroll">
+                  <FavoriteList
+                    onClick={() => setIsDropdownOpen(false)}
+                    favorites={favorites}
+                  />
+                </div>
                 <div>
                   <LogoutButton className="w-full" />
                 </div>
