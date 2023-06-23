@@ -2,7 +2,7 @@ import type { Favorite } from "@/external/types";
 import { profileRoute } from "@/routes";
 import Link from "next/link";
 import { Reorder, useDragControls } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFavorites, useQueues, useSimpleSpectate, useSummoner } from "@/hooks";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
@@ -15,7 +15,11 @@ export function FavoriteList({
   onClick?: () => void;
 }) {
   const favoritesQuery = useFavorites({});
-  const [order, setOrder] = useState(favorites);
+  const [order, setOrder] = useState<Favorite[]>([]);
+
+  useEffect(() => {
+    setOrder(favorites)
+  }, [favorites])
 
   const mutation = useMutation(
     (puuidList: string[]) => api.player.setFavoriteOrder(puuidList),
