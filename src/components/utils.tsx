@@ -86,46 +86,6 @@ export function Item(id: number, image_url: string, match: BasicMatchType) {
   );
 }
 
-export function ParticipantItems({
-  part,
-  match,
-}: {
-  part: FullParticipantType;
-  match: BasicMatchType;
-}) {
-  return (
-    <div
-      style={{
-        display: "inline-block",
-        verticalAlign: "top",
-      }}
-    >
-      <div style={{ width: 100 }}>
-        <span>
-          {Item(part.stats?.item_0, part.stats?.item_0_image?.file_30, match)}
-        </span>
-        <span>
-          {Item(part.stats?.item_1, part.stats?.item_1_image?.file_30, match)}
-        </span>
-        <span>
-          {Item(part.stats?.item_2, part.stats?.item_2_image?.file_30, match)}
-        </span>
-      </div>
-      <div style={{ width: 100 }}>
-        <span>
-          {Item(part.stats?.item_3, part.stats?.item_3_image?.file_30, match)}
-        </span>
-        <span>
-          {Item(part.stats?.item_4, part.stats?.item_4_image?.file_30, match)}
-        </span>
-        <span>
-          {Item(part.stats?.item_5, part.stats?.item_5_image?.file_30, match)}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export function getMyPart<
   T extends FullParticipantType[] | BasicParticipantType[] | AppendParticipant[]
 >(participants: T, puuid: string): T[number] | undefined {

@@ -340,7 +340,7 @@ function ParticipantInfo({
         <div className="flex">
           <div className="my-auto h-full">
             <div className="relative">
-              <ChampionClump part={part} />
+              <ChampionClump part={part} major={match.major} minor={match.minor} />
               {spectate &&
                 <div className="absolute -top-2 -left-2">
                   <InGameDot queueId={spectate.gameQueueConfigId} startTime={spectate.gameStartTime} />

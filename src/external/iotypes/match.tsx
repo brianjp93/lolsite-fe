@@ -36,19 +36,12 @@ export const BasicStats = t.type({
   total_heal: t.number,
   time_ccing_others: t.number,
   item_0: optional(t.number),
-  item_0_image: optional(ItemImage),
   item_1: optional(t.number),
-  item_1_image: optional(ItemImage),
   item_2: optional(t.number),
-  item_2_image: optional(ItemImage),
   item_3: optional(t.number),
-  item_3_image: optional(ItemImage),
   item_4: optional(t.number),
-  item_4_image: optional(ItemImage),
   item_5: optional(t.number),
-  item_5_image: optional(ItemImage),
   item_6: optional(t.number),
-  item_6_image: optional(ItemImage),
   perk_0_image_url: t.string,
   perk_sub_style_image_url: t.string,
 })
@@ -74,17 +67,6 @@ export type BasicParticipantType = t.TypeOf<typeof BasicParticipant>
 
 export const Team = t.type({
   _id: t.number,
-  baron_kills: t.number,
-  dragon_kills: t.number,
-  first_baron: t.boolean,
-  first_blood: t.boolean,
-  first_dragon: t.boolean,
-  first_inhibitor: t.boolean,
-  first_rift_herald: t.boolean,
-  first_tower: t.boolean,
-  inhibitor_kills: t.number,
-  rift_herald_kills: t.number,
-  tower_kills: t.number,
   win: t.boolean,
 })
 export type TeamType = t.TypeOf<typeof Team>
@@ -210,13 +192,6 @@ export const Stats = t.type({
   detector_wards_placed: t.number,
   win: t.boolean,
 
-  item_0_image: optional(ItemImage),
-  item_1_image: optional(ItemImage),
-  item_2_image: optional(ItemImage),
-  item_3_image: optional(ItemImage),
-  item_4_image: optional(ItemImage),
-  item_5_image: optional(ItemImage),
-  item_6_image: optional(ItemImage),
   perk_0_image_url: t.string,
   perk_sub_style_image_url: t.string,
 
@@ -276,7 +251,6 @@ export const FullTeam = t.union([
   t.type({
     id: t.number,
     bans: t.array(Ban),
-    match: t.number,
   }),
 ])
 export type FullTeamType = t.TypeOf<typeof FullTeam>

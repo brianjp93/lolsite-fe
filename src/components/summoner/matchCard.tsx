@@ -1,6 +1,6 @@
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
-import { useBasicChampions, useQueues } from "@/hooks";
+import { useBasicChampions, useQueues, useSimpleItem } from "@/hooks";
 import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
 import {usePickTurn} from "@/stores";
 import clsx from "clsx";
@@ -17,7 +17,7 @@ import {
   mediaUrl,
   queueColor,
 } from "../utils";
-import { type AppendParticipant } from "./rankParticipants";
+import type { AppendParticipant } from "./rankParticipants";
 
 export default function MatchCard({
   match,
@@ -66,7 +66,7 @@ export default function MatchCard({
             </div>
             <div className="flex">
               <div className="my-auto h-full min-w-fit">
-                {part && <ChampionClump part={part} />}
+                {part && <ChampionClump part={part} major={match.major} minor={match.minor} />}
               </div>
               {part && (
                 <div className="my-auto ml-1 h-full min-w-fit">
@@ -247,12 +247,9 @@ export function ItemClump({
         const key = `item_${i}_image` as keyof typeof part.stats;
         const itemId: number =
           part.stats[`item_${i}` as keyof typeof part.stats];
-        part.stats.item_0;
-        const url = part.stats?.[key]?.file_30 || "";
         return (
           <ItemPart
             key={key}
-            url={url}
             itemId={itemId}
             major={version.major}
             minor={version.minor}
@@ -264,30 +261,29 @@ export function ItemClump({
 }
 
 export function ItemPart({
-  url,
   itemId,
   major,
   minor,
 }: {
-  url: string;
-  itemId: number;
+  itemId?: number;
   major: number;
   minor: number;
-}) {
+  }) {
+  const item = useSimpleItem({id: itemId!, major, minor}).data;
   return (
     <div>
-      {url && (
+      {item && (
         <ItemPopover major={major} minor={minor} item_id={itemId}>
           <Image
             className="m-[1px] rounded-md"
-            src={mediaUrl(url)}
+            src={mediaUrl(item.image.file_30)}
             alt="Item image"
             height={30}
             width={30}
           />
         </ItemPopover>
       )}
-      {!url && (
+      {!item && (
         <div className="m-[1px] h-[30px] w-[30px] rounded-md border border-white/30 bg-zinc-800/30"></div>
       )}
     </div>
@@ -296,12 +292,17 @@ export function ItemPart({
 
 export function ChampionClump({
   part,
+  major,
+  minor,
 }: {
   part: AppendParticipant | BasicParticipantType;
+  major: number;
+  minor: number;
 }) {
   const champions = useBasicChampions();
   const [pickTurn, setPickTurn] = usePickTurn();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
+  const item = useSimpleItem({id: part.stats.item_6, major, minor}).data
   if (!champion) return null;
   if (!part) return null;
   return (
@@ -342,9 +343,9 @@ export function ChampionClump({
           height={20}
           alt={`Spell image: ${part?.summoner_2_id}`}
         />
-        {part.stats.item_6_image && (
+        {item?.image?.file_30 && (
           <Image
-            src={mediaUrl(part.stats.item_6_image?.file_30)}
+            src={mediaUrl(item.image.file_30)}
             width={20}
             height={20}
             alt={""}
