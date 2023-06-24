@@ -274,18 +274,25 @@ export function MapEventsInner({
                   bottom: y,
                 }}
               >
-                <Image
-                  className="rounded-full"
-                  width={25}
-                  height={25}
-                  style={{
-                    border: `2px solid ${border_color}`,
-                  }}
-                  src={mediaUrl(
-                    champions[player.part.champion_id]?.image?.file_30
-                  )}
-                  alt="participant bubble"
-                />
+                {champions[player.part.champion_id]?.image?.file_30 ? (
+                  <Image
+                    className="rounded-full"
+                    width={25}
+                    height={25}
+                    style={{
+                      border: `2px solid ${border_color}`,
+                    }}
+                    src={mediaUrl(
+                      champions[player.part.champion_id]?.image?.file_30
+                    )}
+                    alt="participant bubble"
+                  />
+                ) : (
+                  <div
+                    className="h-[25px] w-[25px] rounded-full border-2"
+                    style={{ borderColor: border_color }}
+                  />
+                )}
               </div>
             );
           })}
@@ -398,7 +405,7 @@ function EventBubble({
   const img_style = {
     height: 35,
     borderRadius: 8,
-    display: 'inline-block'
+    display: "inline-block",
   };
 
   const div_style = {

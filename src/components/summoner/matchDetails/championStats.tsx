@@ -239,13 +239,16 @@ export function StatOverview({
               key={`${match._id}-${part._id}`}
               style={{ height: heights, width: 30 }}
             >
-              <Image
-                title={part.summoner_name}
-                width={20}
-                height={20}
-                src={mediaUrl(champions?.[part.champion_id]?.image.file_30)}
-                alt={champions?.[part.champion_id]?.name || "Champion Image"}
-              />
+              {champions?.[part.champion_id]?.image.file_30 ?
+                <Image
+                  title={part.summoner_name}
+                  width={20}
+                  height={20}
+                  src={mediaUrl(champions?.[part.champion_id]?.image.file_30)}
+                  alt={champions?.[part.champion_id]?.name || "Champion Image"}
+                /> :
+                <div className="w-[20px] h-[20px] border border-white"/>
+              }
             </div>
           );
         })}

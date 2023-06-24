@@ -89,7 +89,7 @@ export function RunePage({
               NA
             </div>
           )}
-          {champ?.image?.file_30 !== "" && (
+          {champ?.image?.file_30 && (
             <Image
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}

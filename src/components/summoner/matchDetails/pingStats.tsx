@@ -102,6 +102,9 @@ export function ChampionSelection({
     <div className={className}>
       <div className="flex h-full flex-col justify-around">
         {participants.map((part) => {
+          if (!champions[part.champion_id]?.image?.file_40) {
+            return null
+          }
           return (
             <div key={part._id}>
               <Image
