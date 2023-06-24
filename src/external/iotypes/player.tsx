@@ -53,22 +53,15 @@ export type PositionBinType = t.TypeOf<typeof PositionBin>;
 
 export const Summoner = t.type({
   has_match_overlap: t.number,
-  account_id: t.string,
-  created_date: t.string,
-  full_import_count: t.number,
   id: t.number,
-  last_summoner_page_import: optional(t.string),
   name: t.string,
-  pro: optional(t.number),
   profile_icon_id: t.number,
   profile_icon: t.string,
   puuid: t.string,
   ranked_import_count: t.number,
   region: t.string,
-  revision_date: t.number,
   simple_name: t.string,
   summoner_level: t.number,
-  user: optional(t.number),
   _id: t.string,
 });
 export type SummonerType = t.TypeOf<typeof Summoner>;
