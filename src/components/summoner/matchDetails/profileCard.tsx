@@ -115,6 +115,7 @@ export function ProfileCardInner({
     {
       retry: false,
       enabled: !!summoner?._id,
+      refetchInterval: 1000 * 60,
     }
   );
   const spectate = spectateQuery.data;
