@@ -101,7 +101,7 @@ select {
 }
 
 .ReactModal__Overlay {
-  @apply !bg-zinc-900/75;
+  @apply !bg-zinc-900/75 z-20;
 }
 
 @tailwind utilities;
