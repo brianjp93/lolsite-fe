@@ -176,7 +176,7 @@ export function MatchListSummary({
                       height={30}
                       alt={ch.name}
                     />
-                    <div className="ml-1 text-sm font-bold">{ch.name}</div>
+                    <div className="ml-1 text-xs font-bold">{ch.name}</div>
                   </div>
                 )}
                 <div className="my-1">
