@@ -220,6 +220,7 @@ export const FullParticipant = t.type({
   summoner_name: t.string,
   summoner_name_simplified: t.string,
   champion_id: t.number,
+  champ_experience: optional(t.number),
   summoner_1_id: t.number,
   summoner_1_casts: t.number,
   summoner_2_id: t.number,
