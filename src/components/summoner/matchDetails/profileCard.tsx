@@ -178,7 +178,7 @@ export function ProfileCardInner({
             </div>
             {summoner.has_match_overlap > 0 && (
               <div
-                title={`One of your connected accounts has ${summoner.has_match_overlap} overlapping games with this account.`}
+                title={`Your connected accounts have ${summoner.has_match_overlap} overlapping games with this account.`}
                 className="ml-2 mt-1"
               >
                 <div className="relative">
