@@ -109,7 +109,7 @@ export function Spectate({
                   isOpen={part.summonerId === isHover}
                   positions={["bottom", "top"]}
                   containerStyle={{
-                    zIndex: "11",
+                    zIndex: "21",
                     minWidth: "750px",
                     maxHeight: "400px",
                     overflowY: 'scroll',
