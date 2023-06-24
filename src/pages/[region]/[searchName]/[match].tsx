@@ -355,12 +355,6 @@ function ParticipantInfo({
             />
           </div>
         </div>
-        {part.champ_experience &&
-          <div className="text-xs flex">
-            <div>Champ XP:</div>
-            <div className="font-bold ml-2">{numeral(part.champ_experience).format("0,0")}</div>
-          </div>
-        }
       </div>
       <div className="my-auto ml-2 h-full">
         <StatClump part={part} match={match} />
