@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   useMatchList,
   useNameChanges,
@@ -14,7 +13,7 @@ import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
 import clsx from "clsx";
 import {
-  useQueryParam,
+  useQueryParams,
   NumberParam,
   withDefault,
   StringParam,
@@ -41,22 +40,18 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
   };
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
   const [prevSearchName, setPrevSearchName] = useState("");
-  const [page, setPage] = useQueryParam("page", withDefault(NumberParam, 1));
-  const [playedWith, setPlayedWith] = useQueryParam(
-    "playedWith",
-    withDefault(StringParam, "")
-  );
-  const [queue, setQueue] = useQueryParam(
-    "queue",
-    withDefault(NumberParam, undefined)
-  );
+  const [params, setParams] = useQueryParams({
+    page: withDefault(NumberParam, 1),
+    queue: withDefault(NumberParam, undefined),
+    playedWith: withDefault(StringParam, ""),
+  })
   const limit = 10;
 
   function resetPage() {
-    setPage(1);
+    setParams({...params, page: 1})
   }
 
-  const start = limit * page - limit;
+  const start = limit * params.page - limit;
   const summonerQuery = useSummoner({ region, name: searchName });
   const summoner = summonerQuery.data;
 
@@ -70,15 +65,15 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
     start,
     limit,
     sync: true,
-    queue,
-    playedWith,
+    queue: params.queue,
+    playedWith: params.playedWith,
     keepPreviousData: searchName === prevSearchName,
     onSuccess: () => {
       setLastRefresh(Date.now());
     },
     onError: () => {
-      if (page > 1) {
-        setPage(page - 1);
+      if (params.page > 1) {
+        setParams({...params, page: params.page - 1})
       }
     },
   });
@@ -110,28 +105,13 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
   const nameChangeQuery = useNameChanges(summoner?.id || 0);
   const nameChanges = nameChangeQuery.data || [];
 
-  const match_ids = matches.map((x) => x.id);
-  const commentQuery = useQuery(
-    ["comment_count", match_ids],
-    () =>
-      api.player
-        .getCommentCount({ match_ids: match_ids })
-        .then((response) => response.data.data),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      enabled: matches.length > 0,
-      staleTime: 1000 * 60 * 3,
-    }
-  );
-
   const pagination = () => {
     return (
       <div className="flex">
         <button
-          onClick={() => setPage((x) => Math.max(1, (x || 1) - 1))}
+          onClick={() => setParams((x) => {return {...x, page: Math.max(1, (x.page || 1) - 1)}})}
           className={clsx("btn btn-default", {
-            disabled: matchQuery.isFetching || page <= 1,
+            disabled: matchQuery.isFetching || params.page <= 1,
           })}
         >
           <svg
@@ -150,7 +130,7 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
           </svg>
         </button>
         <button
-          onClick={() => setPage((x) => (x || 1) + 1)}
+          onClick={() => setParams((x) => {return {...x, page: (x.page || 1) + 1}})}
           className={clsx("btn btn-default ml-2", {
             disabled: matchQuery.isFetching,
           })}
@@ -170,8 +150,8 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
             />
           </svg>
         </button>
-        <div className="mx-2 my-auto">{page}</div>
-        {page !== 1 && (
+        <div className="mx-2 my-auto">{params.page}</div>
+        {params.page !== 1 && (
           <div>
             <button onClick={resetPage} className="btn btn-link">
               reset
@@ -245,10 +225,9 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
               )}
               <div className="my-2 w-full">
                 <MatchFilter
-                  onSubmit={(data) => {
-                    setTimeout(() => setQueue(data.queue));
-                    setTimeout(() => setPlayedWith(data.playedWith));
-                  }}
+                onSubmit={(data) => {
+                  setParams({...params, queue: data.queue, playedWith: data.playedWith})
+                }}
                 />
               </div>
               <div>
