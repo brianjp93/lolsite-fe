@@ -30,7 +30,7 @@ export function RunePage({
   const champions = useBasicChampions();
 
   const getPerks = (part: FullParticipantType) => {
-    const perks: { id: string; var1: string; var2: string; var3: string }[] =
+    const perks: { id: number; var1: number; var2: number; var3: number }[] =
       [];
     if (!part && selectedPart) {
       part = selectedPart;
@@ -39,10 +39,10 @@ export function RunePage({
     }
     for (let i = 0; i <= 5; i++) {
       const perk = {
-        id: part.stats[`perk_${i}` as keyof typeof part.stats],
-        var1: part.stats[`perk_${i}_var_1` as keyof typeof part.stats],
-        var2: part.stats[`perk_${i}_var_2` as keyof typeof part.stats],
-        var3: part.stats[`perk_${i}_var_3` as keyof typeof part.stats],
+        id: part.stats[`perk_${i}` as keyof typeof part.stats] as number,
+        var1: part.stats[`perk_${i}_var_1` as keyof typeof part.stats] as number,
+        var2: part.stats[`perk_${i}_var_2` as keyof typeof part.stats] as number,
+        var3: part.stats[`perk_${i}_var_3` as keyof typeof part.stats] as number,
       };
       if (perk.id !== 0) {
         perks.push(perk);
@@ -140,7 +140,7 @@ export function RunePage({
         <div style={{ display: "inline-block" }}>
           {getPerks(selectedPart).map((perk) => {
             const rune = runes[perk.id as unknown as keyof typeof runes];
-            const rune_etc = RUNES.data[perk.id as keyof typeof RUNES.data];
+            const rune_etc = RUNES.data[perk.id.toString() as keyof typeof RUNES.data];
             if (rune && rune_etc && rune_etc.perkFormat) {
               return (
                 <div
@@ -191,7 +191,7 @@ export function RunePage({
                               {perk_format
                                 .replace(
                                   "{0}",
-                                  perk[`var${j + 1}` as keyof typeof perk]
+                                  perk[`var${j + 1}` as keyof typeof perk].toString()
                                 )
                                 .replace(
                                   "{1}",
@@ -201,7 +201,7 @@ export function RunePage({
                                 )
                                 .replace(
                                   "{2}",
-                                  perk[`var${j + 2}` as keyof typeof perk]
+                                  perk[`var${j + 2}` as keyof typeof perk].toString()
                                 )}
                             </div>
                           </div>
