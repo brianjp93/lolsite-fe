@@ -488,9 +488,9 @@ export function useConnectedSummoners() {
   );
 }
 
-export function useSuspiciousAccount(puuid: string, enabled=true) {
+export function useSuspiciousAccount(puuid: string, enabled = true) {
   return useQuery(
-    ['sus-account', puuid],
+    ["sus-account", puuid],
     () => api.player.isSuspicious(puuid),
     {
       retry: false,
@@ -499,5 +499,23 @@ export function useSuspiciousAccount(puuid: string, enabled=true) {
       staleTime: 1000 * 60 * 5,
       enabled: enabled,
     }
-  )
+  );
+}
+
+export function useSpectate(region: string, summoner_id: string, refetchInterval?: number, enabled?: boolean) {
+  return useQuery(
+    ["spectate", region, summoner_id],
+    () =>
+      api.match.getSpectate({ region, summoner_id }).then((x) => {
+        if (x === "not found") {
+          return null;
+        }
+        return x;
+      }),
+    {
+      retry: false,
+      refetchInterval,
+      enabled,
+    }
+  );
 }

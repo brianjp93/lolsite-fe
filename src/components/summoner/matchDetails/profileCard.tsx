@@ -6,6 +6,7 @@ import {
   useNameChanges,
   usePositions,
   useQueues,
+  useSpectate,
   useSummoner,
   useUser,
 } from "@/hooks";
@@ -107,17 +108,11 @@ export function ProfileCardInner({
   const [isNameChangeOpen, setIsNameChangeOpen] = useState(false);
   const [isSpectateModalOpen, setIsSpectateModalOpen] = useState(false);
 
-  const spectateQuery = useQuery(
-    ["spectate", summoner.region, summoner?._id],
-    () =>
-      api.match
-        .getSpectate({ region: summoner.region, summoner_id: summoner!._id })
-        .then((x) => x.data),
-    {
-      retry: false,
-      enabled: !!summoner?._id,
-      refetchInterval: 1000 * 60,
-    }
+  const spectateQuery = useSpectate(
+    summoner.region,
+    summoner?._id,
+    1000 * 60,
+    !!summoner?._id
   );
   const spectate = spectateQuery.data;
   const queues = useQueues().data || {};
@@ -183,7 +178,7 @@ export function ProfileCardInner({
               >
                 <div className="relative">
                   <UsersIcon className="my-auto w-6" />
-                  <div className="absolute -top-3 -right-4 bg-gray-600 rounded-sm px-1 text-xs">
+                  <div className="absolute -top-3 -right-4 rounded-sm bg-gray-600 px-1 text-xs">
                     {summoner.has_match_overlap}
                   </div>
                 </div>

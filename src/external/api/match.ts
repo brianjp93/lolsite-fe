@@ -44,7 +44,9 @@ async function getSpectate(data: GetSpectateData) {
   const response = await axios.get(url, {
     params: { region: data.region, summoner_id: data.summoner_id },
   });
-  return { data: unwrap(SpectateMatch.decode(response.data.data)) };
+  return unwrap(
+    t.union([SpectateMatch, t.literal("not found")]).decode(response.data)
+  );
 }
 
 async function checkForLiveGame(data: { summoner_id: string; region: string }) {
@@ -53,7 +55,6 @@ async function checkForLiveGame(data: { summoner_id: string; region: string }) {
   return unwrap(
     t.union([SimpleSpectate, t.literal("not found")]).decode(r.data)
   );
-  // return unwrap(SimpleSpectate.decode(r.data))
 }
 
 async function getMatch(match_id: string) {

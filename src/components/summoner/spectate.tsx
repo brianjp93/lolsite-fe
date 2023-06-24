@@ -5,10 +5,10 @@ import Link from "next/link";
 import Modal from "react-modal";
 import numeral from "numeral";
 import { formatDatetimeTime, mediaUrl } from "@/components/utils";
-import api from "@/external/api/api";
 import Image from "next/image";
 import { Popover } from "react-tiny-popover";
 import { SummonerSummary } from "./SummonerSummary";
+import {useSpectate} from "@/hooks";
 
 export function Spectate({
   region,
@@ -21,12 +21,8 @@ export function Spectate({
   queueConvert: any;
   closeModal: () => void;
 }) {
-  const spectateQuery = useQuery(
-    ["spectate", region, summoner_id],
-    () => api.match.getSpectate({ region, summoner_id }).then((x) => x.data),
-    { retry: false }
-  );
-  const spectateData = spectateQuery.isSuccess ? spectateQuery.data : undefined;
+  const spectateQuery = useSpectate(region, summoner_id);
+  const spectateData = spectateQuery.data || undefined;
   const [isHover, setIsHover] = useState<string | undefined>(undefined);
 
   const team100 = (spectateQuery.data?.participants || []).filter(
