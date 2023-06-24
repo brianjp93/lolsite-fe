@@ -58,7 +58,6 @@ export const Summoner = t.type({
   profile_icon_id: t.number,
   profile_icon: t.string,
   puuid: t.string,
-  ranked_import_count: t.number,
   region: t.string,
   simple_name: t.string,
   summoner_level: t.number,
