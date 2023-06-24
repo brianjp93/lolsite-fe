@@ -17,9 +17,10 @@ import { useState } from "react";
 import { QUEUE_CONVERT } from "@/utils/constants";
 import numeral from "numeral";
 import api from "@/external/api/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { SpectateModal } from "../spectate";
 import { UsersIcon } from "@/components/icons";
+import { InGameDot } from "@/components/general/favoriteList";
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -165,7 +166,15 @@ export function ProfileCardInner({
                   isSpectateModalOpen={isSpectateModalOpen}
                   setIsSpectateModalOpen={setIsSpectateModalOpen}
                 >
-                  <div className="text-sm hover:cursor-pointer">Live Game</div>
+                  <div className="flex text-sm hover:cursor-pointer">
+                    <div>
+                      <InGameDot
+                        queueId={spectate.gameQueueConfigId}
+                        startTime={spectate.gameStartTime}
+                      />
+                    </div>
+                    Live Game
+                  </div>
                 </SpectateModal>
               ) : (
                 <div className="text-sm">Not in game</div>
