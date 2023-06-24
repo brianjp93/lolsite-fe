@@ -11,7 +11,7 @@ import {
   PaginatedResponse,
 } from "../types";
 import * as t from "io-ts";
-import {SimpleMatch, SimpleSpectate} from "../iotypes/match";
+import { SimpleMatch, SimpleSpectate } from "../iotypes/match";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
@@ -41,21 +41,25 @@ interface GetSpectateData extends AxiosRequestConfig {
 }
 async function getSpectate(data: GetSpectateData) {
   const url = `${base}/get-spectate/`;
-  const response = await axios.post(url, data);
+  const response = await axios.get(url, {
+    params: { region: data.region, summoner_id: data.summoner_id },
+  });
   return { data: unwrap(SpectateMatch.decode(response.data.data)) };
 }
 
-async function checkForLiveGame(data: {summoner_id: string, region: string}) {
+async function checkForLiveGame(data: { summoner_id: string; region: string }) {
   const url = `${base}/check-for-live-game/`;
-  const r =  await axios.get(url, {params: data});
-  return unwrap(t.union([SimpleSpectate, t.literal("not found")]).decode(r.data))
+  const r = await axios.get(url, { params: data });
+  return unwrap(
+    t.union([SimpleSpectate, t.literal("not found")]).decode(r.data)
+  );
   // return unwrap(SimpleSpectate.decode(r.data))
 }
 
 async function getMatch(match_id: string) {
   const url = `${base}/${match_id}/`;
   const response = await axios.get(url);
-  return unwrap(SimpleMatch.decode(response.data))
+  return unwrap(SimpleMatch.decode(response.data));
 }
 
 async function getMatchesBySummonerName({
