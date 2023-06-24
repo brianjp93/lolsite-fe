@@ -13,7 +13,7 @@ import {
   Favorite,
 } from "../types";
 import { env } from "@/env/client.mjs";
-import {PlayerChampionSummaryResponse, Position} from "../iotypes/player";
+import {PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
 import { z } from "zod";
 
 const version = "v1";
@@ -261,6 +261,12 @@ async function logout() {
   return response.status
 }
 
+async function isSuspicious(puuid: string) {
+  const url = `${base}/is_suspicious/`
+  const response = await axios.get(url, {params: {puuid}});
+  return SuspiciousPlayer.parse(response.data)
+}
+
 const exports = {
   getSummoner,
   getSummonerByName,
@@ -297,5 +303,6 @@ const exports = {
   getNameChanges,
   logout,
   setFavoriteOrder,
+  isSuspicious,
 };
 export default exports;

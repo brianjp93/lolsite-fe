@@ -18,6 +18,7 @@ import numeral from "numeral";
 import api from "@/external/api/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { SpectateModal } from "../spectate";
+import { UsersIcon } from "@/components/icons";
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -139,39 +140,54 @@ export function ProfileCardInner({
           </div>
         </div>
         <div className="ml-2 mr-4">
-          <div>
-            <Popover
-              isOpen={isNameChangeOpen}
-              positions={["bottom"]}
-              containerStyle={{ zIndex: "11" }}
-              content={
-                <div>
-                  <h1 className="underline">Old Names</h1>
-                  {nameChanges.map((item, key) => {
-                    return <div key={key}>{item.old_name}</div>;
-                  })}
+          <div className="flex">
+            <div>
+              <Popover
+                isOpen={isNameChangeOpen}
+                positions={["bottom"]}
+                containerStyle={{ zIndex: "11" }}
+                content={
+                  <div>
+                    <h1 className="underline">Old Names</h1>
+                    {nameChanges.map((item, key) => {
+                      return <div key={key}>{item.old_name}</div>;
+                    })}
+                  </div>
+                }
+              >
+                <div
+                  onClick={() => setIsNameChangeOpen((x) => !x)}
+                  className="cursor-pointer font-bold underline"
+                >
+                  {summoner.name}
                 </div>
-              }
-            >
+              </Popover>
+              {spectate ? (
+                <SpectateModal
+                  region={summoner.region}
+                  summoner_id={summoner._id}
+                  queueConvert={queues}
+                  isSpectateModalOpen={isSpectateModalOpen}
+                  setIsSpectateModalOpen={setIsSpectateModalOpen}
+                >
+                  <div className="text-sm hover:cursor-pointer">Live Game</div>
+                </SpectateModal>
+              ) : (
+                <div className="text-sm">Not in game</div>
+              )}
+            </div>
+            {summoner.has_match_overlap > 0 && (
               <div
-                onClick={() => setIsNameChangeOpen((x) => !x)}
-                className="cursor-pointer font-bold underline"
+                title={`One of your connected accounts has ${summoner.has_match_overlap} overlapping games with this account.`}
+                className="ml-2 mt-1"
               >
-                {summoner.name}
+                <div className="relative">
+                  <UsersIcon className="my-auto w-6" />
+                  <div className="absolute -top-3 -right-4 bg-gray-600 rounded-sm px-1 text-xs">
+                    {summoner.has_match_overlap}
+                  </div>
+                </div>
               </div>
-            </Popover>
-            {spectate ? (
-              <SpectateModal
-                region={summoner.region}
-                summoner_id={summoner._id}
-                queueConvert={queues}
-                isSpectateModalOpen={isSpectateModalOpen}
-                setIsSpectateModalOpen={setIsSpectateModalOpen}
-              >
-                <div className="text-sm hover:cursor-pointer">Live Game</div>
-              </SpectateModal>
-            ) : (
-              <div className="text-sm">Not in game</div>
             )}
           </div>
         </div>

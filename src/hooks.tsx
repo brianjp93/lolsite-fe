@@ -487,3 +487,17 @@ export function useConnectedSummoners() {
     }
   );
 }
+
+export function useSuspiciousAccount(puuid: string, enabled=true) {
+  return useQuery(
+    ['sus-account', puuid],
+    () => api.player.isSuspicious(puuid),
+    {
+      retry: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5,
+      enabled: enabled,
+    }
+  )
+}

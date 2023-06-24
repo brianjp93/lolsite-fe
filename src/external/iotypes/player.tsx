@@ -52,7 +52,7 @@ export const PositionBin = t.type({
 export type PositionBinType = t.TypeOf<typeof PositionBin>;
 
 export const Summoner = t.type({
-  has_match_overlap: t.boolean,
+  has_match_overlap: t.number,
   account_id: t.string,
   created_date: t.string,
   full_import_count: t.number,
@@ -131,3 +131,9 @@ export const PlayerChampionSummaryResponse = z.object({
 export type PlayerChampionSummaryResponse = z.infer<
   typeof PlayerChampionSummaryResponse
 >;
+
+export const SuspiciousPlayer = z.object({
+  quick_ff_count: z.number(),
+  total: z.number(),
+})
+export type SuspiciousPlayer = z.infer<typeof SuspiciousPlayer>;

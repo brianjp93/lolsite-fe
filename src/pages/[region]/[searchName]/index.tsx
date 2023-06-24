@@ -5,6 +5,7 @@ import {
   useNameChanges,
   usePositions,
   useSummoner,
+  useSuspiciousAccount,
 } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
@@ -30,9 +31,7 @@ import type { NextPageContext } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSummary";
-import {
-  MatchListSummary,
-} from "@/components/summoner/SummonerSummary";
+import { MatchListSummary } from "@/components/summoner/SummonerSummary";
 
 export default function Summoner({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
@@ -83,6 +82,16 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
       }
     },
   });
+
+  const susAccountQ = useSuspiciousAccount(
+    summoner?.puuid || "",
+    !!summoner?.puuid && matchQuery.isSuccess
+  );
+  const susAccount = susAccountQ.data;
+
+  const flexFFGamePercentage = susAccount
+    ? susAccount.quick_ff_count / (susAccount.total || 1)
+    : 0;
 
   useEffect(() => {
     if (matchQuery.isSuccess) {
@@ -190,11 +199,22 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
       </Head>
       <div style={{ minHeight: 1000 }} className="mx-auto flex-col">
         {summoner && (
-          <ProfileCardInner
-            summoner={summoner}
-            positions={positions}
-            nameChanges={nameChanges}
-          />
+          <div className="flex">
+            <ProfileCardInner
+              summoner={summoner}
+              positions={positions}
+              nameChanges={nameChanges}
+            />
+            {flexFFGamePercentage > 0.05 &&
+              (susAccount?.quick_ff_count || 0) > 4 && (
+                <div className="ml-2 max-w-fit rounded-md bg-red-800/50 p-2 font-bold">
+                  This summoner has suspicious activity
+                  <br />
+                  {susAccount?.quick_ff_count} ff&apos;d (&lt;5min games) in{" "}
+                  {susAccount?.total} total games.
+                </div>
+              )}
+          </div>
         )}
         {matchQuery.isFetching && isInitialQuery && (
           <div>
@@ -242,7 +262,11 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
                   <div className="flex">
                     <div>
                       <div className="my-2 w-full">
-                        <MatchListSummary matches={matches} summoner={summoner} champCount={5} />
+                        <MatchListSummary
+                          matches={matches}
+                          summoner={summoner}
+                          champCount={5}
+                        />
                       </div>
                       {matches.map((match: BasicMatchType, key: number) => {
                         return (
