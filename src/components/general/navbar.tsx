@@ -15,7 +15,7 @@ export default function NavBar() {
   const favorites = favoritesQuery.data || [];
 
   return (
-    <div className="flex h-20 items-center bg-gradient-to-r from-slate-800/70 to-cyan-900/30 px-4 drop-shadow-md">
+    <div className="flex h-20 items-center bg-gradient-to-r from-slate-800/70 to-cyan-900/30 px-4 drop-shadow-md z-10">
       <div>
         <Link href="/">
           <Image

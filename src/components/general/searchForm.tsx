@@ -109,7 +109,7 @@ export function SearchForm({
           {...register("search")}
         />
         {isOpen && (
-          <div className="absolute left-0 bottom-0 h-0 w-full z-10">
+          <div className="absolute left-0 bottom-0 h-0 w-full">
             <div
               className={clsx(
                 "mt-1 max-h-80 w-full overflow-y-auto rounded",
