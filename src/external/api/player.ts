@@ -145,6 +145,11 @@ function connectAccount(data: any) {
   return axios.post(url, data);
 }
 
+function unlinkAccount(puuid: string) {
+  const url = `${base}/unlink-account/`;
+  return axios.request({method: 'DELETE', data: {puuid}, url})
+}
+
 function connectAccountWithProfileIcon(data: any) {
   const url = `${base}/connect-account-with-profile-icon/`;
   return axios.post(url, data);
@@ -304,5 +309,6 @@ const exports = {
   logout,
   setFavoriteOrder,
   isSuspicious,
+  unlinkAccount,
 };
 export default exports;

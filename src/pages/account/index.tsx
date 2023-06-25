@@ -3,7 +3,7 @@ import { mediaUrl } from "@/components/utils";
 import type { UserType, SummonerType } from "@/external/types";
 import { useUser, useConnectedSummoners } from "@/hooks";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
@@ -16,7 +16,13 @@ export default function Account() {
   const connected = connectedQ.data || [];
   return (
     <Skeleton>
-      {user && <AccountInner user={user} connectedSummoners={connected} refetch={connectedQ.refetch} />}
+      {user && (
+        <AccountInner
+          user={user}
+          connectedSummoners={connected}
+          refetch={connectedQ.refetch}
+        />
+      )}
     </Skeleton>
   );
 }
@@ -47,26 +53,9 @@ export function AccountInner({
               return (
                 <div
                   key={x.puuid}
-                  className="flex w-64 rounded-md border border-zinc-800 bg-zinc-800/30 p-3 mx-2"
+                  className="mx-2 flex w-64 rounded-md border border-zinc-800 bg-zinc-800/30 p-3"
                 >
-                  <div className="mx-auto">
-                    <div className="flex">
-                      <Image
-                        className="h-[40px] w-[40px] rounded-md"
-                        width={40}
-                        height={40}
-                        src={mediaUrl(x.profile_icon)}
-                        alt={`Profile Icon ${x.profile_icon_id}`}
-                      />
-                      <div className="my-auto h-full">
-                        <div className="mx-2 rounded-lg border border-zinc-800 bg-black/20 px-2 py-1">
-                          {x.region}
-                        </div>
-                      </div>
-                      <div className="my-auto h-full">{x.name}</div>
-                    </div>
-                    <div>Level: {x.summoner_level}</div>
-                  </div>
+                  <ConnectedCard summoner={x} onUnlink={refetch} />
                 </div>
               );
             })}
@@ -87,7 +76,70 @@ export function AccountInner({
   );
 }
 
-function ConnectAccount({onSuccess}: {onSuccess: () => void}) {
+function ConnectedCard({
+  summoner,
+  onUnlink,
+}: {
+  summoner: SummonerType;
+  onUnlink: () => void;
+}) {
+  const [isConfirm, setIsConfirm] = useState(false);
+  const unlink = useMutation(() => api.player.unlinkAccount(summoner.puuid), {
+    onSuccess: () => onUnlink(),
+  });
+  return (
+    <div className="mx-auto">
+      <div className="flex">
+        <Image
+          className="h-[40px] w-[40px] rounded-md"
+          width={40}
+          height={40}
+          src={mediaUrl(summoner.profile_icon)}
+          alt={`Profile Icon ${summoner.profile_icon_id}`}
+        />
+        <div className="my-auto h-full">
+          <div className="mx-2 rounded-lg border border-zinc-800 bg-black/20 px-2 py-1">
+            {summoner.region}
+          </div>
+        </div>
+        <div className="my-auto h-full">{summoner.name}</div>
+      </div>
+      <div>Level: {summoner.summoner_level}</div>
+      <div>
+        {!isConfirm ? (
+          <button
+            onClick={() => setIsConfirm(true)}
+            className="btn btn-primary w-full"
+          >
+            Unlink Account
+          </button>
+        ) : (
+          <div>
+          <div className="rounded-md bg-red-600/50 p-2 my-2 font-bold">Are you sure?</div>
+            <div className="flex">
+            <button
+              onClick={() => unlink.mutate()}
+              className={clsx("btn btn-primary w-1/2 mr-1", {
+                disabled: unlink.isLoading,
+              })}
+            >
+              Unlink
+            </button>
+            <button
+              onClick={() => setIsConfirm(false)}
+              className="btn btn-default w-1/2 ml-1"
+            >
+              Cancel
+            </button>
+          </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
   const [region, setRegion] = useState("na");
   const mutation = useMutation(
@@ -97,11 +149,14 @@ function ConnectAccount({onSuccess}: {onSuccess: () => void}) {
         .then((response) => response.data)
   );
 
-  const connect = useMutation(() =>
-    api.player.connectAccountWithProfileIcon({
-      summoner_name: mutation.data.summoner_name,
-      region,
-    }).then(r => r.data),
+  const connect = useMutation(
+    () =>
+      api.player
+        .connectAccountWithProfileIcon({
+          summoner_name: mutation.data.summoner_name,
+          region,
+        })
+        .then((r) => r.data),
     {
       onSuccess: () => onSuccess(),
     }
@@ -118,7 +173,7 @@ function ConnectAccount({onSuccess}: {onSuccess: () => void}) {
               <label>
                 <div className="font-bold">Region</div>
                 <select
-                  className="w-full h-8"
+                  className="h-8 w-full"
                   name="region"
                   onChange={(event) => setRegion(event.currentTarget.value)}
                 >
@@ -189,20 +244,22 @@ function ConnectAccount({onSuccess}: {onSuccess: () => void}) {
             </button>
           </div>
 
-          {connect.data &&
+          {connect.data && (
             <>
-              {connect.data.success === false &&
-                <div className="bg-red-900/70 p-2 rounded-md mt-2">
-                  {connect.data.message || "There was an error linking your account."}
+              {connect.data.success === false && (
+                <div className="mt-2 rounded-md bg-red-900/70 p-2">
+                  {connect.data.message ||
+                    "There was an error linking your account."}
                 </div>
-              }
-              {connect.data.success === true &&
-                <div className="bg-teal-900/80 p-2 rounded-md mt-2">
-                  Successfully linked accounts! Refresh if you&apos;d like to connect another.
+              )}
+              {connect.data.success === true && (
+                <div className="mt-2 rounded-md bg-teal-900/80 p-2">
+                  Successfully linked accounts! Refresh if you&apos;d like to
+                  connect another.
                 </div>
-              }
+              )}
             </>
-          }
+          )}
         </div>
       )}
     </>
