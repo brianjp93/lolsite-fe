@@ -201,7 +201,7 @@ export function RunePage({
                                 )
                                 .replace(
                                   "{2}",
-                                  perk[`var${j + 2}` as keyof typeof perk].toString()
+                                  perk[`var${j + 2}` as keyof typeof perk]?.toString() || ""
                                 )}
                             </div>
                           </div>
