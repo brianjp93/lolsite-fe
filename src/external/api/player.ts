@@ -61,8 +61,8 @@ async function getPositions(data: any) {
   return unwrap(t.array(Position).decode(response.data.data))
 }
 
-function signUp({email, password}: {email: string, password: string}) {
-  const data = {email, password}
+function signUp({email, password, token}: {email: string, password: string, token: string}) {
+  const data = {email, password, token}
   const url = `${base}/sign-up/`;
   return axios.post(url, data);
 }

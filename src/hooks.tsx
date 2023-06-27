@@ -520,3 +520,14 @@ export function useSpectate(region: string, summoner_id: string, refetchInterval
     }
   );
 }
+
+export function useGoogleRecaptchaSiteKey() {
+  return useQuery(
+    ['google-recaptcha-site-key'],
+    api.data.getGoogleRecaptchaSiteKey,
+    {
+      retry: true,
+      staleTime: 1000 * 3600,
+    }
+  )
+}

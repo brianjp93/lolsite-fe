@@ -100,6 +100,12 @@ async function getMediaUrl() {
   return unwrap(t.string.decode(response.data));
 }
 
+async function getGoogleRecaptchaSiteKey() {
+  const url = `${base}/google-recaptcha-site-key/`;
+  const response = await axios.get(url);
+  return unwrap(t.string.decode(response.data));
+}
+
 const exports = {
   getItem,
   getSimpleItem,
@@ -112,5 +118,6 @@ const exports = {
   getStaticUrl,
   getMediaUrl,
   getQueues,
+  getGoogleRecaptchaSiteKey,
 };
 export default exports;
