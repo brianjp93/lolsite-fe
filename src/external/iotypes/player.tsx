@@ -127,5 +127,23 @@ export type PlayerChampionSummaryResponse = z.infer<
 export const SuspiciousPlayer = z.object({
   quick_ff_count: z.number(),
   total: z.number(),
-})
+});
 export type SuspiciousPlayer = z.infer<typeof SuspiciousPlayer>;
+
+export const BaseComment = t.type({
+  created_date: t.string,
+  dislikes: t.number,
+  id: t.number,
+  likes: t.number,
+  markdown: t.string,
+  match: t.number,
+  modified_date: t.string,
+  summoner: Summoner,
+  is_deleted: t.boolean,
+});
+
+export const Comment = t.union([
+  BaseComment,
+  t.type({ reply_to: BaseComment }),
+]);
+export type Comment = t.TypeOf<typeof Comment>;

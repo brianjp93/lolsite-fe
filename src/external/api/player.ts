@@ -11,9 +11,10 @@ import {
   User,
   NameChange,
   Favorite,
+  PaginatedResponse,
 } from "../types";
 import { env } from "@/env/client.mjs";
-import {PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
+import {Comment, PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
 import { z } from "zod";
 
 const version = "v1";
@@ -272,6 +273,12 @@ async function isSuspicious(puuid: string) {
   return SuspiciousPlayer.parse(response.data)
 }
 
+async function getMatchComments({page, match_id}: {page: number, match_id: number}) {
+  const url = `${base}/comment/match/${match_id}`
+  const response = await axios.get(url, {params: {page}})
+  return unwrap(PaginatedResponse(Comment).decode(response.data))
+}
+
 const exports = {
   getSummoner,
   getSummonerByName,
@@ -310,5 +317,6 @@ const exports = {
   setFavoriteOrder,
   isSuspicious,
   unlinkAccount,
+  getMatchComments,
 };
 export default exports;

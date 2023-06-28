@@ -13,3 +13,9 @@ export function Editor() {
     </>
   )
 }
+
+export function ViewComments() {
+  return (
+    <></>
+  )
+}
