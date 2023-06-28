@@ -47,7 +47,6 @@ import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
 import {usePickTurn} from "@/stores";
 import {InGameDot} from "@/components/general/favoriteList";
-import { CreateComment } from "@/components/comments/comment";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
