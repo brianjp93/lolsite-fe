@@ -16,7 +16,6 @@ export default function Verify() {
   )
 
   useEffect(() => {
-    console.log('mutate')
     if (code) {
       mutation.mutate()
     }
@@ -32,7 +31,7 @@ export default function Verify() {
       {mutation.isSuccess &&
         <div>
           Email verified! Please
-          <Link href={loginPath()}>Log In</Link>.
+          <Link className="btn btn-link ml-1 inline" href={loginPath()}>Log In</Link>.
         </div>
       }
       {mutation.isError &&
