@@ -503,7 +503,12 @@ export function useSuspiciousAccount(puuid: string, enabled = true) {
   );
 }
 
-export function useSpectate(region: string, summoner_id: string, refetchInterval?: number, enabled?: boolean) {
+export function useSpectate(
+  region: string,
+  summoner_id: string,
+  refetchInterval?: number,
+  enabled?: boolean
+) {
   return useQuery(
     ["spectate", region, summoner_id],
     () =>
@@ -521,13 +526,19 @@ export function useSpectate(region: string, summoner_id: string, refetchInterval
   );
 }
 
+export function useComment(pk: number) {
+  return useQuery(["comment", pk], () => api.player.getComment(pk), {
+    staleTime: 1000 * 3600 * 24,
+  });
+}
+
 export function useGoogleRecaptchaSiteKey() {
   return useQuery(
-    ['google-recaptcha-site-key'],
+    ["google-recaptcha-site-key"],
     api.data.getGoogleRecaptchaSiteKey,
     {
       retry: true,
       staleTime: 1000 * 3600,
     }
-  )
+  );
 }

@@ -279,6 +279,12 @@ async function getMatchComments({page, match_id}: {page: number, match_id: numbe
   return unwrap(PaginatedResponse(Comment).decode(response.data))
 }
 
+async function getComment(pk: number) {
+  const url = `${base}/comment/${pk}/`
+  const response = await axios.get(url)
+  return unwrap(Comment.decode(response.data))
+}
+
 const exports = {
   getSummoner,
   getSummonerByName,
@@ -318,5 +324,6 @@ const exports = {
   isSuspicious,
   unlinkAccount,
   getMatchComments,
+  getComment,
 };
 export default exports;

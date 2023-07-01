@@ -24,6 +24,19 @@ export type PaginatedResponseType<T> = {
   results: T[];
 };
 
+export function PaginatedCursorResponse<C extends t.Mixed>(codec: C) {
+  return t.type({
+    next: optional(t.string),
+    previous: optional(t.string),
+    results: t.array(codec),
+  })
+}
+export type PaginatedCursorResponse<T> = {
+  next: string | null;
+  previous: string | null;
+  results: T[];
+};
+
 export const MetaHead = z.object({
   type: z.string().default(""),
   title: z.string().default(""),

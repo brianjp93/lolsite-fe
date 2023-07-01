@@ -54,11 +54,12 @@ export type {
 } from './iotypes/player'
 
 export {
-  PaginatedResponse
+  PaginatedResponse,
+  PaginatedCursorResponse,
 } from './iotypes/base'
 
 export type {
-  PaginatedResponseType
+  PaginatedResponseType,
 } from './iotypes/base'
 
 export {Champion, Rune, BasicChampionWithImage} from './iotypes/data'
