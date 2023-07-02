@@ -15,6 +15,10 @@ export function profileRoute({
   return url + params.toString()
 }
 
+export function myAccount() {
+  return '/account/'
+}
+
 export function signUpRoute() {
   return '/signup/'
 }

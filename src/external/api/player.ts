@@ -194,14 +194,19 @@ function getReplies(data: any) {
   return axios.get(url, { params: data });
 }
 
-function createComment(data: any) {
+function createComment(data: {markdown: string, match: number, reply_to?: number, summoner: string}) {
   const url = `${base}/comment/`;
   return axios.post(url, data);
 }
 
-function deleteComment(data: any) {
-  const url = `${base}/comment/`;
-  return axios.delete(url, { data });
+function updateComment({id, markdown}: {id: number, markdown: string}) {
+  const url = `${base}/comment/${id}/`;
+  return axios.put(url, {markdown})
+}
+
+function deleteComment({id}: {id: number}) {
+  const url = `${base}/comment/${id}/`;
+  return axios.delete(url);
 }
 
 function likeComment(data: any) {
@@ -309,6 +314,7 @@ const exports = {
   getComments,
   getReplies,
   createComment,
+  updateComment,
   deleteComment,
   likeComment,
   dislikeComment,
