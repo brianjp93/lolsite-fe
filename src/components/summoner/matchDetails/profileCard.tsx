@@ -21,6 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import { SpectateModal } from "../spectate";
 import { UsersIcon } from "@/components/icons";
 import { InGameDot } from "@/components/general/favoriteList";
+import clsx from "clsx";
 
 export function ProfileCard({ className = "" }: { className: string }) {
   const router = useRouter();
@@ -213,6 +214,25 @@ export function ProfileCardInner({
                 <div className="ml-auto mr-3">
                   {x.tier} {x.rank} {x.league_points}LP
                 </div>
+                {x.series_progress &&
+                <div className="flex mr-3">
+                  {[...x.series_progress].map((ch: string, key: number) => {
+                      return (
+                        <div
+                          className={clsx(
+                            "my-auto h-3 w-3 rounded-full border-2",
+                            {
+                              "border-green-900 bg-green-600": ch === "W",
+                              "border-red-900 bg-red-600": ch === "L",
+                              "border-gray-700": ch === "N",
+                            }
+                          )}
+                          key={key}
+                        ></div>
+                      );
+                    })}
+                </div>
+                }
                 <div className="ml-auto flex">
                   {x.wins}/{x.losses}
                   <div className="ml-2 font-bold">{percentage}</div>
