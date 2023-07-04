@@ -214,9 +214,9 @@ export function ProfileCardInner({
                 <div className="ml-auto mr-3">
                   {x.tier} {x.rank} {x.league_points}LP
                 </div>
-                {x.series_progress &&
-                <div className="flex mr-3">
-                  {[...x.series_progress].map((ch: string, key: number) => {
+                {x.series_progress && (
+                  <div className="mr-3 flex">
+                    {[...x.series_progress].map((ch: string, key: number) => {
                       return (
                         <div
                           className={clsx(
@@ -231,8 +231,8 @@ export function ProfileCardInner({
                         ></div>
                       );
                     })}
-                </div>
-                }
+                  </div>
+                )}
                 <div className="ml-auto flex">
                   {x.wins}/{x.losses}
                   <div className="ml-2 font-bold">{percentage}</div>
