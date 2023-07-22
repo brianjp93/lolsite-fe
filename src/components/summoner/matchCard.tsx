@@ -303,6 +303,7 @@ export function ChampionClump({
   const [pickTurn, setPickTurn] = usePickTurn();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
   const item = useSimpleItem({id: part.stats.item_6, major, minor}).data
+  const has_perks = !!(part.stats.perk_0_image_url && part.stats.perk_sub_style_image_url)
   if (!champion) return null;
   if (!part) return null;
   return (
@@ -316,18 +317,28 @@ export function ChampionClump({
           alt={`Champion Image: ${champion.name}`}
         />
         <div className="flex">
-          <Image
-            src={part.stats.perk_0_image_url}
-            width={20}
-            height={20}
-            alt={""}
-          />
-          <Image
-            src={part.stats.perk_sub_style_image_url}
-            width={20}
-            height={20}
-            alt={""}
-          />
+          {has_perks ?
+            <>
+              <Image
+                src={part.stats.perk_0_image_url}
+                width={20}
+                height={20}
+                alt={""}
+              />
+              <Image
+                src={part.stats.perk_sub_style_image_url}
+                width={20}
+                height={20}
+                alt={""}
+              />
+            </>
+            : <>
+              <div
+                title="No runes"
+                className="w-[40px] h-[20px] bg-gradient-to-r from-blue-500 to-orange-800 opacity-30" />
+            </>
+          }
+
         </div>
       </div>
       <div>
