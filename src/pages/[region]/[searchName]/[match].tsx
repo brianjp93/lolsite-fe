@@ -144,6 +144,9 @@ function InnerMatch({
   const queues = useQueues().data || {};
   const minutes = Math.round(match.game_duration / 60_000);
   const seconds = (match.game_duration % 60_000) / 1000;
+
+  const isShowRunes = ![1700].includes(match.queue_id);
+
   return (
     <div>
       <div className="flex justify-center">
@@ -232,7 +235,7 @@ function InnerMatch({
             match_id={match._id}
           />
         </div>
-        {mypart && (
+        {mypart && isShowRunes && (
           <div className="my-2">
             <RunePage
               mypart={mypart}
