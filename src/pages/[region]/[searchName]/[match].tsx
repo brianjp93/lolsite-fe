@@ -52,6 +52,8 @@ export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
 };
 
+const ARENA_QUEUE = 1700;
+
 export default function Match({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
   const {
@@ -145,7 +147,7 @@ function InnerMatch({
   const minutes = Math.round(match.game_duration / 60_000);
   const seconds = (match.game_duration % 60_000) / 1000;
 
-  const isShowRunes = ![1700].includes(match.queue_id);
+  const isShowRunes = ![ARENA_QUEUE].includes(match.queue_id);
 
   return (
     <div>
