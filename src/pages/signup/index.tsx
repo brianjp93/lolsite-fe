@@ -9,6 +9,7 @@ import { ErrorField } from "@/components/utils";
 import { useRouter } from "next/router";
 import Script from "next/script";
 import Orbit from "@/components/general/spinner";
+import clsx from "clsx";
 
 const SignUpSchema = z.object({
   email: z.string().min(1),
@@ -111,7 +112,9 @@ export function SignUpInner() {
               });
             });
           }}
-          className="btn btn-primary mt-2 w-full"
+          className={clsx("btn btn-primary mt-2 w-full", {
+            disabled: mutation.isLoading,
+          })}
         >
           Sign Up
         </button>
