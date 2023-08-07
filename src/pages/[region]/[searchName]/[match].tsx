@@ -21,8 +21,9 @@ import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
   convertRank,
   convertTier,
+  getLoser,
   getMyPart,
-  getTeam,
+  getWinner,
   mediaUrl,
 } from "@/components/utils";
 import {
@@ -47,12 +48,11 @@ import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
 import {usePickTurn} from "@/stores";
 import {InGameDot} from "@/components/general/favoriteList";
+import {ARENA_QUEUE} from "@/utils/constants";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
 };
-
-const ARENA_QUEUE = 1700;
 
 export default function Match({ meta }: { meta: MetaHead | null }) {
   const router = useRouter();
@@ -138,8 +138,8 @@ function InnerMatch({
   summoner: SummonerType;
   bans: BanType[];
 }) {
-  const team100 = getTeam(100, participants);
-  const team200 = getTeam(200, participants);
+  const team100 = getWinner(match.queue_id, participants);
+  const team200 = getLoser(match.queue_id, participants);
   const mypart = getMyPart(participants, summoner.puuid);
   const team100Bans = bans.filter((x) => x.team === 100);
   const team200Bans = bans.filter((x) => x.team === 200);
@@ -172,13 +172,13 @@ function InnerMatch({
       </div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
-          <div className="min-w-fit pr-1">
+          <div className="min-w-fit pr-1 my-auto">
             <TeamSide team={team100} match={match} bans={team100Bans} />
           </div>
           <div className="my-auto rounded-full bg-gradient-to-r from-cyan-700 to-rose-700 p-3 font-bold">
             VS
           </div>
-          <div className="min-w-fit pl-1">
+          <div className="min-w-fit pl-1 my-auto">
             <TeamSide team={team200} match={match} bans={team200Bans} />
           </div>
         </div>
@@ -266,7 +266,12 @@ function TeamSide({
   match: SimpleMatchType;
   bans: BanType[];
 }) {
-  const isWin = !!team[0]?.stats.win;
+  let isWin: boolean
+  if (match.queue_id === ARENA_QUEUE) {
+    isWin = team[0]?.placement === 1
+  } else {
+    isWin = !!team[0]?.stats.win;
+  }
   return (
     <div>
       <div

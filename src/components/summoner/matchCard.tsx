@@ -12,8 +12,9 @@ import { ItemPopover } from "../data/item";
 import {
   formatDatetime,
   formatDatetimeFull,
+  getLoser,
   getMyPart,
-  getTeam,
+  getWinner,
   mediaUrl,
   queueColor,
 } from "../utils";
@@ -126,8 +127,8 @@ function ParticipantClump({
   match: BasicMatchType;
   summoner: SummonerType;
 }) {
-  const team100 = getTeam(100, match.participants);
-  const team200 = getTeam(200, match.participants);
+  const team100 = getWinner(match.queue_id, match.participants);
+  const team200 = getLoser(match.queue_id, match.participants);
   const part = getMyPart(match.participants, summoner.puuid);
   return (
     <div className="flex">

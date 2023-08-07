@@ -5,6 +5,7 @@ import { useItem } from "@/hooks";
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import { env } from "@/env/client.mjs";
 import type { AppendParticipant } from "./summoner/rankParticipants";
+import { ARENA_QUEUE } from "@/utils/constants";
 
 export function formatDatetime(epoch: number) {
   return format(new Date(epoch), "MMM d h:mma");
@@ -23,6 +24,26 @@ export function getTeam<T>(
   participants: ({ team_id: number } & T)[]
 ) {
   return participants.filter((item) => item.team_id === num);
+}
+
+export function getWinner<T>(
+  queueId: number,
+  participants: ({ placement: number; team_id: number } & T)[]
+) {
+  if (queueId === ARENA_QUEUE) {
+    return participants.filter((x) => x.placement === 1);
+  }
+  return participants.filter((x) => x.team_id === 100);
+}
+
+export function getLoser<T>(
+  queueId: number,
+  participants: ({ placement: number; team_id: number } & T)[]
+) {
+  if (queueId === ARENA_QUEUE) {
+    return participants.filter((x) => x.placement > 1);
+  }
+  return participants.filter((x) => x.team_id === 200);
 }
 
 export function convertTier(tier: string) {
@@ -146,7 +167,7 @@ export function stripHtmlFull(html: string) {
 
 export function ErrorField({ message }: { message?: string }) {
   if (!message) return null;
-  return <div className="text-sm font-bold text-red-600 my-1">{message}</div>;
+  return <div className="my-1 text-sm font-bold text-red-600">{message}</div>;
 }
 
 export function mediaUrl(filePath: string) {

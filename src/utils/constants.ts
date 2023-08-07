@@ -1,4 +1,6 @@
-import { type ValueOf } from "next/dist/shared/lib/constants";
+import type { ValueOf } from "next/dist/shared/lib/constants";
+
+export const ARENA_QUEUE = 1700;
 
 export const REGIONS = [
   "na",

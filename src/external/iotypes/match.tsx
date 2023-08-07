@@ -1,5 +1,5 @@
 import * as t from 'io-ts'
-import {ItemImage, BasicChampionWithImage} from './data'
+import {BasicChampionWithImage} from './data'
 import {Position} from './player'
 import {optional} from './base'
 
@@ -62,6 +62,8 @@ export const BasicParticipant = t.type({
   champion_id: t.number,
   stats: BasicStats,
   team_position: t.string,
+  placement: t.number,
+  subteam_placement: t.number,
 })
 export type BasicParticipantType = t.TypeOf<typeof BasicParticipant>
 
@@ -237,6 +239,8 @@ export const FullParticipant = t.type({
   stats: Stats,
   summoner_1_image: t.string,
   summoner_2_image: t.string,
+  placement: t.number,
+  subteam_placement: t.number,
 })
 export type FullParticipantType = t.TypeOf<typeof FullParticipant>
 
