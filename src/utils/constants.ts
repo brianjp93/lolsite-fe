@@ -87,7 +87,7 @@ export function getStatMod(patch = "latest") {
       id: 5003,
       image_url: getStatModImageUrl({
         patch,
-        key: "statmodsmagicresicon.magicresist_fix",
+        key: "statmodsmagicresicon",
       }),
     },
     5005: {
