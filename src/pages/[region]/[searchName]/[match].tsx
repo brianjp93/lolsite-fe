@@ -46,9 +46,9 @@ import type { GetServerSidePropsContext } from "next";
 import api from "@/external/api/api";
 import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
-import {usePickTurn} from "@/stores";
-import {InGameDot} from "@/components/general/favoriteList";
-import {ARENA_QUEUE} from "@/utils/constants";
+import { usePickTurn } from "@/stores";
+import { InGameDot } from "@/components/general/favoriteList";
+import { ARENA_QUEUE } from "@/utils/constants";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -172,13 +172,13 @@ function InnerMatch({
       </div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
-          <div className="min-w-fit pr-1 my-auto">
+          <div className="my-auto min-w-fit pr-1">
             <TeamSide team={team100} match={match} bans={team100Bans} />
           </div>
           <div className="my-auto rounded-full bg-gradient-to-r from-cyan-700 to-rose-700 p-3 font-bold">
             VS
           </div>
-          <div className="min-w-fit pl-1 my-auto">
+          <div className="my-auto min-w-fit pl-1">
             <TeamSide team={team200} match={match} bans={team200Bans} />
           </div>
         </div>
@@ -266,9 +266,9 @@ function TeamSide({
   match: SimpleMatchType;
   bans: BanType[];
 }) {
-  let isWin: boolean
+  let isWin: boolean;
   if (match.queue_id === ARENA_QUEUE) {
-    isWin = team[0]?.placement === 1
+    isWin = team[0]?.placement === 1;
   } else {
     isWin = !!team[0]?.stats.win;
   }
@@ -335,7 +335,7 @@ function ParticipantInfo({
   };
   const summoner = useSummoner({ region, name: searchName }).data;
   const name = part.summoner_name.split(/\s+/).join(" ");
-  const spectate = useSimpleSpectate(part.summoner_id, region).data
+  const spectate = useSimpleSpectate(part.summoner_id, region).data;
 
   return (
     <div
@@ -350,12 +350,19 @@ function ParticipantInfo({
         <div className="flex">
           <div className="my-auto h-full">
             <div className="relative">
-              <ChampionClump part={part} major={match.major} minor={match.minor} />
-              {spectate &&
+              <ChampionClump
+                part={part}
+                major={match.major}
+                minor={match.minor}
+              />
+              {spectate && (
                 <div className="absolute -top-2 -left-2">
-                  <InGameDot queueId={spectate.gameQueueConfigId} startTime={spectate.gameStartTime} />
+                  <InGameDot
+                    queueId={spectate.gameQueueConfigId}
+                    startTime={spectate.gameStartTime}
+                  />
                 </div>
-              }
+              )}
             </div>
           </div>
           <div className="my-auto ml-2 h-full">
@@ -424,16 +431,20 @@ function SecondaryStatClump({
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const isFirstLoad = !(context.req?.url || "").includes("_next/data");
   const { region, searchName, match } = context.query as {
     region: string;
     searchName: string;
     match: string;
   };
-  const meta = await api.general.getMatchMetaData({
-    name: searchName,
-    region,
-    matchId: match,
-  });
+  let meta = null;
+  if (isFirstLoad) {
+    meta = await api.general.getMatchMetaData({
+      name: searchName,
+      region,
+      matchId: match,
+    });
+  }
   return {
     props: {
       meta,

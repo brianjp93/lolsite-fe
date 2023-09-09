@@ -26,13 +26,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
 import Head from "next/head";
-import type { NextPageContext } from "next";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSummary";
 import { MatchListSummary } from "@/components/summoner/SummonerSummary";
 
-export default function Summoner({ meta }: { meta: MetaHead | null }) {
+export default function Summoner({
+  meta,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const { region, searchName } = router.query as {
     region: string;
@@ -44,11 +46,11 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
     page: withDefault(NumberParam, 1),
     queue: withDefault(NumberParam, undefined),
     playedWith: withDefault(StringParam, ""),
-  })
+  });
   const limit = 10;
 
   function resetPage() {
-    setParams({...params, page: 1})
+    setParams({ ...params, page: 1 });
   }
 
   const start = limit * params.page - limit;
@@ -73,7 +75,7 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
     },
     onError: () => {
       if (params.page > 1) {
-        setParams({...params, page: params.page - 1})
+        setParams({ ...params, page: params.page - 1 });
       }
     },
   });
@@ -109,7 +111,11 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
     return (
       <div className="flex">
         <button
-          onClick={() => setParams((x) => {return {...x, page: Math.max(1, (x.page || 1) - 1)}})}
+          onClick={() =>
+            setParams((x) => {
+              return { ...x, page: Math.max(1, (x.page || 1) - 1) };
+            })
+          }
           className={clsx("btn btn-default", {
             disabled: matchQuery.isFetching || params.page <= 1,
           })}
@@ -130,7 +136,11 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
           </svg>
         </button>
         <button
-          onClick={() => setParams((x) => {return {...x, page: (x.page || 1) + 1}})}
+          onClick={() =>
+            setParams((x) => {
+              return { ...x, page: (x.page || 1) + 1 };
+            })
+          }
           className={clsx("btn btn-default ml-2", {
             disabled: matchQuery.isFetching,
           })}
@@ -225,9 +235,13 @@ export default function Summoner({ meta }: { meta: MetaHead | null }) {
               )}
               <div className="my-2 w-full">
                 <MatchFilter
-                onSubmit={(data) => {
-                  setParams({...params, queue: data.queue, playedWith: data.playedWith})
-                }}
+                  onSubmit={(data) => {
+                    setParams({
+                      ...params,
+                      queue: data.queue,
+                      playedWith: data.playedWith,
+                    });
+                  }}
                 />
               </div>
               <div>
@@ -350,24 +364,20 @@ function MatchFilter({
   );
 }
 
-// getInitialProps is being deprecated but I don't know how else to know if
-// The request is the first page load or not!
-// I only want to get the meta data if it's the first page load
-Summoner.getInitialProps = async (context: NextPageContext) => {
+export const getServerSideProps: GetServerSideProps<{
+  meta: MetaHead | null;
+}> = async (context) => {
   const { region, searchName } = context.query as {
     region: string;
     searchName: string;
   };
+  const isFirstLoad = !(context.req?.url || "").includes("_next/data");
   let meta = null;
-  if (context.req) {
+  if (isFirstLoad) {
     meta = await api.general.getSummonerMetaData({
       name: searchName,
       region,
     });
   }
-  return {
-    props: {
-      meta,
-    },
-  };
+  return { props: { meta } };
 };
