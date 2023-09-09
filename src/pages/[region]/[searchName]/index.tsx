@@ -350,15 +350,21 @@ function MatchFilter({
   );
 }
 
+// getInitialProps is being deprecated but I don't know how else to know if
+// The request is the first page load or not!
+// I only want to get the meta data if it's the first page load
 Summoner.getInitialProps = async (context: NextPageContext) => {
   const { region, searchName } = context.query as {
     region: string;
     searchName: string;
   };
-  const meta = await api.general.getSummonerMetaData({
-    name: searchName,
-    region,
-  });
+  let meta = null;
+  if (context.req) {
+    meta = await api.general.getSummonerMetaData({
+      name: searchName,
+      region,
+    });
+  }
   return {
     props: {
       meta,
