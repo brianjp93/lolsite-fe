@@ -156,12 +156,12 @@ function TeamClump({
         name = name.length > 7 ? name.slice(0, 6) + "..." : name;
         const link = (
           <div
-            className={clsx("ml-1 text-xs", {
+            className={clsx("ml-1 text-xs overflow-ellipsis whitespace-nowrap overflow-hidden", {
               "font-bold": teammate.puuid === part?.puuid,
             })}
             title={teammate.summoner_name}
           >
-            {name}
+            {teammate.summoner_name}
           </div>
         );
         return (
@@ -177,7 +177,7 @@ function TeamClump({
                 />
               )}
               {teammate.puuid !== part?.puuid ? (
-                <Link href={`/${region}/${teammate.summoner_name}/`}>
+                <Link className="overflow-hidden" href={`/${region}/${teammate.summoner_name}/`}>
                   {link}
                 </Link>
               ) : (
