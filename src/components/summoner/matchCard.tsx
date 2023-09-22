@@ -151,9 +151,6 @@ function TeamClump({
     <div className="w-32 md:w-44">
       {team.map((teammate) => {
         const champion = champions[teammate.champion_id];
-        // remove extra spaces from names
-        let name = teammate.summoner_name.split(/\s+/).join(" ");
-        name = name.length > 7 ? name.slice(0, 6) + "..." : name;
         const link = (
           <div
             className={clsx("ml-1 text-xs overflow-ellipsis whitespace-nowrap overflow-hidden", {
