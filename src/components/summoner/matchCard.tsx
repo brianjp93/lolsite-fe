@@ -2,7 +2,7 @@ import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
 import { useBasicChampions, useQueues, useSimpleItem } from "@/hooks";
 import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
-import {usePickTurn} from "@/stores";
+import { usePickTurn } from "@/stores";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,7 +67,13 @@ export default function MatchCard({
             </div>
             <div className="flex">
               <div className="my-auto h-full min-w-fit">
-                {part && <ChampionClump part={part} major={match.major} minor={match.minor} />}
+                {part && (
+                  <ChampionClump
+                    part={part}
+                    major={match.major}
+                    minor={match.minor}
+                  />
+                )}
               </div>
               {part && (
                 <div className="my-auto ml-1 h-full min-w-fit">
@@ -153,9 +159,12 @@ function TeamClump({
         const champion = champions[teammate.champion_id];
         const link = (
           <div
-            className={clsx("ml-1 text-xs overflow-ellipsis whitespace-nowrap overflow-hidden", {
-              "font-bold": teammate.puuid === part?.puuid,
-            })}
+            className={clsx(
+              "ml-1 overflow-hidden overflow-ellipsis whitespace-nowrap text-xs",
+              {
+                "font-bold": teammate.puuid === part?.puuid,
+              }
+            )}
             title={teammate.summoner_name}
           >
             {teammate.summoner_name}
@@ -174,7 +183,10 @@ function TeamClump({
                 />
               )}
               {teammate.puuid !== part?.puuid ? (
-                <Link className="overflow-hidden" href={`/${region}/${teammate.summoner_name}/`}>
+                <Link
+                  className="overflow-hidden"
+                  href={`/${region}/${teammate.summoner_name}/`}
+                >
                   {link}
                 </Link>
               ) : (
@@ -266,8 +278,8 @@ export function ItemPart({
   itemId?: number;
   major: number;
   minor: number;
-  }) {
-  const item = useSimpleItem({id: itemId!, major, minor}).data;
+}) {
+  const item = useSimpleItem({ id: itemId!, major, minor }).data;
   return (
     <div>
       {item && (
@@ -300,8 +312,10 @@ export function ChampionClump({
   const champions = useBasicChampions();
   const [pickTurn, setPickTurn] = usePickTurn();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
-  const item = useSimpleItem({id: part.stats.item_6, major, minor}).data
-  const has_perks = !!(part.stats.perk_0_image_url && part.stats.perk_sub_style_image_url)
+  const item = useSimpleItem({ id: part.stats.item_6, major, minor }).data;
+  const has_perks = !!(
+    part.stats.perk_0_image_url && part.stats.perk_sub_style_image_url
+  );
   if (!champion) return null;
   if (!part) return null;
   return (
@@ -315,7 +329,7 @@ export function ChampionClump({
           alt={`Champion Image: ${champion.name}`}
         />
         <div className="flex">
-          {has_perks ?
+          {has_perks ? (
             <>
               <Image
                 src={part.stats.perk_0_image_url}
@@ -330,13 +344,14 @@ export function ChampionClump({
                 alt={""}
               />
             </>
-            : <>
+          ) : (
+            <>
               <div
                 title="No runes"
-                className="w-[40px] h-[20px] bg-gradient-to-r from-blue-500 to-orange-800 opacity-30" />
+                className="h-[20px] w-[40px] bg-gradient-to-r from-blue-500 to-orange-800 opacity-30"
+              />
             </>
-          }
-
+          )}
         </div>
       </div>
       <div>
