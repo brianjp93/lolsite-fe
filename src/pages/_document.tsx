@@ -8,10 +8,10 @@ export default function Document() {
       <Head>
         <link rel="shortcut icon" type="image/png" href="/gen/logo-clean.png" />
         <Script
-          id="ga4-script"
-          strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${env.NEXT_PUBLIC_MEASUREMENT_ID}`}
-        >
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-script" strategy="afterInteractive">
           {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
