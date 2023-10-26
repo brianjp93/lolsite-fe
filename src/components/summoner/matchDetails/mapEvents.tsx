@@ -388,10 +388,14 @@ function EventBubble({
   if (buildingKillEvent) {
     team_id = buildingKillEvent.team_id === 100 ? 200 : 100;
   } else if (championKillEvent) {
-    const victim = part_dict[championKillEvent.victim_id] as ValueOf<
-      typeof part_dict
-    >;
-    team_id = victim.team_id === 100 ? 200 : 100;
+    if (championKillEvent.victim_id) {
+      const victim = part_dict[championKillEvent.victim_id] as ValueOf<
+        typeof part_dict
+      >;
+      team_id = victim.team_id === 100 ? 200 : 100;
+    } else {
+      team_id = part_dict[championKillEvent.killer_id]!.team_id;
+    }
   } else if (turretPlateDestroyedEvent) {
     team_id = turretPlateDestroyedEvent.team_id === 100 ? 200 : 100;
   } else if (eliteMonsterKillEvent) {
