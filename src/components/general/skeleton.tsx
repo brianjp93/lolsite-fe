@@ -10,7 +10,9 @@ export default function Skeleton({
   return (
     <div className="flex min-h-screen flex-col">
       <NavBar />
-      <div className="m-4">{children}</div>
+      <div className="container my-4 mx-auto flex px-4">
+        {children}
+      </div>
       <div className="mt-auto">
         <Footer />
       </div>
