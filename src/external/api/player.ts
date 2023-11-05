@@ -46,6 +46,12 @@ async function getSummonerByName(name: string, region: string) {
   return unwrap(Summoner.decode(response.data));
 }
 
+async function getSummonerByRiotId(riotIdName: string, riotIdTagline: string) {
+  const url = `${base}/summoner/by-riot-id/${riotIdName}/${riotIdTagline}/`
+  const response = await axios.get(url);
+  return unwrap(Summoner.decode(response.data));
+}
+
 interface GetSummonersData extends AxiosRequestConfig {
   puuids: string[];
   region: string;
@@ -293,6 +299,7 @@ async function getComment(pk: number) {
 const exports = {
   getSummoner,
   getSummonerByName,
+  getSummonerByRiotId,
   getSummoners,
   getPositions,
   signUp,
