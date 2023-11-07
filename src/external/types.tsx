@@ -12,6 +12,7 @@ export {
   AdvancedTimeline,
   Frame,
   Ban,
+  MatchSummary,
 } from './iotypes/match'
 export type {
   BasicMatchType,

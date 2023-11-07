@@ -587,3 +587,8 @@ export const AdvancedTimeline = t.type({
   frames: t.array(Frame),
 })
 export type AdvancedTimelineType = t.TypeOf<typeof AdvancedTimeline>
+
+export const MatchSummary = t.type({
+  content: t.string,
+})
+export type MatchSummaryType = t.TypeOf<typeof MatchSummary>

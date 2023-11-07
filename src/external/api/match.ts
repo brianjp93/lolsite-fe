@@ -11,7 +11,7 @@ import {
   PaginatedResponse,
 } from "../types";
 import * as t from "io-ts";
-import { SimpleMatch, SimpleSpectate } from "../iotypes/match";
+import { MatchSummary, SimpleMatch, SimpleSpectate } from "../iotypes/match";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
@@ -111,6 +111,12 @@ async function bans(match_id: string) {
   return unwrap(PaginatedResponse(Ban).decode(response.data));
 }
 
+async function getMatchSummary(match_id: string) {
+  const url = `${base}/${match_id}/summary/`;
+  const response = await axios.get(url);
+  return unwrap(MatchSummary.decode(response.data));
+}
+
 const exports = {
   timeline,
   participants,
@@ -121,6 +127,7 @@ const exports = {
   getLatestUnlabeled,
   bans,
   getMatchesBySummonerName,
+  getMatchSummary,
 };
 
 export default exports;
