@@ -16,7 +16,7 @@ import { SimpleMatch, SimpleSpectate } from "../iotypes/match";
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
 
-axios.defaults.xsrfHeaderName = "X-CSRFToken";
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
 async function timeline(_id: string) {

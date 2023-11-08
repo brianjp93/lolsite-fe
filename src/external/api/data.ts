@@ -9,6 +9,7 @@ import { Item, Queue } from "../iotypes/data";
 import * as t from "io-ts";
 import { env } from "@/env/client.mjs";
 import { z } from "zod";
+import {getCookie} from "./common";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/data`;
@@ -61,7 +62,7 @@ async function items({
 
 async function getRunes(data: any) {
   const url = `${base}/reforged-runes/`;
-  const response = await axios.post(url, data);
+  const response = await axios.post(url, data, {headers: {"X-CSRFToken": getCookie("csrftoken")}});
   return unwrap(t.array(Rune).decode(response.data.data));
 }
 
