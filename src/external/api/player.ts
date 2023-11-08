@@ -16,19 +16,19 @@ import {
 import { env } from "@/env/client.mjs";
 import {Comment, PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
 import { z } from "zod";
+import {getCookie} from "./common";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
 
-axios.defaults.xsrfHeaderName = "X-CSRFToken";
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
+
 async function getMyUser() {
   const url = `${base}/me/`;
-  const response = await axios.get(url, {
-    withCredentials: true
-  });
+  const response = await axios.get(url);
   if (response.data.email) {
     return unwrap(User.decode(response.data));
   }
@@ -46,6 +46,12 @@ async function getSummonerByName(name: string, region: string) {
   return unwrap(Summoner.decode(response.data));
 }
 
+async function getSummonerByRiotId(riotIdName: string, riotIdTagline: string, region: string) {
+  const url = `${base}/summoner/by-riot-id/${region}/${riotIdName}/${riotIdTagline}/`
+  const response = await axios.get(url);
+  return unwrap(Summoner.decode(response.data));
+}
+
 interface GetSummonersData extends AxiosRequestConfig {
   puuids: string[];
   region: string;
@@ -58,7 +64,7 @@ async function getSummoners(data: GetSummonersData) {
 
 async function getPositions(data: any) {
   const url = `${base}/positions/`;
-  const response = await axios.post(url, data);
+  const response = await axios.post(url, data, {headers: {"X-CSRFToken": getCookie("csrftoken")}});
   return unwrap(t.array(Position).decode(response.data.data))
 }
 
@@ -268,7 +274,11 @@ async function login({email, password}: {email: string, password: string}) {
 
 async function logout() {
   const url = `${base}/logout/`
-  const response = await axios.post(url)
+  const response = await axios.post(url, {}, {
+    headers: {
+      "X-CSRFToken": getCookie("csrftoken"),
+    }
+  })
   return response.status
 }
 
@@ -293,6 +303,7 @@ async function getComment(pk: number) {
 const exports = {
   getSummoner,
   getSummonerByName,
+  getSummonerByRiotId,
   getSummoners,
   getPositions,
   signUp,
