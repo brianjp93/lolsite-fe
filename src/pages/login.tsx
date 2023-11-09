@@ -50,8 +50,8 @@ function LoginInner() {
     login.mutate({ email, password });
   };
   return (
-    <div className="mx-auto max-w-prose mt-11">
-      <div className="text-xl font-bold underline w-full mb-3">Login</div>
+    <div className="flex flex-col gap-y-4 mt-11 w-full max-w-prose mx-auto">
+      <div className="text-xl font-bold underline w-full">Login</div>
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
         <label>
           <div>email</div>

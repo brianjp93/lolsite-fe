@@ -16,7 +16,7 @@ import {
 import { env } from "@/env/client.mjs";
 import {Comment, PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
 import { z } from "zod";
-import {getCookie} from "./common";
+import {getCookie, get_default_headers} from "./common";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
@@ -37,7 +37,7 @@ async function getMyUser() {
 
 function getSummoner(data: any) {
   const url = `${base}/summoner/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 async function getSummonerByName(name: string, region: string) {
@@ -58,25 +58,25 @@ interface GetSummonersData extends AxiosRequestConfig {
 }
 async function getSummoners(data: GetSummonersData) {
   const url = `${base}/summoners/`;
-  const r = await axios.post(url, data);
+  const r = await axios.post(url, data, get_default_headers());
   return unwrap(t.array(Summoner).decode(r.data.data));
 }
 
 async function getPositions(data: any) {
   const url = `${base}/positions/`;
-  const response = await axios.post(url, data, {headers: {"X-CSRFToken": getCookie("csrftoken")}});
+  const response = await axios.post(url, data, get_default_headers());
   return unwrap(t.array(Position).decode(response.data.data))
 }
 
 function signUp({email, password, token}: {email: string, password: string, token: string}) {
   const data = {email, password, token}
   const url = `${base}/sign-up/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 function verify(code: string) {
   const url = `${base}/verify/`;
-  return axios.post(url, {code});
+  return axios.post(url, {code}, get_default_headers());
 }
 
 async function getChampionsOverview(data: any) {
@@ -102,7 +102,7 @@ async function summonerSearch(params: {
 
 function isLoggedIn() {
   const url = `${base}/is-logged-in/`;
-  return axios.post(url);
+  return axios.post(url, get_default_headers());
 }
 
 interface GetRankHistoryData extends AxiosRequestConfig {
@@ -114,7 +114,7 @@ interface GetRankHistoryData extends AxiosRequestConfig {
 }
 async function getRankHistory(data: GetRankHistoryData) {
   const url = `${base}/rank-history/`;
-  const response = await axios.post(url, data);
+  const response = await axios.post(url, data, get_default_headers());
   return unwrap(t.array(PositionBin).decode(response.data.data));
 }
 
@@ -126,40 +126,41 @@ async function getFavorites() {
 
 async function setFavorite(summoner_id: number) {
   const url = `${base}/favorites/`;
-  const response = await axios.post(url, {verb: 'set', summoner_id});
+  const response = await axios.post(url, {verb: 'set', summoner_id}, get_default_headers());
   return response.status
 }
 
 async function removeFavorite(summoner_id: number) {
   const url = `${base}/favorites/`;
-  const response = await axios.post(url, {verb: 'remove', summoner_id});
+  const response = await axios.post(url, {verb: 'remove', summoner_id}, get_default_headers());
   return response.status
 }
 
 async function setFavoriteOrder(favorites: string[]) {
   const url = `${base}/favorites/`
-  const response = await axios.post(url, {verb: 'order', favorite_ids: favorites})
+  const response = await axios.post(url, {verb: 'order', favorite_ids: favorites}, get_default_headers())
   return response.status
 }
 
 function generateCode(data: {action: string, summoner_name?: string, region?: string}) {
   const url = `${base}/generate-code/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 function connectAccount(data: any) {
   const url = `${base}/connect-account/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 function unlinkAccount(puuid: string) {
   const url = `${base}/unlink-account/`;
-  return axios.request({method: 'DELETE', data: {puuid}, url})
+  const data = get_default_headers()
+  return axios.request({method: 'DELETE', data: {puuid}, url, ...data})
 }
 
 function connectAccountWithProfileIcon(data: any) {
   const url = `${base}/connect-account-with-profile-icon/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 async function getConnectedAccounts() {
@@ -170,7 +171,7 @@ async function getConnectedAccounts() {
 
 function changePassword(data: any) {
   const url = `${base}/change-password/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 interface GetTopPlayedWithData extends AxiosRequestConfig {
@@ -186,7 +187,7 @@ interface GetTopPlayedWithData extends AxiosRequestConfig {
 }
 async function getTopPlayedWith(data: GetTopPlayedWithData) {
   const url = `${base}/get-top-played-with/`;
-  const r = await axios.post(url, data);
+  const r = await axios.post(url, data, get_default_headers());
   return unwrap(t.array(TopPlayedWithPlayer).decode(r.data.data));
 }
 
@@ -202,7 +203,7 @@ function getReplies(data: any) {
 
 function createComment(data: {markdown: string, match: number, reply_to?: number, summoner: string}) {
   const url = `${base}/comment/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 function updateComment({id, markdown}: {id: number, markdown: string}) {
@@ -232,7 +233,7 @@ function getCommentCount(data: any) {
 
 function editDefaultSummoner(data: any) {
   const url = `${base}/default-summoner/`;
-  return axios.post(url, data);
+  return axios.post(url, data, get_default_headers());
 }
 
 async function getReputation(summoner: number) {
@@ -243,7 +244,7 @@ async function getReputation(summoner: number) {
 
 async function createReputation(summoner: number, is_approve: boolean) {
   const url = `${base}/reputation/create/`;
-  const r = await axios.post(url, { summoner, is_approve });
+  const r = await axios.post(url, { summoner, is_approve }, get_default_headers());
   return unwrap(Reputation.decode(r.data));
 }
 
@@ -268,17 +269,13 @@ async function login({email, password}: {email: string, password: string}) {
   const response = await axios.post(url, {
     email,
     password,
-  })
+  }, get_default_headers())
   return response.data
 }
 
 async function logout() {
   const url = `${base}/logout/`
-  const response = await axios.post(url, {}, {
-    headers: {
-      "X-CSRFToken": getCookie("csrftoken"),
-    }
-  })
+  const response = await axios.post(url, {}, get_default_headers())
   return response.status
 }
 
