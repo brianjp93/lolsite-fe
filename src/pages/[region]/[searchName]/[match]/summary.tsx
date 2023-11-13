@@ -23,7 +23,7 @@ export default function MatchSummary() {
   })
   return (
     <div className="h-screen">
-      {query.isLoading && "loading..."}
+      {(query.isLoading || query.data?.status === "r") && "loading..."}
       {query.data && <>
         <textarea readOnly value={query.data.content} className="w-full h-full bg-black p-8" />
       </>}
