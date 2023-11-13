@@ -13,6 +13,13 @@ export default function MatchSummary() {
   {
     retry: false,
     enabled: !!matchId,
+    refetchInterval: (data) => {
+      if (!data || data.status === "r") {
+        return 3000
+      }
+      return false
+    },
+    staleTime: 10000000,
   })
   return (
     <div className="h-screen">

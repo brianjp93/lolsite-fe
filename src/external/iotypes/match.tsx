@@ -590,5 +590,6 @@ export type AdvancedTimelineType = t.TypeOf<typeof AdvancedTimeline>
 
 export const MatchSummary = t.type({
   content: t.string,
+  status: t.string,
 })
 export type MatchSummaryType = t.TypeOf<typeof MatchSummary>
