@@ -1,6 +1,6 @@
 import { Component } from 'react'
-import Link from 'next/link'
 import PropTypes from 'prop-types'
+import {getProfileRouteFromPuuid} from '@/utils/constants'
 
 
 export class RecentlyPlayedWith extends Component {
@@ -21,9 +21,9 @@ export class RecentlyPlayedWith extends Component {
           // ignore bots
         } else {
           if (count[p.summoner_name] === undefined) {
-            count[p.summoner_name] = 1
+            count[p.summoner_name] = {count: 1, puuid: p.puuid}
           } else {
-            count[p.summoner_name] += 1
+            count[p.summoner_name].count += 1
           }
         }
       }
@@ -35,10 +35,11 @@ export class RecentlyPlayedWith extends Component {
     var count_list = []
     for (var name in count_dict) {
       // only add to list if count > 1
-      if (count_dict[name] > 1) {
+      if (count_dict[name].count > 1) {
         count_list.push({
           summoner_name: name,
-          count: count_dict[name],
+          count: count_dict[name].count,
+          puuid: count_dict[name].puuid
         })
       }
     }
@@ -70,12 +71,16 @@ export class RecentlyPlayedWith extends Component {
                 <tbody key={`row-for-${data.summoner_name}`} style={{fontSize: 'small'}}>
                   <tr>
                     <td style={td_style}>
-                      <Link
+                      <div
                         target="_blank"
-                        href={`/${this.props.region}/${data.summoner_name}/`}
+                        onClick={async () => {
+                          const url = await getProfileRouteFromPuuid(data.puuid, this.props.region)
+                          window.location.href = url
+                        }}
+                        className="cursor-pointer"
                       >
                         {data.summoner_name}
-                      </Link>
+                      </div>
                     </td>
                     <td style={td_style}>{data.count}</td>
                   </tr>

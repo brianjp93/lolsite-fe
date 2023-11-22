@@ -230,7 +230,8 @@ export function useParticipants(matchId: string) {
 }
 
 export function useMatchList({
-  name,
+  riot_id_name,
+  riot_id_tagline,
   region,
   start,
   limit,
@@ -242,7 +243,8 @@ export function useMatchList({
   onSettled,
   keepPreviousData = true,
 }: {
-  name: string;
+  riot_id_name: string;
+  riot_id_tagline: string;
   region: string;
   start: number;
   limit: number;
@@ -258,7 +260,8 @@ export function useMatchList({
     [
       "matches-with-sync",
       "by-summoner",
-      name,
+      riot_id_name,
+      riot_id_tagline,
       region,
       start,
       limit,
@@ -268,8 +271,9 @@ export function useMatchList({
     ],
     () =>
       api.match
-        .getMatchesBySummonerName({
-          summoner_name: name,
+        .getMatchesByRiotIdName({
+          riot_id_name,
+          riot_id_tagline,
           region,
           start,
           limit,
@@ -285,7 +289,7 @@ export function useMatchList({
       keepPreviousData,
       staleTime: 1000 * 60 * 3,
       cacheTime: 1000 * 60 * 3,
-      enabled: !!name && !!region,
+      enabled: !!riot_id_name && !!region && !!riot_id_tagline,
       onSuccess: () => onSuccess(),
       onError: () => onError(),
       onSettled: () => onSettled && onSettled(),
@@ -339,20 +343,22 @@ export function useQueues() {
 
 export function useSummoner({
   region,
-  name,
+  riotIdName,
+  riotIdTagline,
 }: {
   region: string;
-  name: string;
+  riotIdName: string;
+  riotIdTagline: string;
 }) {
   return useQuery(
-    ["summoner", "name", name, region],
-    () => api.player.getSummonerByName(name, region),
+    ["summoner", "name", riotIdName, riotIdTagline, region],
+    () => api.player.getSummonerByRiotId(riotIdName, riotIdTagline, region),
     {
       retry: false,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       staleTime: 1000 * 60 * 5,
-      enabled: !!region && !!name,
+      enabled: !!region && !!riotIdName && !!riotIdTagline,
     }
   );
 }

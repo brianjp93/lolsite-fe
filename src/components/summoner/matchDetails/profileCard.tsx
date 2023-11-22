@@ -14,7 +14,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Popover } from "react-tiny-popover";
 import { useState } from "react";
-import { QUEUE_CONVERT } from "@/utils/constants";
+import { QUEUE_CONVERT, getRiotIdAndTaglineFromSearchName } from "@/utils/constants";
 import numeral from "numeral";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
@@ -29,7 +29,8 @@ export function ProfileCard({ className = "" }: { className: string }) {
     searchName: string;
     region: string;
   };
-  const summonerQ = useSummoner({ region, name: searchName });
+  const [riotIdName, riotIdTagline] = getRiotIdAndTaglineFromSearchName(searchName)
+  const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;
   const positionQ = usePositions({ summoner_id: summoner?._id || "", region });
   const positions = positionQ.data;
@@ -154,9 +155,14 @@ export function ProfileCardInner({
               >
                 <div
                   onClick={() => setIsNameChangeOpen((x) => !x)}
-                  className="cursor-pointer font-bold underline"
+                  className="cursor-pointer font-bold underline flex"
                 >
-                  {summoner.name}
+                  <div>
+                    {summoner.riot_id_name}
+                  </div>
+                  <div className="text-gray-600">
+                    #{summoner.riot_id_tagline}
+                  </div>
                 </div>
               </Popover>
               {spectate ? (

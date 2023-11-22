@@ -31,6 +31,7 @@ import type { MetaHead } from "@/external/iotypes/base";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSummary";
 import { MatchListSummary } from "@/components/summoner/SummonerSummary";
+import { getRiotIdAndTaglineFromSearchName } from "@/utils/constants";
 
 export default function Summoner({
   meta,
@@ -40,6 +41,8 @@ export default function Summoner({
     region: string;
     searchName: string;
   };
+  const [riot_id_name, riot_id_tagline] =
+    getRiotIdAndTaglineFromSearchName(searchName);
   const [lastRefresh, setLastRefresh] = useState<undefined | number>();
   const [prevSearchName, setPrevSearchName] = useState("");
   const [params, setParams] = useQueryParams({
@@ -54,7 +57,11 @@ export default function Summoner({
   }
 
   const start = limit * params.page - limit;
-  const summonerQuery = useSummoner({ region, name: searchName });
+  const summonerQuery = useSummoner({
+    region,
+    riotIdName: riot_id_name,
+    riotIdTagline: riot_id_tagline,
+  });
   const summoner = summonerQuery.data;
 
   if (summoner?.summoner_level === 0) {
@@ -62,7 +69,8 @@ export default function Summoner({
   }
 
   const matchQuery = useMatchList({
-    name: searchName,
+    riot_id_name,
+    riot_id_tagline,
     region,
     start,
     limit,

@@ -55,6 +55,8 @@ export const BasicParticipant = t.type({
   lane: t.string,
   role: t.string,
   team_id: t.number,
+  riot_id_name: t.string,
+  riot_id_tagline: t.string,
   summoner_1_id: t.number,
   summoner_1_image: t.string,
   summoner_2_id: t.number,
@@ -241,6 +243,8 @@ export const FullParticipant = t.type({
   summoner_2_image: t.string,
   placement: t.number,
   subteam_placement: t.number,
+  riot_id_name: t.string,
+  riot_id_tagline: t.string,
 })
 export type FullParticipantType = t.TypeOf<typeof FullParticipant>
 

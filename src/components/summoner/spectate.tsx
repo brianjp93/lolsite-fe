@@ -1,6 +1,5 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from "react";
 import type { ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Modal from "react-modal";
 import numeral from "numeral";
@@ -116,7 +115,8 @@ export function Spectate({
                       className="w-full"
                       onMouseLeave={() => setIsHover(undefined)}>
                       <SummonerSummary
-                        name={part.summonerName}
+                        riotIdName={part.riot_id_name}
+                        riotIdTagline={part.riot_id_tagline}
                         region={region}
                       />
                     </div>

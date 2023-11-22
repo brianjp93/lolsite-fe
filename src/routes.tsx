@@ -1,13 +1,15 @@
 export function profileRoute({
   region,
-  name,
+  riotIdName,
+  riotIdTagline,
   playedWith,
 }: {
   region: string;
-  name: string;
+  riotIdName: string;
+  riotIdTagline: string;
   playedWith?: string;
 }) {
-  const url = `/${region}/${name}/`;
+  const url = `/${region}/${riotIdName}-${riotIdTagline}/`;
   const params = new URLSearchParams();
   if (playedWith) {
     params.append('playedWith', playedWith)

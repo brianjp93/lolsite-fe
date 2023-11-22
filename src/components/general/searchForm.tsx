@@ -29,6 +29,7 @@ export function SearchForm({
     resolver: zodResolver(SearchSchema),
   });
   const [isOpen, setIsOpen] = useState(false);
+  const isOpenOverride = false
   const router = useRouter();
   const name = watch("search") || "";
   const region = watch("region") || "na";
@@ -74,7 +75,13 @@ export function SearchForm({
   }, []);
 
   const onSubmit = handleSubmit((data) => {
-    router.push(`/${data.region}/${data.search}/`);
+    let search = data.search
+    if (data.search.indexOf("#") < 0) {
+      search = search + '-NA1'
+    } else {
+      search = search.replace("#", "-")
+    }
+    router.push(`/${data.region}/${search}/`);
   });
 
   const handleSelect = (x: SummonerSearchType) => {
@@ -105,10 +112,11 @@ export function SearchForm({
             if (query.data) setIsOpen(true);
           }}
           type="text"
+          placeholder="gameName#tagline"
           className={clsx("w-full", inputClass)}
           {...register("search")}
         />
-        {isOpen && (
+        {isOpenOverride && (
           <div className="absolute left-0 bottom-0 h-0 w-full">
             <div
               className={clsx(

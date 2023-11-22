@@ -48,7 +48,11 @@ import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
 import { usePickTurn } from "@/stores";
 import { InGameDot } from "@/components/general/favoriteList";
-import { ARENA_QUEUE } from "@/utils/constants";
+import {
+  ARENA_QUEUE,
+  getProfileRouteFromPuuid,
+  getRiotIdAndTaglineFromSearchName,
+} from "@/utils/constants";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -65,12 +69,14 @@ export default function Match({ meta }: { meta: MetaHead | null }) {
     "returnPath",
     withDefault(StringParam, "")
   );
+  const [riotIdName, riotIdTagline] =
+    getRiotIdAndTaglineFromSearchName(searchName);
   const matchQuery = useMatch(matchId);
   const match = matchQuery.data;
   const participantsQuery = useParticipants(matchId);
   const participants = participantsQuery.data;
   const timelineQuery = useTimeline({ matchId });
-  const summonerQ = useSummoner({ region, name: searchName });
+  const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;
   const bans = useBans(matchId).data?.results || [];
 
@@ -91,7 +97,9 @@ export default function Match({ meta }: { meta: MetaHead | null }) {
       <div className="ml-10 flex">
         <Link
           href={
-            returnPath ? returnPath : profileRoute({ region, name: searchName })
+            returnPath
+              ? returnPath
+              : profileRoute({ region, riotIdName, riotIdTagline })
           }
         >
           <svg
@@ -329,11 +337,14 @@ function ParticipantInfo({
   part: AppendParticipant;
   match: SimpleMatchType;
 }) {
-  const { region, searchName } = useRouter().query as {
+  const router = useRouter();
+  const { region, searchName } = router.query as {
     region: string;
     searchName: string;
   };
-  const summoner = useSummoner({ region, name: searchName }).data;
+  const [riotIdName, riotIdTagline] =
+    getRiotIdAndTaglineFromSearchName(searchName);
+  const summoner = useSummoner({ region, riotIdName, riotIdTagline }).data;
   const name = part.summoner_name.split(/\s+/).join(" ");
   const spectate = useSimpleSpectate(part.summoner_id, region).data;
 
@@ -345,7 +356,15 @@ function ParticipantInfo({
     >
       <div className="my-auto flex h-full flex-col">
         <div className="text-sm font-bold">
-          <Link href={profileRoute({ region, name })}>{name}</Link>
+          <div
+            className="cursor-pointer"
+            onClick={async () => {
+              const url = await getProfileRouteFromPuuid(part.puuid, region);
+              router.push(url);
+            }}
+          >
+            {name}
+          </div>
         </div>
         <div className="flex">
           <div className="my-auto h-full">
@@ -356,7 +375,7 @@ function ParticipantInfo({
                 minor={match.minor}
               />
               {spectate && (
-                <div className="absolute -top-2 -left-2">
+                <div className="absolute -left-2 -top-2">
                   <InGameDot
                     queueId={spectate.gameQueueConfigId}
                     startTime={spectate.gameStartTime}

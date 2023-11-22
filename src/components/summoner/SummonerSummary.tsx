@@ -8,14 +8,17 @@ import { mediaUrl } from "../utils";
 import MatchCard from "./matchCard";
 
 export function SummonerSummary({
-  name,
+  riotIdName,
+  riotIdTagline,
   region,
 }: {
-  name: string;
+  riotIdName: string;
+  riotIdTagline: string,
   region: string;
 }) {
   const query = useMatchList({
-    name,
+    riot_id_name: riotIdName,
+    riot_id_tagline: riotIdTagline,
     region,
     start: 0,
     limit: 20,
@@ -24,7 +27,7 @@ export function SummonerSummary({
     onSuccess: () => undefined,
     onError: () => undefined,
   });
-  const summonerQ = useSummoner({ region, name });
+  const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;
   const matches = query.data || [];
   if (query.isLoading) {

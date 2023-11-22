@@ -1,12 +1,12 @@
 import type { Favorite } from "@/external/types";
 import { profileRoute } from "@/routes";
-import Link from "next/link";
 import { Reorder, useDragControls } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useFavorites, useQueues, useSimpleSpectate } from "@/hooks";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 import numeral from "numeral";
+import {useRouter} from "next/router";
 
 export function FavoriteList({
   favorites,
@@ -19,8 +19,8 @@ export function FavoriteList({
   const [order, setOrder] = useState<Favorite[]>([]);
 
   useEffect(() => {
-    setOrder(favorites)
-  }, [favorites])
+    setOrder(favorites);
+  }, [favorites]);
 
   const mutation = useMutation(
     (puuidList: string[]) => api.player.setFavoriteOrder(puuidList),
@@ -59,7 +59,8 @@ function FavoriteItem({
   onClick?: () => void;
 }) {
   const controls = useDragControls();
-  const spectate = useSimpleSpectate(fav.summoner_id, fav.region).data
+  const spectate = useSimpleSpectate(fav.summoner_id, fav.region).data;
+  const router = useRouter();
 
   return (
     <Reorder.Item
@@ -89,28 +90,45 @@ function FavoriteItem({
             />
           </svg>
         </div>
-        <Link
-          onClick={() => onClick && onClick()}
-          href={profileRoute({
-            region: fav.region,
-            name: fav.name,
-          })}
-          className="flex px-2 py-1"
+        <div
+          onClick={() => {
+            api.player
+              .getSummoner({ puuid: fav.puuid, region: fav.region })
+              .then((response) => {
+                const url = profileRoute({
+                  region: fav.region,
+                  riotIdName: response.riot_id_name,
+                  riotIdTagline: response.riot_id_tagline,
+                });
+                router.push(url);
+              });
+            onClick && onClick();
+          }}
+          className="flex cursor-pointer px-2 py-1"
           key={`${fav.puuid}`}
         >
           <div className="mr-2 font-bold">{fav.region}</div>
-          {spectate &&
-            <InGameDot queueId={spectate.gameQueueConfigId} startTime={spectate.gameStartTime} />
-          }
+          {spectate && (
+            <InGameDot
+              queueId={spectate.gameQueueConfigId}
+              startTime={spectate.gameStartTime}
+            />
+          )}
           <div>{fav.name}</div>
-        </Link>
+        </div>
       </div>
     </Reorder.Item>
   );
 }
 
-export function InGameDot({queueId, startTime}: {queueId: number, startTime: number}) {
-  const queues = useQueues().data
+export function InGameDot({
+  queueId,
+  startTime,
+}: {
+  queueId: number;
+  startTime: number;
+}) {
+  const queues = useQueues().data;
   const queue = queues?.[queueId || -1]?.description || "";
   const now = new Date().getTime();
   const ms = now - startTime || 0;
@@ -120,9 +138,12 @@ export function InGameDot({queueId, startTime}: {queueId: number, startTime: num
 
   return (
     <>
-      <div className="flex h-full mr-1" title={`In game: ${queue} ${minutes}:${numeral(seconds).format("00")}`}>
-        <div className="rounded-full bg-green-700/70 border-green-300/80 border-2 h-4 w-4 my-auto"/>
+      <div
+        className="mr-1 flex h-full"
+        title={`In game: ${queue} ${minutes}:${numeral(seconds).format("00")}`}
+      >
+        <div className="my-auto h-4 w-4 rounded-full border-2 border-green-300/80 bg-green-700/70" />
       </div>
     </>
-  )
+  );
 }

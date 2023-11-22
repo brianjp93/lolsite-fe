@@ -35,15 +35,10 @@ async function getMyUser() {
   return null;
 }
 
-function getSummoner(data: any) {
+async function getSummoner(data: {puuid?: string, region: string}) {
   const url = `${base}/summoner/`;
-  return axios.post(url, data, get_default_headers());
-}
-
-async function getSummonerByName(name: string, region: string) {
-  const url = `${base}/summoner/${region}/by-name/${name}/`;
-  const response = await axios.get(url);
-  return unwrap(Summoner.decode(response.data));
+  const response = await axios.post(url, data, get_default_headers());
+  return unwrap(Summoner.decode(response.data.data))
 }
 
 async function getSummonerByRiotId(riotIdName: string, riotIdTagline: string, region: string) {
@@ -299,7 +294,6 @@ async function getComment(pk: number) {
 
 const exports = {
   getSummoner,
-  getSummonerByName,
   getSummonerByRiotId,
   getSummoners,
   getPositions,

@@ -63,8 +63,9 @@ async function getMatch(match_id: string) {
   return unwrap(SimpleMatch.decode(response.data));
 }
 
-async function getMatchesBySummonerName({
-  summoner_name,
+async function getMatchesByRiotIdName({
+  riot_id_name,
+  riot_id_tagline,
   region,
   queue,
   sync_import,
@@ -72,7 +73,8 @@ async function getMatchesBySummonerName({
   start = 0,
   limit = 10,
 }: {
-  summoner_name: string;
+  riot_id_name: string;
+  riot_id_tagline: string;
   region: string;
   sync_import?: boolean;
   playedWith?: string;
@@ -80,10 +82,10 @@ async function getMatchesBySummonerName({
   limit?: number;
   queue?: number | string;
 }) {
-  if (!summoner_name || !region) {
+  if (!riot_id_name || !region || !riot_id_tagline) {
     throw new Error("summoner and region required.");
   }
-  const url = `${base}/by-summoner/${region}/${summoner_name}/`;
+  const url = `${base}/by-summoner/${region}/${riot_id_name}/${riot_id_tagline}/`;
   const params = {
     start,
     limit,
@@ -126,7 +128,7 @@ const exports = {
   setRole,
   getLatestUnlabeled,
   bans,
-  getMatchesBySummonerName,
+  getMatchesByRiotIdName,
   getMatchSummary,
 };
 

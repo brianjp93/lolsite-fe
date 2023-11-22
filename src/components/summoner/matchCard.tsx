@@ -19,6 +19,8 @@ import {
   queueColor,
 } from "../utils";
 import type { AppendParticipant } from "./rankParticipants";
+import api from "@/external/api/api";
+import { profileRoute } from "@/routes";
 
 export default function MatchCard({
   match,
@@ -152,7 +154,8 @@ function TeamClump({
   part?: BasicParticipantType;
 }) {
   const champions = useBasicChampions();
-  const { region } = useRouter().query as { region: string };
+  const router = useRouter();
+  const { region } = router.query as { region: string };
   return (
     <div className="w-32 md:w-44">
       {team.map((teammate) => {
@@ -165,9 +168,9 @@ function TeamClump({
                 "font-bold": teammate.puuid === part?.puuid,
               }
             )}
-            title={teammate.summoner_name}
+            title={teammate.riot_id_name || teammate.summoner_name}
           >
-            {teammate.summoner_name}
+            {teammate.riot_id_name || teammate.summoner_name}
           </div>
         );
         return (
@@ -183,12 +186,23 @@ function TeamClump({
                 />
               )}
               {teammate.puuid !== part?.puuid ? (
-                <Link
-                  className="overflow-hidden"
-                  href={`/${region}/${teammate.summoner_name}/`}
+                <div
+                  className="cursor-pointer overflow-hidden"
+                  onClick={() => {
+                    api.player
+                      .getSummoner({ puuid: teammate.puuid, region: region })
+                      .then((response) => {
+                        const url = profileRoute({
+                          region,
+                          riotIdName: response.riot_id_name,
+                          riotIdTagline: response.riot_id_tagline,
+                        });
+                        router.push(url);
+                      });
+                  }}
                 >
                   {link}
-                </Link>
+                </div>
               ) : (
                 link
               )}
