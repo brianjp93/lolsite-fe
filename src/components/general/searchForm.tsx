@@ -6,7 +6,7 @@ import { REGIONS } from "@/utils/constants";
 import { useRouter } from "next/router";
 import { useSummonerSearch } from "@/hooks";
 import clsx from "clsx";
-import type { SummonerSearchType } from "@/external/types";
+import type { SummonerType } from "@/external/types";
 
 const SearchSchema = z.object({
   search: z.string().min(1, "Please give a summoner name."),
@@ -29,7 +29,6 @@ export function SearchForm({
     resolver: zodResolver(SearchSchema),
   });
   const [isOpen, setIsOpen] = useState(false);
-  const isOpenOverride = false
   const router = useRouter();
   const name = watch("search") || "";
   const region = watch("region") || "na";
@@ -84,8 +83,8 @@ export function SearchForm({
     router.push(`/${data.region}/${search}/`);
   });
 
-  const handleSelect = (x: SummonerSearchType) => {
-    setValue("search", x.name);
+  const handleSelect = (x: SummonerType) => {
+    setValue("search", `${x.riot_id_name}#${x.riot_id_tagline}`);
     onSubmit();
   };
 
@@ -116,7 +115,7 @@ export function SearchForm({
           className={clsx("w-full", inputClass)}
           {...register("search")}
         />
-        {isOpenOverride && (
+        {isOpen && (
           <div className="absolute left-0 bottom-0 h-0 w-full">
             <div
               className={clsx(
@@ -138,14 +137,14 @@ export function SearchForm({
                         }
                       }}
                       className="flex h-fit w-full items-center rounded py-1 hover:cursor-pointer hover:bg-white/10"
-                      key={x.name}
+                      key={x.puuid}
                     >
                       <div className="h-full w-16">
                         <div className="mr-3 rounded border border-gray-300 px-0 py-1 text-center">
                           {x.summoner_level}
                         </div>
                       </div>
-                      <div className="">{x.name}</div>
+                      <div className="">{x.riot_id_name}#{x.riot_id_tagline}</div>
                     </div>
                   );
                 })}
