@@ -1,13 +1,14 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from "react";
 import type { ReactNode } from "react";
-import Link from "next/link";
 import Modal from "react-modal";
 import numeral from "numeral";
 import { formatDatetimeTime, mediaUrl } from "@/components/utils";
 import Image from "next/image";
 import { Popover } from "react-tiny-popover";
 import { SummonerSummary } from "./SummonerSummary";
-import {useSpectate} from "@/hooks";
+import { useSpectate } from "@/hooks";
+import { getProfileRouteFromPuuid } from "@/utils/constants";
+import { useRouter } from "next/router";
 
 export function Spectate({
   region,
@@ -23,6 +24,7 @@ export function Spectate({
   const spectateQuery = useSpectate(region, summoner_id);
   const spectateData = spectateQuery.data || undefined;
   const [isHover, setIsHover] = useState<string | undefined>(undefined);
+  const router = useRouter();
 
   const team100 = (spectateQuery.data?.participants || []).filter(
     (x) => x.teamId === 100
@@ -107,13 +109,14 @@ export function Spectate({
                     zIndex: "21",
                     minWidth: "750px",
                     maxHeight: "400px",
-                    overflowY: 'scroll',
-                    overflowX: 'hidden',
+                    overflowY: "scroll",
+                    overflowX: "hidden",
                   }}
                   content={
                     <div
                       className="w-full"
-                      onMouseLeave={() => setIsHover(undefined)}>
+                      onMouseLeave={() => setIsHover(undefined)}
+                    >
                       <SummonerSummary
                         riotIdName={part.riot_id_name}
                         riotIdTagline={part.riot_id_tagline}
@@ -122,13 +125,18 @@ export function Spectate({
                     </div>
                   }
                 >
-                  <Link
-                    target="_blank"
-                    className="align-top"
-                    href={`/${region}/${part.summonerName}/`}
+                  <div
+                    className="cursor-pointer align-top hover:underline"
+                    onClick={async () => {
+                      const url = await getProfileRouteFromPuuid(
+                        part.puuid,
+                        region
+                      );
+                      router.push(url);
+                    }}
                   >
                     {part.summonerName}
-                  </Link>
+                  </div>
                 </Popover>
               )}
             </small>{" "}

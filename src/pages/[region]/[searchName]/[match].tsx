@@ -357,7 +357,7 @@ function ParticipantInfo({
       <div className="my-auto flex h-full flex-col">
         <div className="text-sm font-bold">
           <div
-            className="cursor-pointer"
+            className="cursor-pointer hover:underline"
             onClick={async () => {
               const url = await getProfileRouteFromPuuid(part.puuid, region);
               router.push(url);

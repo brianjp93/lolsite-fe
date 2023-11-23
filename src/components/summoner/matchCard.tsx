@@ -21,6 +21,7 @@ import {
 import type { AppendParticipant } from "./rankParticipants";
 import api from "@/external/api/api";
 import { profileRoute } from "@/routes";
+import {getProfileRouteFromPuuid} from "@/utils/constants";
 
 export default function MatchCard({
   match,
@@ -187,18 +188,10 @@ function TeamClump({
               )}
               {teammate.puuid !== part?.puuid ? (
                 <div
-                  className="cursor-pointer overflow-hidden"
-                  onClick={() => {
-                    api.player
-                      .getSummoner({ puuid: teammate.puuid, region: region })
-                      .then((response) => {
-                        const url = profileRoute({
-                          region,
-                          riotIdName: response.riot_id_name,
-                          riotIdTagline: response.riot_id_tagline,
-                        });
-                        router.push(url);
-                      });
+                  className="cursor-pointer overflow-hidden hover:underline"
+                  onClick={async () => {
+                    const url = await getProfileRouteFromPuuid(teammate.puuid, region)
+                    router.push(url)
                   }}
                 >
                   {link}

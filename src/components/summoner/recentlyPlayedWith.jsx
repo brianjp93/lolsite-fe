@@ -77,7 +77,7 @@ export class RecentlyPlayedWith extends Component {
                           const url = await getProfileRouteFromPuuid(data.puuid, this.props.region)
                           window.location.href = url
                         }}
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:underline"
                       >
                         {data.summoner_name}
                       </div>
