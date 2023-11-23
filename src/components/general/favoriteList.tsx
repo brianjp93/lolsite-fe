@@ -104,7 +104,7 @@ function FavoriteItem({
               });
             onClick && onClick();
           }}
-          className="flex cursor-pointer px-2 py-1"
+          className="flex cursor-pointer px-2 py-1 hover:underline"
           key={`${fav.puuid}`}
         >
           <div className="mr-2 font-bold">{fav.region}</div>
