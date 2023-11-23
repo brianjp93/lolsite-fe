@@ -114,7 +114,12 @@ function FavoriteItem({
               startTime={spectate.gameStartTime}
             />
           )}
-          <div>{fav.name}</div>
+          {(fav.riot_id_name && fav.riot_id_tagline) ?
+            <div title={`${fav.riot_id_name}#${fav.riot_id_tagline}`}>
+              {fav.riot_id_name}
+            </div>
+            : <div>{fav.name}</div>
+          }
         </div>
       </div>
     </Reorder.Item>
