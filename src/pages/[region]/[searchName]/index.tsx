@@ -196,6 +196,23 @@ export default function Summoner({
         )}
       </Head>
       <div style={{ minHeight: 1000 }} className="mx-auto flex-col">
+        {searchName.indexOf("-") === -1 &&
+          <div className="mt-4 flex flex-col gap-y-2">
+            <div className="mb-4">
+              Error while searching for summoner.
+            </div>
+            <div>
+              Riot has updated summoner names to use your RiotIdName + RiotTagline.
+            </div>
+            <div>
+              Make sure to search for your name, using a &quot;#&quot; between your name and tagline.
+            </div>
+            <div className="mt-4">
+              Ex:
+              <span className="font-bold ml-2">yourName#tagline</span>
+            </div>
+          </div>
+        }
         {summoner && (
           <div className="flex">
             <ProfileCardInner
