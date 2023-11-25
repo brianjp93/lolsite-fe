@@ -19,9 +19,7 @@ import {
   queueColor,
 } from "../utils";
 import type { AppendParticipant } from "./rankParticipants";
-import api from "@/external/api/api";
-import { profileRoute } from "@/routes";
-import {getProfileRouteFromPuuid} from "@/utils/constants";
+import { puuidRoute } from "@/routes";
 
 export default function MatchCard({
   match,
@@ -187,15 +185,12 @@ function TeamClump({
                 />
               )}
               {teammate.puuid !== part?.puuid ? (
-                <div
+                <Link
                   className="cursor-pointer overflow-hidden hover:underline"
-                  onClick={async () => {
-                    const url = await getProfileRouteFromPuuid(teammate.puuid, region)
-                    router.push(url)
-                  }}
+                  href={puuidRoute(teammate.puuid, region)}
                 >
                   {link}
-                </div>
+                </Link>
               ) : (
                 link
               )}

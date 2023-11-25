@@ -363,6 +363,26 @@ export function useSummoner({
   );
 }
 
+export function useSummonerByPuuid({
+  region,
+  puuid,
+}: {
+  region: string;
+  puuid: string;
+}) {
+  return useQuery(
+    ["summoner", "puuid", region, puuid],
+    () => api.player.getSummoner({puuid, region}),
+    {
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      staleTime: 1000 * 60 * 5,
+      enabled: !!region && !!puuid,
+    }
+  )
+}
+
 export function usePositions({
   summoner_id,
   region,

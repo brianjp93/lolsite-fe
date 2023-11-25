@@ -26,5 +26,9 @@ export function signUpRoute() {
 }
 
 export function itemsRoute() {
-  return "/items"
+  return "/items/"
+}
+
+export function puuidRoute(puuid: string, region: string) {
+  return `/${region}/puuid/${puuid}/`
 }

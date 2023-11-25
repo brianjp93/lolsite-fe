@@ -7,8 +7,8 @@ import Image from "next/image";
 import { Popover } from "react-tiny-popover";
 import { SummonerSummary } from "./SummonerSummary";
 import { useSpectate } from "@/hooks";
-import { getProfileRouteFromPuuid } from "@/utils/constants";
-import { useRouter } from "next/router";
+import Link from "next/link";
+import {puuidRoute} from "@/routes";
 
 export function Spectate({
   region,
@@ -24,7 +24,6 @@ export function Spectate({
   const spectateQuery = useSpectate(region, summoner_id);
   const spectateData = spectateQuery.data || undefined;
   const [isHover, setIsHover] = useState<string | undefined>(undefined);
-  const router = useRouter();
 
   const team100 = (spectateQuery.data?.participants || []).filter(
     (x) => x.teamId === 100
@@ -125,18 +124,12 @@ export function Spectate({
                     </div>
                   }
                 >
-                  <div
+                  <Link
                     className="cursor-pointer align-top hover:underline"
-                    onClick={async () => {
-                      const url = await getProfileRouteFromPuuid(
-                        part.puuid,
-                        region
-                      );
-                      router.push(url);
-                    }}
+                    href={puuidRoute(part.puuid, region)}
                   >
                     {part.summonerName}
-                  </div>
+                  </Link>
                 </Popover>
               )}
             </small>{" "}

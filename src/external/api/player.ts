@@ -6,7 +6,6 @@ import {
   unwrap,
   TopPlayedWithPlayer,
   Summoner,
-  SummonerSearch,
   Reputation,
   User,
   NameChange,
@@ -16,7 +15,7 @@ import {
 import { env } from "@/env/client.mjs";
 import {Comment, PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
 import { z } from "zod";
-import {getCookie, get_default_headers} from "./common";
+import {get_default_headers} from "./common";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;

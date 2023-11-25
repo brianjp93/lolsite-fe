@@ -15,7 +15,7 @@ import type { SimpleMatchType, SummonerType } from "@/external/types";
 import Orbit from "@/components/general/spinner";
 import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
-import { profileRoute } from "@/routes";
+import { profileRoute, puuidRoute } from "@/routes";
 import type { BanType, FrameType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
@@ -50,7 +50,6 @@ import { usePickTurn } from "@/stores";
 import { InGameDot } from "@/components/general/favoriteList";
 import {
   ARENA_QUEUE,
-  getProfileRouteFromPuuid,
   getRiotIdAndTaglineFromSearchName,
 } from "@/utils/constants";
 
@@ -356,15 +355,12 @@ function ParticipantInfo({
     >
       <div className="my-auto flex h-full flex-col">
         <div className="text-sm font-bold">
-          <div
+          <Link
             className="cursor-pointer hover:underline"
-            onClick={async () => {
-              const url = await getProfileRouteFromPuuid(part.puuid, region);
-              router.push(url);
-            }}
+            href={puuidRoute(part.puuid, region)}
           >
             {name}
-          </div>
+          </Link>
         </div>
         <div className="flex">
           <div className="my-auto h-full">

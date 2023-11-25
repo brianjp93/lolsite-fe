@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
-import {getProfileRouteFromPuuid} from '@/utils/constants'
+import {puuidRoute} from '@/routes'
+import Link from 'next/link'
 
 
 export class RecentlyPlayedWith extends Component {
@@ -71,16 +72,12 @@ export class RecentlyPlayedWith extends Component {
                 <tbody key={`row-for-${data.summoner_name}`} style={{fontSize: 'small'}}>
                   <tr>
                     <td style={td_style}>
-                      <div
-                        target="_blank"
-                        onClick={async () => {
-                          const url = await getProfileRouteFromPuuid(data.puuid, this.props.region)
-                          window.location.href = url
-                        }}
+                      <Link
+                        href={puuidRoute(data.puuid, this.props.region)}
                         className="cursor-pointer hover:underline"
                       >
                         {data.summoner_name}
-                      </div>
+                      </Link>
                     </td>
                     <td style={td_style}>{data.count}</td>
                   </tr>
