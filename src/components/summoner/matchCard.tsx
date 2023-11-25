@@ -187,7 +187,7 @@ function TeamClump({
               {teammate.puuid !== part?.puuid ? (
                 <Link
                   className="cursor-pointer overflow-hidden hover:underline"
-                  href={puuidRoute(teammate.puuid, region)}
+                  href={puuidRoute(teammate.puuid)}
                 >
                   {link}
                 </Link>

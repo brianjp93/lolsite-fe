@@ -93,7 +93,7 @@ function FavoriteItem({
         </div>
         <Link
           className="flex cursor-pointer px-2 py-1 hover:underline"
-          href={puuidRoute(fav.puuid, fav.region)}
+          href={puuidRoute(fav.puuid)}
           key={`${fav.puuid}`}
         >
           <div className="mr-2 font-bold">{fav.region}</div>

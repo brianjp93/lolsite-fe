@@ -357,7 +357,7 @@ function ParticipantInfo({
         <div className="text-sm font-bold">
           <Link
             className="cursor-pointer hover:underline"
-            href={puuidRoute(part.puuid, region)}
+            href={puuidRoute(part.puuid)}
           >
             {name}
           </Link>

@@ -73,7 +73,7 @@ export class RecentlyPlayedWith extends Component {
                   <tr>
                     <td style={td_style}>
                       <Link
-                        href={puuidRoute(data.puuid, this.props.region)}
+                        href={puuidRoute(data.puuid)}
                         className="cursor-pointer hover:underline"
                       >
                         {data.summoner_name}

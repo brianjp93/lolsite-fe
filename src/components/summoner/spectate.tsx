@@ -126,7 +126,7 @@ export function Spectate({
                 >
                   <Link
                     className="cursor-pointer align-top hover:underline"
-                    href={puuidRoute(part.puuid, region)}
+                    href={puuidRoute(part.puuid)}
                   >
                     {part.summonerName}
                   </Link>
