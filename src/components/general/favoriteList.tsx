@@ -1,5 +1,5 @@
 import type { Favorite } from "@/external/types";
-import { profileRoute } from "@/routes";
+import { profileRoute, puuidRoute } from "@/routes";
 import { Reorder, useDragControls } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useFavorites, useQueues, useSimpleSpectate } from "@/hooks";
@@ -7,6 +7,7 @@ import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 import numeral from "numeral";
 import {useRouter} from "next/router";
+import Link from "next/link";
 
 export function FavoriteList({
   favorites,
@@ -90,21 +91,9 @@ function FavoriteItem({
             />
           </svg>
         </div>
-        <div
-          onClick={() => {
-            api.player
-              .getSummoner({ puuid: fav.puuid, region: fav.region })
-              .then((response) => {
-                const url = profileRoute({
-                  region: fav.region,
-                  riotIdName: response.riot_id_name,
-                  riotIdTagline: response.riot_id_tagline,
-                });
-                router.push(url);
-              });
-            onClick && onClick();
-          }}
+        <Link
           className="flex cursor-pointer px-2 py-1 hover:underline"
+          href={puuidRoute(fav.puuid, fav.region)}
           key={`${fav.puuid}`}
         >
           <div className="mr-2 font-bold">{fav.region}</div>
@@ -120,7 +109,7 @@ function FavoriteItem({
             </div>
             : <div>{fav.name}</div>
           }
-        </div>
+        </Link>
       </div>
     </Reorder.Item>
   );

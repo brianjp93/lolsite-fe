@@ -34,7 +34,7 @@ async function getMyUser() {
   return null;
 }
 
-async function getSummoner(data: {puuid?: string, region: string}) {
+async function getSummoner(data: {puuid: string, region?: string}) {
   const url = `${base}/summoner/`;
   const response = await axios.post(url, data, get_default_headers());
   return unwrap(Summoner.decode(response.data.data))

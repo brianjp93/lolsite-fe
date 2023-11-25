@@ -364,21 +364,18 @@ export function useSummoner({
 }
 
 export function useSummonerByPuuid({
-  region,
   puuid,
 }: {
-  region: string;
   puuid: string;
 }) {
   return useQuery(
-    ["summoner", "puuid", region, puuid],
-    () => api.player.getSummoner({puuid, region}),
+    ["summoner", "puuid", puuid],
+    () => api.player.getSummoner({puuid}),
     {
       retry: false,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       staleTime: 1000 * 60 * 5,
-      enabled: !!region && !!puuid,
     }
   )
 }

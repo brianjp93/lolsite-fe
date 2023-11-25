@@ -29,6 +29,6 @@ export function itemsRoute() {
   return "/items/"
 }
 
-export function puuidRoute(puuid: string, region: string) {
-  return `/${region}/puuid/${puuid}/`
+export function puuidRoute(puuid: string) {
+  return `/puuid/${puuid}/`
 }
