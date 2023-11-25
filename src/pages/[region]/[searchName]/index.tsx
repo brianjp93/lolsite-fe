@@ -322,6 +322,7 @@ const QUEUEFILTER = {
   440: "5v5 Ranked Flex",
   400: "5v5 Norms Draft",
   430: "5v5 Norms Blind",
+  490: "Normal (Quickplay)",
   1700: "2v2v2v2",
   0: "Custom Games",
   700: "Clash",
