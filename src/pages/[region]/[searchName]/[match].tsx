@@ -344,7 +344,7 @@ function ParticipantInfo({
   const [riotIdName, riotIdTagline] =
     getRiotIdAndTaglineFromSearchName(searchName);
   const summoner = useSummoner({ region, riotIdName, riotIdTagline }).data;
-  const name = part.summoner_name.split(/\s+/).join(" ");
+  const name = part.riot_id_name.split(/\s+/).join(" ");
   const spectate = useSimpleSpectate(part.summoner_id, region).data;
 
   return (
@@ -356,10 +356,17 @@ function ParticipantInfo({
       <div className="my-auto flex h-full flex-col">
         <div className="text-sm font-bold">
           <Link
-            className="cursor-pointer hover:underline"
+            className="flex cursor-pointer hover:underline"
             href={puuidRoute(part.puuid)}
           >
-            {name}
+            {name ? (
+              <>
+                <div>{name}</div>
+                <div className="text-gray-400">#{part.riot_id_tagline}</div>
+              </>
+            ) : (
+              <>{part.summoner_name}</>
+            )}
           </Link>
         </div>
         <div className="flex">
