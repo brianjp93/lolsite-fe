@@ -14,17 +14,23 @@ export class RecentlyPlayedWith extends Component {
   }
   countPlayers() {
     var count = {}
-    for (var match of this.props.matches) {
+    for (const match of this.props.matches) {
       for (var p of match.participants) {
+        const tagline = p.riot_id_tagline
+        const id_name = p.riot_id_name
+        let name = p.summoner_name
+        if (tagline && id_name) {
+          name = `${id_name}#${tagline}`
+        }
         if (p.puuid === this.props.summoner.puuid) {
           // ignore self
         } else if ([0, '0'].indexOf(p.puuid) >= 0) {
           // ignore bots
         } else {
-          if (count[p.summoner_name] === undefined) {
-            count[p.summoner_name] = {count: 1, puuid: p.puuid}
+          if (count[name] === undefined) {
+            count[name] = {count: 1, puuid: p.puuid}
           } else {
-            count[p.summoner_name].count += 1
+            count[name].count += 1
           }
         }
       }
