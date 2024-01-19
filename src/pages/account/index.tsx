@@ -1,5 +1,5 @@
 import Skeleton from "@/components/general/skeleton";
-import { mediaUrl } from "@/components/utils";
+import { ErrorField, mediaUrl } from "@/components/utils";
 import type { UserType, SummonerType } from "@/external/types";
 import { useUser, useConnectedSummoners } from "@/hooks";
 import Image from "next/image";
@@ -143,9 +143,9 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
   const [region, setRegion] = useState("na");
   const mutation = useMutation(
-    ({ summonerName, region }: { summonerName: string; region: string }) =>
+    ({ simpleRiotId, region }: { simpleRiotId: string; region: string }) =>
       api.player
-        .generateCode({ action: "create", summoner_name: summonerName, region })
+        .generateCode({ action: "create", simple_riot_id: simpleRiotId, region })
         .then((response) => response.data)
   );
 
@@ -153,7 +153,7 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
     () =>
       api.player
         .connectAccountWithProfileIcon({
-          summoner_name: mutation.data.summoner_name,
+          simple_riot_id: mutation.data.simple_riot_id,
           region,
         })
         .then((r) => r.data),
@@ -161,6 +161,14 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
       onSuccess: () => onSuccess(),
     }
   );
+
+  function isInvalid(name: string) {
+    const count = name.split('#').length - 1
+    if (count !== 1) {
+      return "There must be one '#' between your Riot ID and Tagline."
+    }
+    return false
+  }
 
   return (
     <>
@@ -187,18 +195,21 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
                 </select>
               </label>
               <label className="mt-2">
-                <div className="font-bold">Summoner Name</div>
+                <div className="font-bold">Riot ID & Tagline (your-name#tagline)</div>
                 <input
                   className="w-full"
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.currentTarget.value)}
                 />
+                {name.length > 0 && isInvalid(name) &&
+                  <ErrorField message={isInvalid(name) || ""}/>
+                }
               </label>
             </div>
             <div>
               <button
-                onClick={() => mutation.mutate({ summonerName: name, region })}
+                onClick={() => mutation.mutate({ simpleRiotId: name, region })}
                 className={clsx("btn btn-default mt-2 w-full", {
                   disabled: mutation.isLoading,
                 })}
@@ -230,7 +241,7 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
                 height={60}
                 alt={`Icon ID: ${mutation.data.icon.id}`}
               />
-              <div className="font-bold">{mutation.data.summoner_name}</div>
+              <div className="font-bold">{mutation.data.simple_riot_id}</div>
             </div>
           </div>
           <div>
