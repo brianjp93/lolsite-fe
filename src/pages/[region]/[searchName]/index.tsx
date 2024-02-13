@@ -328,6 +328,7 @@ const QUEUEFILTER = {
   700: "Clash",
   720: "ARAM Clash",
   450: "ARAM",
+  1900: "U.R.F.",
 } as const;
 
 const MatchFilterSchema = z.object({
