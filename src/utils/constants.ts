@@ -66,24 +66,34 @@ function getStatModImageUrl({ patch = "latest", key = "" }) {
   return `https://raw.communitydragon.org/${patch}/game/assets/perks/statmods/${key}.png`;
 }
 
+// https://raw.communitydragon.org/14.6/plugins/rcp-be-lol-game-data/global/en_gb/v1/perks.json
 export function getStatMod(patch = "latest") {
   const data = {
-    5001: {
-      name: "+15-90 Health (based on level)",
+    statmodshealthscalingicon: {
+      name: "65 Bonus Health",
       key: "statmodshealthscalingicon",
-      id: 5001,
+      id: 5011,
       image_url: getStatModImageUrl({
         patch,
         key: "statmodshealthscalingicon",
       }),
     },
-    5002: {
+    statmodshealthplusicon: {
+      name: "+10-180 Health (based on level)",
+      key: "statmodshealthplusicon",
+      id: 5001,
+      image_url: getStatModImageUrl({
+        patch,
+        key: "statmodshealthplusicon",
+      }),
+    },
+    statmodsarmoricon: {
       name: "+6 Armor",
       key: "statmodsarmoricon",
       id: 5002,
       image_url: getStatModImageUrl({ patch, key: "statmodsarmoricon" }),
     },
-    5003: {
+    statmodsmagicresicon: {
       name: "+8 Magic Resist",
       key: "statmodsmagicresicon",
       id: 5003,
@@ -92,13 +102,13 @@ export function getStatMod(patch = "latest") {
         key: "statmodsmagicresicon",
       }),
     },
-    5005: {
+    statmodsattackspeedicon: {
       name: "+10% Attack Speed",
       key: "statmodsattackspeedicon",
       id: 5005,
       image_url: getStatModImageUrl({ patch, key: "statmodsattackspeedicon" }),
     },
-    5008: {
+    statmodsadaptiveforceicon: {
       name: "Adaptive Force +9",
       key: "statmodsadaptiveforceicon",
       id: 5008,
@@ -107,11 +117,17 @@ export function getStatMod(patch = "latest") {
         key: "statmodsadaptiveforceicon",
       }),
     },
-    5007: {
+    statmodscdrscalingicon: {
       name: "+1-10% CDR (based on level)",
       key: "statmodscdrscalingicon",
       id: 5007,
       image_url: getStatModImageUrl({ patch, key: "statmodscdrscalingicon" }),
+    },
+    statmodstenacityicon: {
+      name: "10% tenacity and slow resist",
+      key: "statmodstenacityicon",
+      id: 5013,
+      image_url: getStatModImageUrl({ patch, key: "statmodstenacityicon" }),
     },
   };
   return data;

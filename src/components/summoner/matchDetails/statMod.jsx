@@ -6,9 +6,9 @@ export function StatModTable(props) {
   const participant = props.participant;
   const statmods = getStatMod("latest");
 
-  const perk_0_order = [5008, 5005, 5007];
-  const perk_1_order = [5008, 5002, 5003];
-  const perk_2_order = [5001, 5002, 5003];
+  const perk_0_order = ['statmodsadaptiveforceicon', 'statmodsattackspeedicon', 'statmodscdrscalingicon'];
+  const perk_1_order = ['statmodsadaptiveforceicon', 'statmodsarmoricon', 'statmodsmagicresicon'];
+  const perk_2_order = ['statmodshealthscalingicon', 'statmodstenacityicon', 'statmodshealthplusicon'];
   const table_rows = [perk_0_order, perk_1_order, perk_2_order];
 
   return (
@@ -19,7 +19,7 @@ export function StatModTable(props) {
             {perks.map((perk_id, key) => {
               const perk = statmods[perk_id];
               const is_perk_selected =
-                participant.stats[`stat_perk_${perk_int}`] === perk_id;
+                participant.stats[`stat_perk_${perk_int}`] === perk.id;
               return (
                 <div
                   key={`${perk_id}-${key}`}
