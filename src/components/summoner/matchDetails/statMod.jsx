@@ -7,7 +7,7 @@ export function StatModTable(props) {
   const statmods = getStatMod("latest");
 
   const perk_0_order = ['statmodsadaptiveforceicon', 'statmodsattackspeedicon', 'statmodscdrscalingicon'];
-  const perk_1_order = ['statmodsadaptiveforceicon', 'statmodsarmoricon', 'statmodsmagicresicon'];
+  const perk_1_order = ['statmodsadaptiveforceicon', 'statmodsmovementspeedicon', 'statmodshealthplusicon'];
   const perk_2_order = ['statmodshealthscalingicon', 'statmodstenacityicon', 'statmodshealthplusicon'];
   const table_rows = [perk_0_order, perk_1_order, perk_2_order];
 

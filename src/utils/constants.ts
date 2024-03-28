@@ -129,6 +129,12 @@ export function getStatMod(patch = "latest") {
       id: 5013,
       image_url: getStatModImageUrl({ patch, key: "statmodstenacityicon" }),
     },
+    statmodsmovementspeedicon: {
+      name: "2% bonus movement speed",
+      key: "statmodsmovementspeedicon",
+      id: 5010,
+      image_url: getStatModImageUrl({ patch, key: "statmodsmovementspeedicon" }),
+    },
   };
   return data;
 }
