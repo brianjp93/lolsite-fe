@@ -79,6 +79,7 @@ export function RunePage({
             <div
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
+              role='button'
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   setSelectedPart(part);
@@ -100,6 +101,7 @@ export function RunePage({
               }}
               style={{ ...select_style }}
               tabIndex={1}
+              role='button'
               height={30}
               width={30}
               className="my-2"
@@ -275,6 +277,10 @@ export function RuneTooltip({
         ref={ref}
         style={style}
         onClick={toggle}
+        role='button'
+        tabIndex={1}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setIsOpen(false)}
         onMouseOver={() => setIsOpen(true)}
         onMouseOut={() => setIsOpen(false)}
       >

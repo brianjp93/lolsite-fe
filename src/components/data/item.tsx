@@ -37,7 +37,11 @@ export function ItemPopover({major, minor, item_id, style, children}: React.Prop
         containerStyle={{zIndex: '11'}}
         content={<Item item={item} />}
       >
-        <div style={{...style, cursor: 'pointer'}} onClick={toggle}>
+        <div
+          tabIndex={1}
+          role='button'
+          onKeyDown={(event) => event.key === 'Enter' ? toggle(): null}
+          style={{...style, cursor: 'pointer'}} onClick={toggle}>
           {children}
         </div>
       </Popover>
