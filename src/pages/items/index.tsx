@@ -59,51 +59,54 @@ function ItemsPageInner({ items }: { items: ItemType[] }) {
 
   return (
     <>
-      <div className="max-w-prose">
-        <label className="my-2">
-          <div>search</div>
-          <input className="w-full" type="text" {...register("search")} />
-        </label>
-        <ErrorField message={errors.search?.message} />
+      <div className="flex flex-col">
+        <div className="w-full sticky top-0 bg-gray-900 p-3 shadow-md rounded-md">
+          <label className="my-2">
+            <div>search</div>
+            <input className="w-full" type="text" {...register("search")} />
+          </label>
+          <ErrorField message={errors.search?.message} />
 
-        <label className="my-2">
-          <div>order by</div>
-          <select className="w-full" {...register("order_by")}>
-            {orderByOptions.map((option) => {
-              return (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              );
-            })}
-          </select>
-        </label>
-        <ErrorField message={errors.search?.message} />
-      </div>
+          <label className="my-2">
+            <div>order by</div>
+            <select className="w-full" {...register("order_by")}>
+              {orderByOptions.map((option) => {
+                return (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+          <ErrorField message={errors.search?.message} />
+        </div>
 
-      <div className="flex flex-wrap">
-        {filteredItems.map((x) => {
-          return (
-            <div key={x.id} className="m-2 w-56 p-2 bg-gray-900 rounded-md max-h-52 overflow-y-scroll quiet-scroll">
-              <div className="flex mb-2">
-                <Image src={mediaUrl(x.image.file_40)} height={40} width={40} alt={x.name} className="h-[40px]" />
-                <div className="ml-1 text-sm font-bold">
-                  {x.name}
+        <div className="flex flex-wrap">
+          {filteredItems.map((x) => {
+            return (
+              <div key={x.id} className="m-2 w-56 p-2 bg-gray-900 rounded-md max-h-52 overflow-y-scroll quiet-scroll">
+                <div className="flex mb-2">
+                  <Image src={mediaUrl(x.image.file_40)} height={40} width={40} alt={x.name} className="h-[40px]" />
+                  <div className="ml-1 text-sm font-bold">
+                    {x.name}
+                  </div>
+                  <div>
+                    <div className="ml-3 text-sm font-bold text-yellow-600">{x.gold.total}</div>
+                    {x.last_changed &&
+                      <div className="text-sm">Last Changed: {x.last_changed}</div>
+                    }
+                  </div>
                 </div>
-                <div>
-                  <div className="ml-3 text-sm font-bold text-yellow-600">{x.gold.total}</div>
-                  {x.last_changed &&
-                    <div className="text-sm">Last Changed: {x.last_changed}</div>
-                  }
-                </div>
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{ __html: x.description }} />
               </div>
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{__html: x.description}} />
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+
     </>
   );
 }
