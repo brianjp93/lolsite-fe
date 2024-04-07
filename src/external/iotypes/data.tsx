@@ -2,51 +2,56 @@ import * as t from "io-ts";
 import { z } from "zod";
 import { optional } from "./base";
 
-export const ItemImage = t.type({
-  file: optional(t.string),
-  file_15: optional(t.string),
-  file_30: optional(t.string),
-  file_40: optional(t.string),
+export const ItemImage = z.object({
+  file: z.string().optional(),
+  file_15: z.string().nullable(),
+  file_30: z.string().nullable(),
+  file_40: z.string().nullable(),
 });
-export type ItemImageType = t.TypeOf<typeof ItemImage>;
+export type ItemImageType = z.infer<typeof ItemImage>;
 
-export const ItemGold = t.type({
-  id: t.number,
-  base: t.number,
-  purchasable: t.boolean,
-  sell: t.number,
-  total: t.number,
-  item: t.number,
+export const ItemGold = z.object({
+  id: z.number(),
+  base: z.number(),
+  purchasable: z.boolean(),
+  sell: z.number(),
+  total: z.number(),
+  item: z.number(),
 });
 
-export const Item = t.type({
-  id: t.number,
+export const Item = z.object({
+  id: z.number(),
   gold: ItemGold,
   image: ItemImage,
-  stats: t.record(t.string, t.number),
-  maps: t.record(t.string, t.boolean),
-  major: t.number,
-  minor: t.number,
-  patch: t.number,
-  _id: t.number,
-  version: t.string,
-  language: t.string,
-  colloq: t.string,
-  depth: optional(t.number),
-  group: t.string,
-  description: t.string,
-  name: t.string,
-  plaintext: t.string,
-  required_ally: t.string,
-  required_champion: t.string,
-  in_store: t.boolean,
-  consumed: t.boolean,
-  consume_on_full: t.boolean,
-  special_recipe: optional(t.number),
-  stacks: optional(t.number),
-  last_changed: optional(t.string),
+  stats: z.record(z.number().nullable()),
+  maps: z.record(z.boolean()),
+  major: z.number(),
+  minor: z.number(),
+  patch: z.number(),
+  _id: z.number(),
+  version: z.string(),
+  language: z.string(),
+  colloq: z.string(),
+  description: z.string(),
+  name: z.string(),
+  plaintext: z.string(),
+  required_ally: z.string(),
+  required_champion: z.string(),
+  in_store: z.boolean(),
+  consumed: z.boolean(),
+  consume_on_full: z.boolean(),
+  stacks: z.number().nullable(),
+  last_changed: z.string().nullable(),
+  diff: z.record(z.object({
+    prev: z.string().or(z.number()).nullable(),
+    curr: z.string().or(z.number()).nullable(),
+  })).nullable(),
+  stat_efficiency: z.object({
+    calculated_cost: z.number(),
+    gold_efficiency: z.number(),
+  }).and(z.record(z.number())),
 });
-export type ItemType = t.TypeOf<typeof Item>;
+export type ItemType = z.infer<typeof Item>;
 
 export const ChampionImage = t.type({
   file: optional(t.string),

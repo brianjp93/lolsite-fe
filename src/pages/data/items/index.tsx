@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorField, mediaUrl } from "@/components/utils";
 import Image from "next/image";
+import Link from "next/link";
+import { itemHistoryRoute } from "./[itemId]/history";
+import numeral from "numeral";
 
 function fuzzyMatch(pattern: string, str: string) {
   pattern = ".*" + pattern.toLowerCase().split("").join(".*") + ".*";
@@ -87,12 +90,15 @@ function ItemsPageInner({ items }: { items: ItemType[] }) {
             return (
               <div key={x.id} className="m-2 w-56 p-2 bg-gray-900 rounded-md max-h-52 overflow-y-scroll quiet-scroll">
                 <div className="flex mb-2">
-                  <Image src={mediaUrl(x.image.file_40)} height={40} width={40} alt={x.name} className="h-[40px]" />
-                  <div className="ml-1 text-sm font-bold">
-                    {x.name}
-                  </div>
+                  <Image src={mediaUrl(x.image.file_40 || "")} height={40} width={40} alt={x.name} className="h-[40px]" />
+                  <Link href={itemHistoryRoute(x._id)}>
+                    <div className="ml-1 text-sm font-bold">
+                      {x.name}
+                    </div>
+                  </Link>
                   <div>
-                    <div className="ml-3 text-sm font-bold text-yellow-600">{x.gold.total}</div>
+                    <div className="ml-3 text-sm font-bold text-yellow-600">{x.gold.total}g</div>
+                    <div title="stat gold efficiency" className="ml-3 text-sm font-bold text-cyan-300">{numeral(x.stat_efficiency.gold_efficiency).format('0')}%</div>
                     {x.last_changed &&
                       <div className="text-sm">Last Changed: {x.last_changed}</div>
                     }

@@ -9,7 +9,7 @@ import { Item, Queue } from "../iotypes/data";
 import * as t from "io-ts";
 import { env } from "@/env/client.mjs";
 import { z } from "zod";
-import {getCookie} from "./common";
+import { getCookie } from "./common";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/data`;
@@ -26,6 +26,12 @@ async function getQueues() {
 function getItem(data: any) {
   const url = `${base}/item/`;
   return axios.post(url, data);
+}
+
+async function getItemDiff(itemId: string) {
+  const url = `${base}/item/diff/${itemId}/`
+  const response = await axios.get(url)
+  return z.array(Item).parse(response.data)
 }
 
 function getSimpleItem(
@@ -50,19 +56,17 @@ async function items({
 }) {
   const url = `${base}/items/`;
   const r = await axios.get(url, { params: { major, minor, patch, map_id } });
-  return unwrap(
-    t
-      .type({
-        data: t.array(Item),
-        version: t.string,
-      })
-      .decode(r.data)
-  );
+  return z.object({
+    data: z.array(Item),
+    version: z.string(),
+  })
+    .parse(r.data)
+
 }
 
 async function getRunes(data: any) {
   const url = `${base}/reforged-runes/`;
-  const response = await axios.post(url, data, {headers: {"X-CSRFToken": getCookie("csrftoken")}});
+  const response = await axios.post(url, data, { headers: { "X-CSRFToken": getCookie("csrftoken") } });
   return unwrap(t.array(Rune).decode(response.data.data));
 }
 
@@ -120,5 +124,6 @@ const exports = {
   getMediaUrl,
   getQueues,
   getGoogleRecaptchaSiteKey,
+  getItemDiff,
 };
 export default exports;
