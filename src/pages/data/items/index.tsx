@@ -42,6 +42,10 @@ function ItemsPageInner({ items }: { items: ItemType[] }) {
     formState: { errors },
   } = useForm<LoginSchema>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      order_by: 'price desc',
+      search: '',
+    }
   });
 
   const search = watch("search");
