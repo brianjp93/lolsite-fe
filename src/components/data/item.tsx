@@ -1,4 +1,6 @@
 import {useSimpleItem} from '@/hooks'
+import { itemHistoryRoute } from '@/pages/data/items/[itemId]/history'
+import Link from 'next/link'
 import {useState} from 'react'
 import {Popover} from 'react-tiny-popover'
 
@@ -9,7 +11,9 @@ export function Item(props: any) {
       {props.item !== null && (
         <div>
           <div>
-            <span style={{textDecoration: 'underline'}}>{props.item.name}</span>{' '}
+            <Link href={itemHistoryRoute(props.item._id)}>
+              <span style={{textDecoration: 'underline'}}>{props.item.name}</span>{' '}
+            </Link>
             <span style={{color: 'gold'}}>{props.item.gold.total}</span>
           </div>
           <div>
