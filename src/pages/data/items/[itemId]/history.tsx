@@ -20,11 +20,12 @@ export default function ItemHistory() {
 
   return <Skeleton>
     <div className="flex flex-col gap-y-4 w-full">
-      {mainItem &&
+      {mainItem ?
         <>
           <h1>{mainItem.name}</h1>
           <hr />
-        </>
+        </> :
+        <h1>No item history found</h1>
       }
       {itemHistory.map(item => {
         return <Fragment key={item.id}>
