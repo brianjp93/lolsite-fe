@@ -12,16 +12,16 @@ import {puuidRoute} from "@/routes";
 
 export function Spectate({
   region,
-  summoner_id,
+  puuid,
   queueConvert,
   closeModal,
 }: {
   region: string;
-  summoner_id: string;
+  puuid: string;
   queueConvert: any;
   closeModal: () => void;
 }) {
-  const spectateQuery = useSpectate(region, summoner_id);
+  const spectateQuery = useSpectate(region, puuid);
   const spectateData = spectateQuery.data || undefined;
   const [isHover, setIsHover] = useState<string | undefined>(undefined);
 
@@ -84,6 +84,7 @@ export function Spectate({
   const participantLine = (part: any) => {
     const pos = getTopSoloPosition(part.positions);
     const champion = part.champion || {};
+    const [name, tagline] = part.riotId.split('#')
     return (
       <div key={part.summonerId}>
         <hr />
@@ -97,10 +98,10 @@ export function Spectate({
           />
           <div className="ml-2">
             <small onMouseEnter={() => setIsHover(part.summonerId)}>
-              {summoner_id === part.summonerId && (
-                <span className="align-top font-bold">{part.summonerName}</span>
+              {puuid === part.puuid && (
+                <span className="align-top font-bold">{part.riotId}</span>
               )}
-              {summoner_id !== part.summonerId && (
+              {puuid !== part.puuid && (
                 <Popover
                   isOpen={part.summonerId === isHover}
                   positions={["bottom", "top"]}
@@ -117,8 +118,8 @@ export function Spectate({
                       onMouseLeave={() => setIsHover(undefined)}
                     >
                       <SummonerSummary
-                        riotIdName={part.riot_id_name}
-                        riotIdTagline={part.riot_id_tagline}
+                        riotIdName={name}
+                        riotIdTagline={tagline}
                         region={region}
                       />
                     </div>
@@ -128,7 +129,7 @@ export function Spectate({
                     className="cursor-pointer align-top hover:underline"
                     href={puuidRoute(part.puuid)}
                   >
-                    {part.summonerName}
+                    {part.riotId}
                   </Link>
                 </Popover>
               )}
@@ -215,14 +216,14 @@ export function SpectateModal({
   setIsSpectateModalOpen,
   queueConvert,
   region,
-  summoner_id,
+  puuid,
   children,
 }: {
   isSpectateModalOpen: boolean;
   setIsSpectateModalOpen: (x: boolean) => void;
   queueConvert: any;
   region: string;
-  summoner_id: string;
+  puuid: string;
   children: ReactNode;
 }) {
   return (
@@ -236,7 +237,7 @@ export function SpectateModal({
           closeModal={() => setIsSpectateModalOpen(false)}
           queueConvert={queueConvert}
           region={region}
-          summoner_id={summoner_id}
+          puuid={puuid}
         />
       </Modal>
       <span

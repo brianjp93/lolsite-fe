@@ -113,7 +113,7 @@ export function ProfileCardInner({
 
   const spectateQuery = useSpectate(
     summoner.region,
-    summoner?._id,
+    summoner?.puuid,
     1000 * 60,
     !!summoner?._id
   );
@@ -168,7 +168,7 @@ export function ProfileCardInner({
               {spectate ? (
                 <SpectateModal
                   region={summoner.region}
-                  summoner_id={summoner._id}
+                  puuid={summoner.puuid}
                   queueConvert={queues}
                   isSpectateModalOpen={isSpectateModalOpen}
                   setIsSpectateModalOpen={setIsSpectateModalOpen}

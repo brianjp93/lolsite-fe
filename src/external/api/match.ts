@@ -37,19 +37,19 @@ async function participants(data: ParticipantsData) {
 
 interface GetSpectateData extends AxiosRequestConfig {
   region: string;
-  summoner_id: string;
+  puuid: string;
 }
 async function getSpectate(data: GetSpectateData) {
   const url = `${base}/get-spectate/`;
   const response = await axios.get(url, {
-    params: { region: data.region, summoner_id: data.summoner_id },
+    params: { region: data.region, puuid: data.puuid },
   });
   return unwrap(
     t.union([SpectateMatch, t.literal("not found")]).decode(response.data)
   );
 }
 
-async function checkForLiveGame(data: { summoner_id: string; region: string }) {
+async function checkForLiveGame(data: { puuid: string; region: string }) {
   const url = `${base}/check-for-live-game/`;
   const r = await axios.get(url, { params: data });
   return unwrap(

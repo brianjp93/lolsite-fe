@@ -60,8 +60,7 @@ function FavoriteItem({
   onClick?: () => void;
 }) {
   const controls = useDragControls();
-  const spectate = useSimpleSpectate(fav.summoner_id, fav.region).data;
-  const router = useRouter();
+  const spectate = useSimpleSpectate(fav.puuid, fav.region).data;
 
   return (
     <Reorder.Item

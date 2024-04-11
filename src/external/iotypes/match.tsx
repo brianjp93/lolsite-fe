@@ -306,8 +306,8 @@ export const SpectateParticipant = t.type({
   spell1Id: t.number,
   spell2Id: t.number,
   summonerId: t.string,
-  summonerName: t.string,
   teamId: t.number,
+  riotId: t.string,
 })
 export type SpectateParticipantType = t.TypeOf<typeof SpectateParticipant>
 
@@ -317,7 +317,7 @@ export const SimpleSpectateParticipant = t.type({
   "spell2Id": t.number,
   "championId": t.number,
   "profileIconId": t.number,
-  "summonerName": t.string,
+  "riotId": t.string,
   "bot": t.boolean,
   "summonerId": t.string,
   "gameCustomizationObjects": t.array(t.unknown),

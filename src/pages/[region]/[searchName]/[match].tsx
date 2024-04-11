@@ -345,7 +345,7 @@ function ParticipantInfo({
     getRiotIdAndTaglineFromSearchName(searchName);
   const summoner = useSummoner({ region, riotIdName, riotIdTagline }).data;
   const name = part.riot_id_name.split(/\s+/).join(" ");
-  const spectate = useSimpleSpectate(part.summoner_id, region).data;
+  const spectate = useSimpleSpectate(part.puuid, region).data;
 
   return (
     <div

@@ -492,11 +492,11 @@ export function usePlayerSummary({
   );
 }
 
-export function useSimpleSpectate(summoner_id: string, region: string) {
+export function useSimpleSpectate(puuid: string, region: string) {
   return useQuery(
-    ["simple-spectate", summoner_id, region],
+    ["simple-spectate", puuid, region],
     () =>
-      api.match.checkForLiveGame({ summoner_id, region }).then((response) => {
+      api.match.checkForLiveGame({ puuid, region }).then((response) => {
         if (response === "not found") {
           return null;
         }
@@ -507,7 +507,7 @@ export function useSimpleSpectate(summoner_id: string, region: string) {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       retry: false,
-      enabled: !!(summoner_id && region),
+      enabled: !!(puuid && region),
     }
   );
 }
@@ -541,14 +541,14 @@ export function useSuspiciousAccount(puuid: string, enabled = true) {
 
 export function useSpectate(
   region: string,
-  summoner_id: string,
+  puuid: string,
   refetchInterval?: number,
   enabled?: boolean
 ) {
   return useQuery(
-    ["spectate", region, summoner_id],
+    ["spectate", region, puuid],
     () =>
-      api.match.getSpectate({ region, summoner_id }).then((x) => {
+      api.match.getSpectate({ region, puuid }).then((x) => {
         if (x === "not found") {
           return null;
         }
