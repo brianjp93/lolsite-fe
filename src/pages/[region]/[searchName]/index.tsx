@@ -43,7 +43,6 @@ export default function Summoner({
   };
   const [riot_id_name, riot_id_tagline] =
     getRiotIdAndTaglineFromSearchName(searchName);
-  const [lastRefresh, setLastRefresh] = useState<undefined | number>();
   const [prevSearchName, setPrevSearchName] = useState("");
   const [params, setParams] = useQueryParams({
     page: withDefault(NumberParam, 1),
@@ -78,9 +77,6 @@ export default function Summoner({
     queue: params.queue,
     playedWith: params.playedWith,
     keepPreviousData: searchName === prevSearchName,
-    onSuccess: () => {
-      setLastRefresh(Date.now());
-    },
     onError: () => {
       if (params.page > 1) {
         setParams({ ...params, page: params.page - 1 });

@@ -3,6 +3,7 @@ import type { NameChangeType, PositionType } from "@/external/iotypes/player";
 import type { SummonerType } from "@/external/types";
 import {
   useFavorites,
+  useFollowList,
   useNameChanges,
   usePositions,
   useQueues,
@@ -48,6 +49,38 @@ export function ProfileCard({ className = "" }: { className: string }) {
   );
 }
 
+export function FollowButton({ summoner }: { summoner: SummonerType }) {
+  const user = useUser().data;
+  const followQ = useFollowList({ enabled: !!user });
+  const following = followQ.data || [];
+  const isFollow = following.map(x => x.id).includes(summoner.id);
+
+  const setFollowM = useMutation(
+    () => api.player.setFollow({ id: summoner.id }), { onSuccess: () => followQ.refetch() }
+  );
+  const removeFollowM = useMutation(
+    () => api.player.removeFollow({ id: summoner.id }), { onSuccess: () => followQ.refetch() }
+  );
+  if (!user) {
+    return null
+  }
+  return <div title="follow">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill={isFollow ? "currentColor" : "none"}
+      onClick={() => {
+        isFollow ? removeFollowM.mutate() : setFollowM.mutate()
+      }}
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke={isFollow ? "black": "currentColor"}
+      className="w-6 h-6 hover:cursor-pointer"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  </div>
+}
+
 export function FavoriteButton({ summoner }: { summoner: SummonerType }) {
   const user = useUser().data;
   const favoritesQuery = useFavorites({ enabled: !!user });
@@ -73,7 +106,7 @@ export function FavoriteButton({ summoner }: { summoner: SummonerType }) {
   }
 
   return (
-    <div>
+    <div title="favorite">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill={isFavorite ? "currentColor" : "none"}
@@ -202,8 +235,9 @@ export function ProfileCardInner({
             )}
           </div>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex">
           <FavoriteButton summoner={summoner} />
+          <FollowButton summoner={summoner} />
         </div>
       </div>
       <div className="mt-2">

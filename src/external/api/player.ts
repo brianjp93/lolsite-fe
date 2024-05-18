@@ -113,6 +113,24 @@ async function getRankHistory(data: GetRankHistoryData) {
   return unwrap(t.array(PositionBin).decode(response.data.data));
 }
 
+async function getFollowList() {
+  const url = `${base}/following/`;
+  const response = await axios.get(url);
+  return unwrap(t.array(Summoner).decode(response.data))
+}
+
+async function setFollow({id}: {id: number}) {
+  const url = `${base}/following/`;
+  const response = await axios.post(url, {id}, get_default_headers())
+  return unwrap(t.array(Summoner).decode(response.data))
+}
+
+async function removeFollow({id}: {id: number}) {
+  const url = `${base}/following/`;
+  const response = await axios.delete(url, {data: {id}, ...get_default_headers()})
+  return unwrap(t.array(Summoner).decode(response.data))
+}
+
 async function getFavorites() {
   const url = `${base}/favorites/`;
   const response = await axios.get(url);
@@ -333,5 +351,8 @@ const exports = {
   unlinkAccount,
   getMatchComments,
   getComment,
+  getFollowList,
+  setFollow,
+  removeFollow,
 };
 export default exports;

@@ -264,7 +264,7 @@ export function useMatchList({
   sync: boolean;
   queue?: number;
   playedWith?: string;
-  onSuccess: () => void;
+  onSuccess?: () => void;
   onError: () => void;
   onSettled?: () => void;
   keepPreviousData?: boolean;
@@ -303,7 +303,7 @@ export function useMatchList({
       staleTime: 1000 * 60 * 3,
       cacheTime: 1000 * 60 * 3,
       enabled: !!riot_id_name && !!region && !!riot_id_tagline,
-      onSuccess: () => onSuccess(),
+      onSuccess: () => onSuccess && onSuccess(),
       onError: () => onError(),
       onSettled: () => onSettled && onSettled(),
     }
@@ -577,4 +577,8 @@ export function useGoogleRecaptchaSiteKey() {
       staleTime: 1000 * 3600,
     }
   );
+}
+
+export function useFollowList({enabled}: {enabled?:boolean}) {
+  return useQuery(['followList'], () => api.player.getFollowList(), {enabled})
 }
