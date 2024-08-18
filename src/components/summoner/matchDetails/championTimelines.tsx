@@ -40,7 +40,6 @@ type GraphType =
   | 'bonus_armor_pen_percent'
   | 'bonus_magic_pen_percent'
   | 'cc_reduction'
-  | 'cooldown_reduction'
   | 'health'
   | 'health_max'
   | 'health_regen'

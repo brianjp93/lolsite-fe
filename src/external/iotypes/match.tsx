@@ -386,7 +386,6 @@ export const ParticipantFrame = t.type({
   bonus_armor_pen_percent: t.number,
   bonus_magic_pen_percent: t.number,
   cc_reduction: t.number,
-  cooldown_reduction: t.number,
   health: t.number,
   health_max: t.number,
   health_regen: t.number,
