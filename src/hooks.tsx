@@ -197,7 +197,7 @@ export function useSummonerSearch({
   name = name.split(/\s+/).join("");
   const query = useQuery(
     ["summoner-search", name, region],
-    () => api.player.summonerSearch({ simple_riot_id__icontains: name, region }),
+    () => api.player.summonerSearch({ simple_riot_id__startswith: name.toLowerCase(), region }),
     {
       staleTime: 1000 * 60 * 2,
       refetchOnWindowFocus: false,

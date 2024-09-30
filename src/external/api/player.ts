@@ -85,6 +85,7 @@ async function getChampionsOverview(data: any) {
 async function summonerSearch(params: {
   simple_name__icontains?: string;
   simple_riot_id__icontains?: string;
+  simple_riot_id__startswith?: string;
   region: string;
   order_by?: string;
   start?: number;
