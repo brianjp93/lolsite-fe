@@ -67,14 +67,14 @@ export default function ItemHistory() {
                 if (val === null) {
                   return null
                 }
-                const gold = item.stat_efficiency[key]
+                const gold = item.stat_efficiency?.[key]
                 return <div key={key} className="flex gap-x-2">
                   <div className="w-40">{key}:</div>
                   <div>
                     {val}
                     {key.includes('percent') && '%'}
                   </div>
-                  {gold &&
+                  {typeof gold == 'object' &&
                     <div className="font-bold text-yellow-600">({numeral(gold.gold_value).format('0.00')}g)</div>
                   }
                 </div>

@@ -19,6 +19,11 @@ export const ItemGold = z.object({
   item: z.number(),
 });
 
+export const StatEfficiency = z.record(z.object({
+  amount: z.number(),
+  gold_value: z.number(),
+}).or(z.number()))
+
 export const Item = z.object({
   id: z.number(),
   gold: ItemGold,
@@ -46,14 +51,7 @@ export const Item = z.object({
     prev: z.string().or(z.number()).nullable(),
     curr: z.string().or(z.number()).nullable(),
   })).nullable(),
-  stat_efficiency: z.object({
-    calculated_cost: z.number(),
-    gold_efficiency: z.number(),
-  }).or(z.record(z.object({
-    amount: z.number(),
-    gold_value: z.number(),
-  })),
-  )
+  stat_efficiency: StatEfficiency,
 });
 export type ItemType = z.infer<typeof Item>;
 
