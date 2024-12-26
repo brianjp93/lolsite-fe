@@ -49,7 +49,11 @@ export const Item = z.object({
   stat_efficiency: z.object({
     calculated_cost: z.number(),
     gold_efficiency: z.number(),
-  }).and(z.record(z.number())),
+  }).or(z.record(z.object({
+    amount: z.number(),
+    gold_value: z.number(),
+  })),
+  )
 });
 export type ItemType = z.infer<typeof Item>;
 

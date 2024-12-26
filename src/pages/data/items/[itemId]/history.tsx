@@ -75,7 +75,7 @@ export default function ItemHistory() {
                     {key.includes('percent') && '%'}
                   </div>
                   {gold &&
-                    <div className="font-bold text-yellow-600">({numeral(gold).format('0.00')}g)</div>
+                    <div className="font-bold text-yellow-600">({numeral(gold.gold_value).format('0.00')}g)</div>
                   }
                 </div>
               })}
