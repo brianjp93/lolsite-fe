@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
 } else if (process.env.NODE_ENV === 'production') {
   remotePatterns.push({
     protocol: 'https',
-    hostname: 'app.hardstuck.club',
+    hostname: 'dokku.hardstuck.club',
     pathname: '/**',
   })
   remotePatterns.push({
