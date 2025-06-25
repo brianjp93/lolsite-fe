@@ -91,7 +91,6 @@ export const Favorite = z.object({
   region: z.string(),
   sort_int: z.number(),
   puuid: z.string(),
-  summoner_id: z.string(),
   riot_id_name: z.string(),
   riot_id_tagline: z.string(),
 });
