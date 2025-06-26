@@ -104,7 +104,7 @@ export default function Summoner({
   const matches: BasicMatchType[] = matchQuery.data || [];
   const positionQuery = usePositions({
     region,
-    summoner_id: summoner?._id || "",
+    puuid: summoner?.puuid || "",
   });
   const positions = positionQuery.data;
 

@@ -394,19 +394,19 @@ export function useSummonerByPuuid({
 }
 
 export function usePositions({
-  summoner_id,
+  puuid,
   region,
 }: {
-  summoner_id: string;
+  puuid: string;
   region: string;
 }) {
   const query = useQuery(
-    ["positions", summoner_id, region],
+    ["positions", puuid, region],
     () =>
-      summoner_id
-        ? api.player.getPositions({ summoner_id, region })
+      puuid
+        ? api.player.getPositions({ puuid, region })
         : undefined,
-    { retry: false, refetchOnWindowFocus: false, enabled: !!summoner_id }
+    { retry: false, refetchOnWindowFocus: false, enabled: !!puuid }
   );
   return query;
 }
