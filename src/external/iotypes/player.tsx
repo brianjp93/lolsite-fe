@@ -63,7 +63,6 @@ export const Summoner = t.type({
   summoner_level: t.number,
   riot_id_name: t.string,
   riot_id_tagline: t.string,
-  _id: t.string,
 });
 export type SummonerType = t.TypeOf<typeof Summoner>;
 
