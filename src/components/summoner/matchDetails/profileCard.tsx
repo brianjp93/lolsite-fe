@@ -33,7 +33,7 @@ export function ProfileCard({ className = "" }: { className: string }) {
   const [riotIdName, riotIdTagline] = getRiotIdAndTaglineFromSearchName(searchName)
   const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;
-  const positionQ = usePositions({ summoner_id: summoner?._id || "", region });
+  const positionQ = usePositions({ puuid: summoner?.puuid || "", region });
   const positions = positionQ.data;
   const nameChangeQuery = useNameChanges(summoner?.id || 0);
   const nameChanges = nameChangeQuery.data || [];
@@ -148,7 +148,7 @@ export function ProfileCardInner({
     summoner.region,
     summoner?.puuid,
     1000 * 60,
-    !!summoner?._id
+    !!summoner?.puuid
   );
   const spectate = spectateQuery.data;
   const queues = useQueues().data || {};
