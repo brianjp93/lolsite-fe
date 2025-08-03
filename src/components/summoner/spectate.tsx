@@ -86,7 +86,7 @@ export function Spectate({
     const champion = part.champion || {};
     const [name, tagline] = part.riotId.split('#')
     return (
-      <div key={part.summonerId}>
+      <div key={part.puuid}>
         <hr />
         <div className="flex h-24">
           <Image
@@ -97,13 +97,13 @@ export function Spectate({
             alt=""
           />
           <div className="ml-2">
-            <small onMouseEnter={() => setIsHover(part.summonerId)}>
+            <small onMouseEnter={() => setIsHover(part.puuid)}>
               {puuid === part.puuid && (
                 <span className="align-top font-bold">{part.riotId}</span>
               )}
               {puuid !== part.puuid && (
                 <Popover
-                  isOpen={part.summonerId === isHover}
+                  isOpen={part.puuid === isHover}
                   positions={["bottom", "top"]}
                   containerStyle={{
                     zIndex: "21",

@@ -283,7 +283,7 @@ export type BannedChampionType = t.TypeOf<typeof BannedChampion>
 
 export const SpectateParticipant = t.type({
   bot: t.boolean,
-  champion: BasicChampionWithImage,
+  champion: optional(BasicChampionWithImage),
   championId: t.number,
   gameCustomizationObjects: t.array(t.unknown),
   perks: t.type({
