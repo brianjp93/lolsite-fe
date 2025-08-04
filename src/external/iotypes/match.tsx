@@ -1,7 +1,7 @@
 import * as t from 'io-ts'
 import {BasicChampionWithImage} from './data'
 import {Position} from './player'
-import {optional} from './base'
+import {maybe, optional} from './base'
 
 export const SimpleMatch = t.type({
   id: t.number,
@@ -283,7 +283,7 @@ export type BannedChampionType = t.TypeOf<typeof BannedChampion>
 
 export const SpectateParticipant = t.type({
   bot: t.boolean,
-  champion: optional(BasicChampionWithImage),
+  champion: maybe(BasicChampionWithImage),
   championId: t.number,
   gameCustomizationObjects: t.array(t.unknown),
   perks: t.type({
