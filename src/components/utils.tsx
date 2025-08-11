@@ -170,7 +170,7 @@ export function ErrorField({ message }: { message?: string }) {
   return <div className="my-1 text-sm font-bold text-red-600">{message}</div>;
 }
 
-export function mediaUrl(filePath: string) {
+export function mediaUrl(filePath: string | null | undefined) {
   if (!filePath) return "";
   if (filePath.startsWith("/")) {
     return `${env.NEXT_PUBLIC_BACKEND_URL}${filePath}`;

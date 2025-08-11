@@ -44,7 +44,7 @@ export function OftenPlaysWith(props: {region: string; summoner_id: number}) {
         if (players.length > 0) {
           api.player
             .getSummoners({
-              puuids: players.map((item) => item.puuid),
+              puuids: players.map((item) => item.puuid).filter((puuid): puuid is string => puuid !== undefined),
               region: region,
             })
             .then((summoners) => {
@@ -54,7 +54,7 @@ export function OftenPlaysWith(props: {region: string; summoner_id: number}) {
               }
               const new_players = []
               for (const summoner of players) {
-                if (modified[summoner.puuid]) {
+                if (summoner.puuid && modified[summoner.puuid]) {
                   summoner.name = modified[summoner.puuid]?.name
                   if (summoner) {
                     new_players.push(summoner)

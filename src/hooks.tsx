@@ -110,16 +110,16 @@ export function useSimpleItem({
   major,
   minor,
 }: {
-  id: number;
+  id: number | null;
   major: number | string;
   minor: number | string;
 }) {
   return useQuery(
     ["item", id, major, minor],
-    () =>
+    () => id ?
       api.data
         .getSimpleItem(id, major, minor)
-        .then((response) => response.data),
+        .then((response) => response.data) : null,
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,

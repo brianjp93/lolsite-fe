@@ -1,6 +1,4 @@
-import * as t from "io-ts";
 import { z } from "zod";
-import { optional } from "./base";
 
 export const ItemImage = z.object({
   file: z.string().optional(),
@@ -55,55 +53,55 @@ export const Item = z.object({
 });
 export type ItemType = z.infer<typeof Item>;
 
-export const ChampionImage = t.type({
-  file: optional(t.string),
-  file_15: optional(t.string),
-  file_30: optional(t.string),
-  file_40: optional(t.string),
+export const ChampionImage = z.object({
+  file: z.string().nullable(),
+  file_15: z.string().nullable(),
+  file_30: z.string().nullable(),
+  file_40: z.string().nullable(),
 });
-export type ChampionImageType = t.TypeOf<typeof ChampionImage>;
+export type ChampionImageType = z.infer<typeof ChampionImage>;
 
-export const BasicChampionWithImage = t.type({
-  _id: t.string,
-  name: t.string,
-  key: t.number,
+export const BasicChampionWithImage = z.object({
+  _id: z.string(),
+  name: z.string(),
+  key: z.number(),
   image: ChampionImage,
 });
-export type BasicChampionWithImageType = t.TypeOf<
+export type BasicChampionWithImageType = z.infer<
   typeof BasicChampionWithImage
 >;
 
-export const Champion = t.type({
+export const Champion = z.object({
   image: ChampionImage,
-  stats: t.unknown,
-  spells: t.unknown,
-  _id: t.string,
-  version: t.string,
-  language: t.string,
-  key: t.number,
-  name: t.string,
-  partype: t.string,
-  title: t.string,
-  lore: t.string,
-  last_changed: t.string,
-  created_date: t.string,
+  stats: z.unknown(),
+  spells: z.unknown(),
+  _id: z.string(),
+  version: z.string(),
+  language: z.string(),
+  key: z.number(),
+  name: z.string(),
+  partype: z.string(),
+  title: z.string(),
+  lore: z.string(),
+  last_changed: z.string(),
+  created_date: z.string(),
 });
-export type ChampionType = t.TypeOf<typeof Champion>;
+export type ChampionType = z.infer<typeof Champion>;
 
-export const Rune = t.type({
-  icon: t.string,
-  id: t.number,
-  image_url: t.string,
-  key: t.string,
-  long_description: t.string,
-  name: t.string,
-  reforgedtree: t.number,
-  row: t.number,
-  short_description: t.string,
-  sort_int: t.number,
-  _id: t.number,
+export const Rune = z.object({
+  icon: z.string(),
+  id: z.number(),
+  image_url: z.string(),
+  key: z.string(),
+  long_description: z.string(),
+  name: z.string(),
+  reforgedtree: z.number(),
+  row: z.number(),
+  short_description: z.string(),
+  sort_int: z.number(),
+  _id: z.number(),
 });
-export type RuneType = t.TypeOf<typeof Rune>;
+export type RuneType = z.infer<typeof Rune>;
 
 export const Queue = z.object({
   _id: z.number(),

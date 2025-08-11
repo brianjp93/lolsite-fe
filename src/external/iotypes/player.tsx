@@ -1,90 +1,88 @@
-import * as t from "io-ts";
-import { optional, maybe } from "./base";
 import { z } from "zod";
 
-export const User = t.type({
-  email: t.string,
+export const User = z.object({
+  email: z.string(),
 });
-export type UserType = t.TypeOf<typeof User>;
+export type UserType = z.infer<typeof User>;
 
-export const NameChange = t.type({
-  old_name: t.string,
-  created_date: t.string,
+export const NameChange = z.object({
+  old_name: z.string(),
+  created_date: z.string(),
 });
-export type NameChangeType = t.TypeOf<typeof NameChange>;
+export type NameChangeType = z.infer<typeof NameChange>;
 
-export const Position = t.type({
-  checkpoint: t.number,
-  fresh_blood: t.boolean,
-  hot_streak: t.boolean,
-  id: t.number,
-  inactive: t.boolean,
-  league_points: t.number,
-  losses: t.number,
-  position: t.string,
-  queue_type: t.string,
-  rank: t.string,
-  rank_integer: t.number,
-  series_progress: optional(t.string),
-  tier: t.string,
-  veteran: t.boolean,
-  wins: t.number,
+export const Position = z.object({
+  checkpoint: z.number(),
+  fresh_blood: z.boolean(),
+  hot_streak: z.boolean(),
+  id: z.number(),
+  inactive: z.boolean(),
+  league_points: z.number(),
+  losses: z.number(),
+  position: z.string(),
+  queue_type: z.string(),
+  rank: z.string(),
+  rank_integer: z.number(),
+  series_progress: z.string().nullable(),
+  tier: z.string(),
+  veteran: z.boolean(),
+  wins: z.number(),
 });
-export type PositionType = t.TypeOf<typeof Position>;
+export type PositionType = z.infer<typeof Position>;
 
-export const RankExtreme = t.type({
-  tier: t.string,
-  division: t.string,
-  league_points: t.number,
+export const RankExtreme = z.object({
+  tier: z.string(),
+  division: z.string(),
+  league_points: z.number(),
 });
 
-export const PositionBin = t.type({
-  day: t.number,
-  month: t.number,
+export const PositionBin = z.object({
+  day: z.number(),
+  month: z.number(),
   peak_rank: RankExtreme,
-  peak_rank_integer: t.number,
-  start_date: t.string,
+  peak_rank_integer: z.number(),
+  start_date: z.string(),
   trough_rank: RankExtreme,
-  trough_rank_integer: t.number,
-  week: t.number,
-  year: t.number,
+  trough_rank_integer: z.number(),
+  week: z.number(),
+  year: z.number(),
 });
-export type PositionBinType = t.TypeOf<typeof PositionBin>;
+export type PositionBinType = z.infer<typeof PositionBin>;
 
-export const Summoner = t.type({
-  has_match_overlap: t.number,
-  id: t.number,
-  name: t.string,
-  profile_icon_id: t.number,
-  profile_icon: t.string,
-  puuid: t.string,
-  region: t.string,
-  simple_name: t.string,
-  summoner_level: t.number,
-  riot_id_name: t.string,
-  riot_id_tagline: t.string,
+export const Summoner = z.object({
+  has_match_overlap: z.number(),
+  id: z.number(),
+  name: z.string(),
+  profile_icon_id: z.number(),
+  profile_icon: z.string(),
+  puuid: z.string(),
+  region: z.string(),
+  simple_name: z.string(),
+  summoner_level: z.number(),
+  riot_id_name: z.string(),
+  riot_id_tagline: z.string(),
 });
-export type SummonerType = t.TypeOf<typeof Summoner>;
+export type SummonerType = z.infer<typeof Summoner>;
 
-export const SummonerSearch = t.type({
-  name: t.string,
-  summoner_level: optional(t.number),
+export const SummonerSearch = z.object({
+  name: z.string(),
+  summoner_level: z.number().nullable(),
 });
-export type SummonerSearchType = t.TypeOf<typeof SummonerSearch>;
+export type SummonerSearchType = z.infer<typeof SummonerSearch>;
 
-export const TopPlayedWithPlayer = t.type({
-  puuid: maybe(t.string),
-  summoner_name: maybe(t.string),
-  wins: t.number,
-  count: t.number,
+export const TopPlayedWithPlayer = z.object({
+  puuid: z.string().optional(),
+  summoner_name: z.string().optional(),
+  wins: z.number(),
+  count: z.number(),
 });
-export type TopPlayedWithPlayerType = t.TypeOf<typeof TopPlayedWithPlayer>;
+export type TopPlayedWithPlayerType = z.infer<typeof TopPlayedWithPlayer>;
 
-export const Reputation = t.type({
-  id: t.number,
-  is_approve: t.boolean,
+export const Reputation = z.object({
+  id: z.number(),
+  is_approve: z.boolean(),
 });
-export type ReputationType = t.TypeOf<typeof Reputation>;
+export type ReputationType = z.infer<typeof Reputation>;
 
 export const Favorite = z.object({
   name: z.string(),
@@ -132,20 +130,20 @@ export const SuspiciousPlayer = z.object({
 });
 export type SuspiciousPlayer = z.infer<typeof SuspiciousPlayer>;
 
-export const BaseComment = t.type({
-  created_date: t.string,
-  dislikes: t.number,
-  id: t.number,
-  likes: t.number,
-  markdown: t.string,
-  match: t.number,
-  modified_date: t.string,
+export const BaseComment = z.object({
+  created_date: z.string(),
+  dislikes: z.number(),
+  id: z.number(),
+  likes: z.number(),
+  markdown: z.string(),
+  match: z.number(),
+  modified_date: z.string(),
   summoner: Summoner,
-  is_deleted: t.boolean,
+  is_deleted: z.boolean(),
 });
 
-export const Comment = t.union([
+export const Comment = z.union([
   BaseComment,
-  t.type({ reply_to: BaseComment }),
+  z.object({ reply_to: BaseComment }),
 ]);
-export type Comment = t.TypeOf<typeof Comment>;
+export type Comment = z.infer<typeof Comment>;

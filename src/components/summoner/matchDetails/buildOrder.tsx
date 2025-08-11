@@ -292,10 +292,11 @@ function BuildOrder(props: {
                     {Object.values(group).map((event, sub_key) => {
                       if (event._type !== "ITEM_UNDO") {
                         count++;
+                        if (!match?.major || !match?.minor) return null;
                         return (
                           <div key={sub_key} className="inline-block">
                             <div className="relative inline-block">
-                              <ItemImage major={match?.major} minor={match?.minor} item_id={event.item_id} event_type={event._type}/>
+                              <ItemImage major={match.major} minor={match.minor} item_id={event.item_id} event_type={event._type}/>
                               {(event.count || 1) > 1 && (
                                 <div
                                   style={{

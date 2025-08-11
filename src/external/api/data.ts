@@ -1,12 +1,10 @@
 import axios from "axios";
 import {
-  unwrap,
   Rune,
   BasicChampionWithImage,
   PaginatedResponse,
 } from "@/external/types";
 import { Item, Queue } from "../iotypes/data";
-import * as t from "io-ts";
 import { env } from "@/env/client.mjs";
 import { z } from "zod";
 import { getCookie } from "./common";
@@ -67,7 +65,7 @@ async function items({
 async function getRunes(data: any) {
   const url = `${base}/reforged-runes/`;
   const response = await axios.post(url, data, { headers: { "X-CSRFToken": getCookie("csrftoken") } });
-  return unwrap(t.array(Rune).decode(response.data.data));
+  return z.array(Rune).parse(response.data.data);
 }
 
 function getCurrentSeason() {
@@ -88,27 +86,25 @@ function getChampionSpells(data: any) {
 async function basicChampions() {
   const url = `${base}/basic-champions/`;
   const response = await axios.get(url);
-  return unwrap(
-    PaginatedResponse(BasicChampionWithImage).decode(response.data)
-  );
+  return PaginatedResponse(BasicChampionWithImage).parse(response.data);
 }
 
 async function getStaticUrl() {
   const url = `${base}/get-static-url/`;
   const response = await axios.get(url);
-  return unwrap(t.string.decode(response.data));
+  return z.string().parse(response.data);
 }
 
 async function getMediaUrl() {
   const url = `${base}/get-media-url/`;
   const response = await axios.get(url);
-  return unwrap(t.string.decode(response.data));
+  return z.string().parse(response.data);
 }
 
 async function getGoogleRecaptchaSiteKey() {
   const url = `${base}/google-recaptcha-site-key/`;
   const response = await axios.get(url);
-  return unwrap(t.string.decode(response.data));
+  return z.string().parse(response.data);
 }
 
 const exports = {

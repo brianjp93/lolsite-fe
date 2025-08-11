@@ -1,7 +1,3 @@
-import type * as t from 'io-ts'
-import {isRight} from 'fp-ts/Either'
-import reporter from 'io-ts-reporters'
-
 // MATCH
 export {
   BasicMatch,
@@ -43,6 +39,8 @@ export {
   User,
   NameChange,
   Favorite,
+  Comment,
+  Position,
 } from './iotypes/player'
 export type {
   SummonerType,
@@ -52,6 +50,7 @@ export type {
   ReputationType,
   UserType,
   NameChangeType,
+  PositionType,
 } from './iotypes/player'
 
 export {
@@ -65,16 +64,6 @@ export type {
 
 export {Champion, Rune, BasicChampionWithImage} from './iotypes/data'
 export type {ChampionType, RuneType, BasicChampionWithImageType} from './iotypes/data'
-
-export function unwrap<T>(x: t.Validation<T>) {
-  if (isRight(x)) {
-    return x.right
-  }
-  console.error('There was an error with the request.')
-  const errors = reporter.report(x).join('\n')
-  console.error(errors)
-  throw new Error(reporter.report(x).join('\n'))
-}
 
 export type Regions =
   | 'na'

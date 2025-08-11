@@ -1,588 +1,587 @@
-import * as t from 'io-ts'
+import { z } from 'zod'
 import {BasicChampionWithImage} from './data'
 import {Position} from './player'
-import {maybe, optional} from './base'
 
-export const SimpleMatch = t.type({
-  id: t.number,
-  _id: t.string,
-  game_creation: t.number,
-  game_duration: t.number,
-  game_mode: t.string,
-  game_type: t.string,
-  map_id: t.number,
-  platform_id: t.string,
-  season_id: optional(t.number),
-  game_version: t.string,
-  build: t.number,
-  major: optional(t.number),
-  minor: optional(t.number),
-  patch: optional(t.number),
-  queue_id: t.number,
+export const SimpleMatch = z.object({
+  id: z.number(),
+  _id: z.string(),
+  game_creation: z.number(),
+  game_duration: z.number(),
+  game_mode: z.string(),
+  game_type: z.string(),
+  map_id: z.number(),
+  platform_id: z.string(),
+  season_id: z.number().nullable(),
+  game_version: z.string(),
+  build: z.number(),
+  major: z.number().nullable(),
+  minor: z.number().nullable(),
+  patch: z.number().nullable(),
+  queue_id: z.number(),
 })
-export type SimpleMatchType = t.TypeOf<typeof SimpleMatch>
+export type SimpleMatchType = z.infer<typeof SimpleMatch>
 
-export const BasicStats = t.type({
-  kills: t.number,
-  deaths: t.number,
-  assists: t.number,
-  champ_level: t.number,
-  total_damage_dealt_to_champions: t.number,
-  vision_score: t.number,
-  total_damage_taken: t.number,
-  damage_dealt_to_objectives: t.number,
-  damage_dealt_to_turrets: t.number,
-  gold_earned: t.number,
-  total_heal: t.number,
-  time_ccing_others: t.number,
-  item_0: optional(t.number),
-  item_1: optional(t.number),
-  item_2: optional(t.number),
-  item_3: optional(t.number),
-  item_4: optional(t.number),
-  item_5: optional(t.number),
-  item_6: optional(t.number),
-  perk_0_image_url: t.string,
-  perk_sub_style_image_url: t.string,
+export const BasicStats = z.object({
+  kills: z.number(),
+  deaths: z.number(),
+  assists: z.number(),
+  champ_level: z.number(),
+  total_damage_dealt_to_champions: z.number(),
+  vision_score: z.number(),
+  total_damage_taken: z.number(),
+  damage_dealt_to_objectives: z.number(),
+  damage_dealt_to_turrets: z.number(),
+  gold_earned: z.number(),
+  total_heal: z.number(),
+  time_ccing_others: z.number(),
+  item_0: z.number().nullable(),
+  item_1: z.number().nullable(),
+  item_2: z.number().nullable(),
+  item_3: z.number().nullable(),
+  item_4: z.number().nullable(),
+  item_5: z.number().nullable(),
+  item_6: z.number().nullable(),
+  perk_0_image_url: z.string(),
+  perk_sub_style_image_url: z.string(),
 })
-export type BasicStatsType = t.TypeOf<typeof BasicStats>
+export type BasicStatsType = z.infer<typeof BasicStats>
 
-export const BasicParticipant = t.type({
-  _id: t.number,
-  summoner_name: t.string,
-  puuid: t.string,
-  lane: t.string,
-  role: t.string,
-  team_id: t.number,
-  riot_id_name: t.string,
-  riot_id_tagline: t.string,
-  summoner_1_id: t.number,
-  summoner_1_image: t.string,
-  summoner_2_id: t.number,
-  summoner_2_image: t.string,
-  champion_id: t.number,
+export const BasicParticipant = z.object({
+  _id: z.number(),
+  summoner_name: z.string(),
+  puuid: z.string(),
+  lane: z.string(),
+  role: z.string(),
+  team_id: z.number(),
+  riot_id_name: z.string(),
+  riot_id_tagline: z.string(),
+  summoner_1_id: z.number(),
+  summoner_1_image: z.string(),
+  summoner_2_id: z.number(),
+  summoner_2_image: z.string(),
+  champion_id: z.number(),
   stats: BasicStats,
-  team_position: t.string,
-  placement: t.number,
-  subteam_placement: t.number,
+  team_position: z.string().nullable(),
+  placement: z.number(),
+  subteam_placement: z.number(),
 })
-export type BasicParticipantType = t.TypeOf<typeof BasicParticipant>
+export type BasicParticipantType = z.infer<typeof BasicParticipant>
 
-export const Team = t.type({
-  _id: t.number,
-  win: t.boolean,
+export const Team = z.object({
+  _id: z.number(),
+  win: z.boolean(),
 })
-export type TeamType = t.TypeOf<typeof Team>
+export type TeamType = z.infer<typeof Team>
 
-export const BasicMatch = t.type({
-  id: t.number,
-  _id: t.string,
-  game_duration: t.number,
-  game_creation: t.number,
-  queue_id: t.number,
-  major: t.number,
-  minor: t.number,
-  participants: t.array(BasicParticipant),
-  teams: t.array(Team),
+export const BasicMatch = z.object({
+  id: z.number(),
+  _id: z.string(),
+  game_duration: z.number(),
+  game_creation: z.number(),
+  queue_id: z.number(),
+  major: z.number(),
+  minor: z.number(),
+  participants: z.array(BasicParticipant),
+  teams: z.array(Team),
 })
-export type BasicMatchType = t.TypeOf<typeof BasicMatch>
+export type BasicMatchType = z.infer<typeof BasicMatch>
 
-export const Stats = t.type({
-  participant: t.number,
-  assists: t.number,
-  champ_level: t.number,
-  damage_dealt_to_objectives: t.number,
-  damage_dealt_to_turrets: t.number,
-  damage_self_mitigated: t.number,
-  deaths: t.number,
-  double_kills: t.number,
-  first_blood_assist: t.boolean,
-  first_blood_kill: t.boolean,
-  first_tower_assist: t.boolean,
-  first_tower_kill: t.boolean,
-  gold_earned: t.number,
-  gold_spent: t.number,
-  inhibitor_kills: t.number,
-  item_0: t.number,
-  item_1: t.number,
-  item_2: t.number,
-  item_3: t.number,
-  item_4: t.number,
-  item_5: t.number,
-  item_6: t.number,
-  kills: t.number,
-  largest_multi_kill: t.number,
-  magic_damage_dealt: t.number,
-  magic_damage_dealt_to_champions: t.number,
-  magical_damage_taken: t.number,
-  neutral_minions_killed: t.number,
-  penta_kills: t.number,
+export const Stats = z.object({
+  participant: z.number(),
+  assists: z.number(),
+  champ_level: z.number(),
+  damage_dealt_to_objectives: z.number(),
+  damage_dealt_to_turrets: z.number(),
+  damage_self_mitigated: z.number(),
+  deaths: z.number(),
+  double_kills: z.number(),
+  first_blood_assist: z.boolean(),
+  first_blood_kill: z.boolean(),
+  first_tower_assist: z.boolean(),
+  first_tower_kill: z.boolean(),
+  gold_earned: z.number(),
+  gold_spent: z.number(),
+  inhibitor_kills: z.number(),
+  item_0: z.number(),
+  item_1: z.number(),
+  item_2: z.number(),
+  item_3: z.number(),
+  item_4: z.number(),
+  item_5: z.number(),
+  item_6: z.number(),
+  kills: z.number(),
+  largest_multi_kill: z.number(),
+  magic_damage_dealt: z.number(),
+  magic_damage_dealt_to_champions: z.number(),
+  magical_damage_taken: z.number(),
+  neutral_minions_killed: z.number(),
+  penta_kills: z.number(),
 
-  perk_0: t.number,
-  perk_0_var_1: t.number,
-  perk_0_var_2: t.number,
-  perk_0_var_3: t.number,
+  perk_0: z.number(),
+  perk_0_var_1: z.number(),
+  perk_0_var_2: z.number(),
+  perk_0_var_3: z.number(),
 
-  perk_1: t.number,
-  perk_1_var_1: t.number,
-  perk_1_var_2: t.number,
-  perk_1_var_3: t.number,
+  perk_1: z.number(),
+  perk_1_var_1: z.number(),
+  perk_1_var_2: z.number(),
+  perk_1_var_3: z.number(),
 
-  perk_2: t.number,
-  perk_2_var_1: t.number,
-  perk_2_var_2: t.number,
-  perk_2_var_3: t.number,
+  perk_2: z.number(),
+  perk_2_var_1: z.number(),
+  perk_2_var_2: z.number(),
+  perk_2_var_3: z.number(),
 
-  perk_3: t.number,
-  perk_3_var_1: t.number,
-  perk_3_var_2: t.number,
-  perk_3_var_3: t.number,
+  perk_3: z.number(),
+  perk_3_var_1: z.number(),
+  perk_3_var_2: z.number(),
+  perk_3_var_3: z.number(),
 
-  perk_4: t.number,
-  perk_4_var_1: t.number,
-  perk_4_var_2: t.number,
-  perk_4_var_3: t.number,
+  perk_4: z.number(),
+  perk_4_var_1: z.number(),
+  perk_4_var_2: z.number(),
+  perk_4_var_3: z.number(),
 
-  perk_5: t.number,
-  perk_5_var_1: t.number,
-  perk_5_var_2: t.number,
-  perk_5_var_3: t.number,
+  perk_5: z.number(),
+  perk_5_var_1: z.number(),
+  perk_5_var_2: z.number(),
+  perk_5_var_3: z.number(),
 
-  perk_primary_style: t.number,
-  perk_sub_style: t.number,
-  physical_damage_dealt: t.number,
-  physical_damage_dealt_to_champions: t.number,
-  physical_damage_taken: t.number,
+  perk_primary_style: z.number(),
+  perk_sub_style: z.number(),
+  physical_damage_dealt: z.number(),
+  physical_damage_dealt_to_champions: z.number(),
+  physical_damage_taken: z.number(),
 
-  quadra_kills: t.number,
+  quadra_kills: z.number(),
 
-  stat_perk_0: t.number,
-  stat_perk_1: t.number,
-  stat_perk_2: t.number,
+  stat_perk_0: z.number(),
+  stat_perk_1: z.number(),
+  stat_perk_2: z.number(),
 
-  spell_1_casts: t.number,
-  spell_2_casts: t.number,
-  spell_3_casts: t.number,
-  spell_4_casts: t.number,
+  spell_1_casts: z.number(),
+  spell_2_casts: z.number(),
+  spell_3_casts: z.number(),
+  spell_4_casts: z.number(),
 
-  time_ccing_others: t.number,
-  total_damage_dealt: t.number,
-  total_damage_dealt_to_champions: t.number,
-  total_damage_taken: t.number,
-  total_heal: t.number,
-  total_heals_on_teammates: t.number,
-  total_damage_shielded_on_teammates: t.number,
-  total_minions_killed: t.number,
-  total_time_crowd_control_dealt: t.number,
-  total_units_healed: t.number,
-  total_ally_jungle_minions_killed: t.number,
-  total_enemy_jungle_minions_killed: t.number,
-  triple_kills: t.number,
-  true_damage_dealt: t.number,
-  true_damage_dealt_to_champions: t.number,
-  true_damage_taken: t.number,
-  vision_score: t.number,
-  vision_wards_bought_in_game: t.number,
-  wards_killed: t.number,
-  wards_placed: t.number,
-  win: t.boolean,
+  time_ccing_others: z.number(),
+  total_damage_dealt: z.number(),
+  total_damage_dealt_to_champions: z.number(),
+  total_damage_taken: z.number(),
+  total_heal: z.number(),
+  total_heals_on_teammates: z.number(),
+  total_damage_shielded_on_teammates: z.number(),
+  total_minions_killed: z.number(),
+  total_time_crowd_control_dealt: z.number(),
+  total_units_healed: z.number(),
+  total_ally_jungle_minions_killed: z.number(),
+  total_enemy_jungle_minions_killed: z.number(),
+  triple_kills: z.number(),
+  true_damage_dealt: z.number(),
+  true_damage_dealt_to_champions: z.number(),
+  true_damage_taken: z.number(),
+  vision_score: z.number(),
+  vision_wards_bought_in_game: z.number(),
+  wards_killed: z.number(),
+  wards_placed: z.number(),
+  win: z.boolean(),
 
-  perk_0_image_url: t.string,
-  perk_sub_style_image_url: t.string,
+  perk_0_image_url: z.string(),
+  perk_sub_style_image_url: z.string(),
 
-  all_in_pings: t.number,
-  assist_me_pings: t.number,
-  bait_pings: t.number,
-  basic_pings: t.number,
-  command_pings: t.number,
-  danger_pings: t.number,
-  enemy_missing_pings: t.number,
-  enemy_vision_pings: t.number,
-  get_back_pings: t.number,
-  hold_pings: t.number,
-  need_vision_pings: t.number,
-  on_my_way_pings: t.number,
-  push_pings: t.number,
-  vision_cleared_pings: t.number,
+  all_in_pings: z.number(),
+  assist_me_pings: z.number(),
+  bait_pings: z.number(),
+  basic_pings: z.number(),
+  command_pings: z.number(),
+  danger_pings: z.number(),
+  enemy_missing_pings: z.number(),
+  enemy_vision_pings: z.number(),
+  get_back_pings: z.number(),
+  hold_pings: z.number(),
+  need_vision_pings: z.number(),
+  on_my_way_pings: z.number(),
+  push_pings: z.number(),
+  vision_cleared_pings: z.number(),
 })
-export type StatsType = t.TypeOf<typeof Stats>
+export type StatsType = z.infer<typeof Stats>
 
-export const FullParticipant = t.type({
-  id: t.number,
-  match: t.number,
-  _id: t.number,
-  summoner_name: t.string,
-  summoner_name_simplified: t.string,
-  champion_id: t.number,
-  champ_experience: optional(t.number),
-  summoner_1_id: t.number,
-  summoner_1_casts: t.number,
-  summoner_2_id: t.number,
-  summoner_2_casts: t.number,
-  team_id: t.number,
-  puuid: t.string,
-  lane: t.string,
-  role: t.string,
-  rank: optional(t.string),
-  tier: optional(t.string),
-  individual_position: optional(t.string),
-  team_position: optional(t.string),
-  role_label: optional(t.number),
+export const FullParticipant = z.object({
+  id: z.number(),
+  match: z.number(),
+  _id: z.number(),
+  summoner_name: z.string(),
+  summoner_name_simplified: z.string(),
+  champion_id: z.number(),
+  champ_experience: z.number().nullable(),
+  summoner_1_id: z.number(),
+  summoner_1_casts: z.number(),
+  summoner_2_id: z.number(),
+  summoner_2_casts: z.number(),
+  team_id: z.number(),
+  puuid: z.string(),
+  lane: z.string(),
+  role: z.string(),
+  rank: z.string().nullable(),
+  tier: z.string().nullable(),
+  individual_position: z.string().nullable(),
+  team_position: z.string().nullable(),
+  role_label: z.number().nullable(),
   stats: Stats,
-  summoner_1_image: t.string,
-  summoner_2_image: t.string,
-  placement: t.number,
-  subteam_placement: t.number,
-  riot_id_name: t.string,
-  riot_id_tagline: t.string,
+  summoner_1_image: z.string(),
+  summoner_2_image: z.string(),
+  placement: z.number(),
+  subteam_placement: z.number(),
+  riot_id_name: z.string(),
+  riot_id_tagline: z.string(),
 })
-export type FullParticipantType = t.TypeOf<typeof FullParticipant>
+export type FullParticipantType = z.infer<typeof FullParticipant>
 
-export const Ban = t.type({
-  team: t.number,
-  champion_id: t.number,
-  pick_turn: t.number,
+export const Ban = z.object({
+  team: z.number(),
+  champion_id: z.number(),
+  pick_turn: z.number(),
 })
-export type BanType = t.TypeOf<typeof Ban>
+export type BanType = z.infer<typeof Ban>
 
-export const FullTeam = t.union([
+export const FullTeam = z.union([
   Team,
-  t.type({
-    id: t.number,
-    bans: t.array(Ban),
+  z.object({
+    id: z.number(),
+    bans: z.array(Ban),
   }),
 ])
-export type FullTeamType = t.TypeOf<typeof FullTeam>
+export type FullTeamType = z.infer<typeof FullTeam>
 
-export const FullMatch = t.type({
-  id: t.number,
-  _id: t.string,
-  game_creation: t.number,
-  game_duration: t.number,
-  game_mode: t.string,
-  game_type: t.string,
-  map_id: t.number,
-  platform_id: t.string,
-  queue_id: t.number,
-  season_id: t.number,
-  game_version: t.string,
-  major: t.number,
-  minor: t.number,
-  patch: t.number,
-  participants: t.array(FullParticipant),
-  teams: t.array(FullTeam),
+export const FullMatch = z.object({
+  id: z.number(),
+  _id: z.string(),
+  game_creation: z.number(),
+  game_duration: z.number(),
+  game_mode: z.string(),
+  game_type: z.string(),
+  map_id: z.number(),
+  platform_id: z.string(),
+  queue_id: z.number(),
+  season_id: z.number(),
+  game_version: z.string(),
+  major: z.number(),
+  minor: z.number(),
+  patch: z.number(),
+  participants: z.array(FullParticipant),
+  teams: z.array(FullTeam),
 })
-export type FullMatchType = t.TypeOf<typeof FullMatch>
+export type FullMatchType = z.infer<typeof FullMatch>
 
-export const BannedChampion = t.type({
-  championId: t.number,
-  teamId: t.number,
-  pickTurn: t.number,
+export const BannedChampion = z.object({
+  championId: z.number(),
+  teamId: z.number(),
+  pickTurn: z.number(),
 })
-export type BannedChampionType = t.TypeOf<typeof BannedChampion>
+export type BannedChampionType = z.infer<typeof BannedChampion>
 
-export const SpectateParticipant = t.type({
-  bot: t.boolean,
-  champion: maybe(BasicChampionWithImage),
-  championId: t.number,
-  gameCustomizationObjects: t.array(t.unknown),
-  perks: t.type({
-    perkIds: t.array(t.number),
-    perkStyle: t.number,
-    perkSubStyle: t.number,
+export const SpectateParticipant = z.object({
+  bot: z.boolean(),
+  champion: BasicChampionWithImage.optional(),
+  championId: z.number(),
+  gameCustomizationObjects: z.array(z.unknown()),
+  perks: z.object({
+    perkIds: z.array(z.number()),
+    perkStyle: z.number(),
+    perkSubStyle: z.number(),
+  }).nullable(),
+  positions: z.array(Position).nullable(),
+  profileIconId: z.number(),
+  spell1Id: z.number(),
+  spell2Id: z.number(),
+  teamId: z.number(),
+  riotId: z.string(),
+  "puuid": z.string(),
+})
+export type SpectateParticipantType = z.infer<typeof SpectateParticipant>
+
+export const SimpleSpectateParticipant = z.object({
+  "teamId": z.number(),
+  "spell1Id": z.number(),
+  "spell2Id": z.number(),
+  "championId": z.number(),
+  "profileIconId": z.number(),
+  "riotId": z.string(),
+  "puuid": z.string(),
+  "bot": z.boolean(),
+  "gameCustomizationObjects": z.array(z.unknown()),
+  "perks": z.object({
+      "perkIds": z.array(z.number()),
+      "perkStyle": z.number(),
+      "perkSubStyle": z.number()
   }),
-  positions: optional(t.array(Position)),
-  profileIconId: t.number,
-  spell1Id: t.number,
-  spell2Id: t.number,
-  teamId: t.number,
-  riotId: t.string,
-  "puuid": t.string,
 })
-export type SpectateParticipantType = t.TypeOf<typeof SpectateParticipant>
 
-export const SimpleSpectateParticipant = t.type({
-  "teamId": t.number,
-  "spell1Id": t.number,
-  "spell2Id": t.number,
-  "championId": t.number,
-  "profileIconId": t.number,
-  "riotId": t.string,
-  "puuid": t.string,
-  "bot": t.boolean,
-  "gameCustomizationObjects": t.array(t.unknown),
-  "perks": t.type({
-      "perkIds": t.array(t.number),
-      "perkStyle": t.number,
-      "perkSubStyle": t.number
+export const SpectateMatch = z.object({
+  bannedChampions: z.array(BannedChampion),
+  gameId: z.number(),
+  gameLength: z.number(),
+  gameMode: z.string(),
+  gameQueueConfigId: z.number(),
+  gameStartTime: z.number(),
+  gameType: z.string(),
+  mapId: z.number(),
+  observers: z.object({
+    encryptionKey: z.string(),
   }),
+  participants: z.array(SpectateParticipant),
+  platformId: z.string(),
 })
+export type SpectateMatchType = z.infer<typeof SpectateMatch>
 
-export const SpectateMatch = t.type({
-  bannedChampions: t.array(BannedChampion),
-  gameId: t.number,
-  gameLength: t.number,
-  gameMode: t.string,
-  gameQueueConfigId: t.number,
-  gameStartTime: t.number,
-  gameType: t.string,
-  mapId: t.number,
-  observers: t.type({
-    encryptionKey: t.string,
+export const SimpleSpectate = z.object({
+  bannedChampions: z.array(BannedChampion),
+  gameId: z.number(),
+  gameLength: z.number(),
+  gameMode: z.string(),
+  gameQueueConfigId: z.number(),
+  gameStartTime: z.number(),
+  gameType: z.string(),
+  mapId: z.number(),
+  observers: z.object({
+    encryptionKey: z.string(),
   }),
-  participants: t.array(SpectateParticipant),
-  platformId: t.string,
+  participants: z.array(SimpleSpectateParticipant),
+  platformId: z.string(),
 })
-export type SpectateMatchType = t.TypeOf<typeof SpectateMatch>
+export type SimpleSpectate = z.infer<typeof SimpleSpectate>;
 
-export const SimpleSpectate = t.type({
-  bannedChampions: t.array(BannedChampion),
-  gameId: t.number,
-  gameLength: t.number,
-  gameMode: t.string,
-  gameQueueConfigId: t.number,
-  gameStartTime: t.number,
-  gameType: t.string,
-  mapId: t.number,
-  observers: t.type({
-    encryptionKey: t.string,
-  }),
-  participants: t.array(SimpleSpectateParticipant),
-  platformId: t.string,
+export const ParticipantFrame = z.object({
+  participant_id: z.number(),
+  current_gold: z.number(),
+  gold_per_second: z.number(),
+  jungle_minions_killed: z.number(),
+  level: z.number(),
+  minions_killed: z.number(),
+  team_score: z.number(),
+  total_gold: z.number(),
+  time_enemy_spent_controlled: z.number(),
+  xp: z.number(),
+  x: z.number(),
+  y: z.number(),
+
+  ability_haste: z.number(),
+  ability_power: z.number(),
+  armor: z.number(),
+  armor_pen: z.number(),
+  armor_pen_percent: z.number(),
+  attack_damage: z.number(),
+  attack_speed: z.number(),
+  bonus_armor_pen_percent: z.number(),
+  bonus_magic_pen_percent: z.number(),
+  cc_reduction: z.number(),
+  health: z.number(),
+  health_max: z.number(),
+  health_regen: z.number(),
+  lifesteal: z.number(),
+  magic_pen: z.number(),
+  magic_pen_percent: z.number(),
+  magic_resist: z.number(),
+  movement_speed: z.number(),
+  omnivamp: z.number(),
+  physical_vamp: z.number(),
+  power: z.number(),
+  power_max: z.number(),
+  power_regen: z.number(),
+  spell_vamp: z.number(),
+
+  magic_damage_done: z.number(),
+  magic_damage_done_to_champions: z.number(),
+  magic_damage_taken: z.number(),
+  physical_damage_done: z.number(),
+  physical_damage_done_to_champions: z.number(),
+  physical_damage_taken: z.number(),
+  total_damage_done: z.number(),
+  total_damage_done_to_champions: z.number(),
+  total_damage_taken: z.number(),
+  true_damage_done: z.number(),
+  true_damage_done_to_champions: z.number(),
+  true_damage_taken: z.number(),
 })
-export type SimpleSpectate = t.TypeOf<typeof SimpleSpectate>;
+export type ParticipantFrameType = z.infer<typeof ParticipantFrame>
 
-export const ParticipantFrame = t.type({
-  participant_id: t.number,
-  current_gold: t.number,
-  gold_per_second: t.number,
-  jungle_minions_killed: t.number,
-  level: t.number,
-  minions_killed: t.number,
-  team_score: t.number,
-  total_gold: t.number,
-  time_enemy_spent_controlled: t.number,
-  xp: t.number,
-  x: t.number,
-  y: t.number,
-
-  ability_haste: t.number,
-  ability_power: t.number,
-  armor: t.number,
-  armor_pen: t.number,
-  armor_pen_percent: t.number,
-  attack_damage: t.number,
-  attack_speed: t.number,
-  bonus_armor_pen_percent: t.number,
-  bonus_magic_pen_percent: t.number,
-  cc_reduction: t.number,
-  health: t.number,
-  health_max: t.number,
-  health_regen: t.number,
-  lifesteal: t.number,
-  magic_pen: t.number,
-  magic_pen_percent: t.number,
-  magic_resist: t.number,
-  movement_speed: t.number,
-  omnivamp: t.number,
-  physical_vamp: t.number,
-  power: t.number,
-  power_max: t.number,
-  power_regen: t.number,
-  spell_vamp: t.number,
-
-  magic_damage_done: t.number,
-  magic_damage_done_to_champions: t.number,
-  magic_damage_taken: t.number,
-  physical_damage_done: t.number,
-  physical_damage_done_to_champions: t.number,
-  physical_damage_taken: t.number,
-  total_damage_done: t.number,
-  total_damage_done_to_champions: t.number,
-  total_damage_taken: t.number,
-  true_damage_done: t.number,
-  true_damage_done_to_champions: t.number,
-  true_damage_taken: t.number,
+export const WardKillEvent = z.object({
+  timestamp: z.number(),
+  killer_id: z.number(),
+  ward_type: z.string(),
+  _type: z.literal('WARD_KILL'),
 })
-export type ParticipantFrameType = t.TypeOf<typeof ParticipantFrame>
+export type WardKillEventType = z.infer<typeof WardKillEvent>
 
-export const WardKillEvent = t.type({
-  timestamp: t.number,
-  killer_id: t.number,
-  ward_type: t.string,
-  _type: t.literal('WARD_KILL'),
+export const WardPlacedEvent = z.object({
+  timestamp: z.number(),
+  creator_id: z.number(),
+  ward_type: z.string(),
+  _type: z.literal('WARD_PLACED'),
 })
-export type WardKillEventType = t.TypeOf<typeof WardKillEvent>
+export type WardPlacedEventType = z.infer<typeof WardPlacedEvent>
 
-export const WardPlacedEvent = t.type({
-  timestamp: t.number,
-  creator_id: t.number,
-  ward_type: t.string,
-  _type: t.literal('WARD_PLACED'),
+export const LevelUpEvent = z.object({
+  timestamp: z.number(),
+  level: z.number(),
+  participant_id: z.number(),
+  _type: z.literal('LEVEL_UP'),
 })
-export type WardPlacedEventType = t.TypeOf<typeof WardPlacedEvent>
+export type LevelUpEventType = z.infer<typeof LevelUpEvent>
 
-export const LevelUpEvent = t.type({
-  timestamp: t.number,
-  level: t.number,
-  participant_id: t.number,
-  _type: t.literal('LEVEL_UP'),
+export const SkillLevelUpEvent = z.object({
+  timestamp: z.number(),
+  level_up_type: z.string(),
+  participant_id: z.number(),
+  skill_slot: z.number(),
+  _type: z.literal('SKILL_LEVEL_UP'),
 })
-export type LevelUpEventType = t.TypeOf<typeof LevelUpEvent>
+export type SkillLevelUpEventType = z.infer<typeof SkillLevelUpEvent>
 
-export const SkillLevelUpEvent = t.type({
-  timestamp: t.number,
-  level_up_type: t.string,
-  participant_id: t.number,
-  skill_slot: t.number,
-  _type: t.literal('SKILL_LEVEL_UP'),
+export const ItemPurchasedEvent = z.object({
+  timestamp: z.number(),
+  item_id: z.number(),
+  participant_id: z.number(),
+  _type: z.literal('ITEM_PURCHASED'),
 })
-export type SkillLevelUpEventType = t.TypeOf<typeof SkillLevelUpEvent>
+export type ItemPurchasedEventType = z.infer<typeof ItemPurchasedEvent>
 
-export const ItemPurchasedEvent = t.type({
-  timestamp: t.number,
-  item_id: t.number,
-  participant_id: t.number,
-  _type: t.literal('ITEM_PURCHASED'),
+export const ItemDestroyedEvent = z.object({
+  timestamp: z.number(),
+  item_id: z.number(),
+  participant_id: z.number(),
+  _type: z.literal('ITEM_DESTROYED'),
 })
-export type ItemPurchasedEventType = t.TypeOf<typeof ItemPurchasedEvent>
+export type ItemDestroyedEventType = z.infer<typeof ItemDestroyedEvent>
 
-export const ItemDestroyedEvent = t.type({
-  timestamp: t.number,
-  item_id: t.number,
-  participant_id: t.number,
-  _type: t.literal('ITEM_DESTROYED'),
+export const ItemSoldEvent = z.object({
+  timestamp: z.number(),
+  item_id: z.number(),
+  participant_id: z.number(),
+  _type: z.literal('ITEM_SOLD'),
 })
-export type ItemDestroyedEventType = t.TypeOf<typeof ItemDestroyedEvent>
+export type ItemSoldEventType = z.infer<typeof ItemSoldEvent>
 
-export const ItemSoldEvent = t.type({
-  timestamp: t.number,
-  item_id: t.number,
-  participant_id: t.number,
-  _type: t.literal('ITEM_SOLD'),
+export const ItemUndoEvent = z.object({
+  timestamp: z.number(),
+  participant_id: z.number(),
+  before_id: z.number(),
+  after_id: z.number(),
+  gold_gain: z.number(),
+  _type: z.literal('ITEM_UNDO'),
 })
-export type ItemSoldEventType = t.TypeOf<typeof ItemSoldEvent>
+export type ItemUndoEventType = z.infer<typeof ItemUndoEvent>
 
-export const ItemUndoEvent = t.type({
-  timestamp: t.number,
-  participant_id: t.number,
-  before_id: t.number,
-  after_id: t.number,
-  gold_gain: t.number,
-  _type: t.literal('ITEM_UNDO'),
+export const TurretPlateDestroyedEvent = z.object({
+  timestamp: z.number(),
+  killer_id: z.number(),
+  lane_type: z.string(),
+  x: z.number(),
+  y: z.number(),
+  team_id: z.number(),
+  _type: z.literal('TURRET_PLATE_DESTROYED'),
 })
-export type ItemUndoEventType = t.TypeOf<typeof ItemUndoEvent>
+export type TurretPlateDestroyedEventType = z.infer<typeof TurretPlateDestroyedEvent>
 
-export const TurretPlateDestroyedEvent = t.type({
-  timestamp: t.number,
-  killer_id: t.number,
-  lane_type: t.string,
-  x: t.number,
-  y: t.number,
-  team_id: t.number,
-  _type: t.literal('TURRET_PLATE_DESTROYED'),
+export const EliteMonsterKillEvent = z.object({
+  bounty: z.number(),
+  timestamp: z.number(),
+  killer_id: z.number(),
+  assisting_participant_ids: z.array(z.number()).nullable(),
+  killer_team_id: z.number(),
+  monster_type: z.string(),
+  monster_sub_type: z.string().nullable(),
+  x: z.number(),
+  y: z.number(),
+  _type: z.literal('ELITE_MONSTER_KILL'),
 })
-export type TurretPlateDestroyedEventType = t.TypeOf<typeof TurretPlateDestroyedEvent>
+export type EliteMonsterKillEventType = z.infer<typeof EliteMonsterKillEvent>
 
-export const EliteMonsterKillEvent = t.type({
-  bounty: t.number,
-  timestamp: t.number,
-  killer_id: t.number,
-  assisting_participant_ids: optional(t.array(t.number)),
-  killer_team_id: t.number,
-  monster_type: t.string,
-  monster_sub_type: optional(t.string),
-  x: t.number,
-  y: t.number,
-  _type: t.literal('ELITE_MONSTER_KILL'),
+export const ChampionSpecialKillEvent = z.object({
+  timestamp: z.number(),
+  assisting_participant_ids: z.array(z.number()).nullable(),
+  killer_id: z.number(),
+  kill_type: z.string(),
+  multi_kill_length: z.number().nullable(),
+  x: z.number(),
+  y: z.number(),
+  _type: z.literal('CHAMPION_SPECIAL_KILL'),
 })
-export type EliteMonsterKillEventType = t.TypeOf<typeof EliteMonsterKillEvent>
+export type ChampionSpecialKillEventType = z.infer<typeof ChampionSpecialKillEvent>
 
-export const ChampionSpecialKillEvent = t.type({
-  timestamp: t.number,
-  assisting_participant_ids: optional(t.array(t.number)),
-  killer_id: t.number,
-  kill_type: t.string,
-  multi_kill_length: optional(t.number),
-  x: t.number,
-  y: t.number,
-  _type: t.literal('CHAMPION_SPECIAL_KILL'),
+export const BuildingKillEvent = z.object({
+  timestamp: z.number(),
+  assisting_participant_ids: z.array(z.number()).nullable(),
+  building_type: z.string(),
+  bounty: z.number(),
+  killer_id: z.number(),
+  lane_type: z.string(),
+  x: z.number(),
+  y: z.number(),
+  team_id: z.number(),
+  tower_type: z.string().nullable(),
+  _type: z.literal('BUILDING_KILL'),
 })
-export type ChampionSpecialKillEventType = t.TypeOf<typeof ChampionSpecialKillEvent>
+export type BuildingKillEventType = z.infer<typeof BuildingKillEvent>
 
-export const BuildingKillEvent = t.type({
-  timestamp: t.number,
-  assisting_participant_ids: optional(t.array(t.number)),
-  building_type: t.string,
-  bounty: t.number,
-  killer_id: t.number,
-  lane_type: t.string,
-  x: t.number,
-  y: t.number,
-  team_id: t.number,
-  tower_type: optional(t.string),
-  _type: t.literal('BUILDING_KILL'),
+export const VictimDamage = z.object({
+  basic: z.boolean(),
+  magic_damage: z.number(),
+  name: z.string(),
+  participant_id: z.number(),
+  physical_damage: z.number(),
+  spell_name: z.string(),
+  spell_slot: z.number(),
+  true_damage: z.number(),
+  type: z.string(),
 })
-export type BuildingKillEventType = t.TypeOf<typeof BuildingKillEvent>
+export type VictimDamageType = z.infer<typeof VictimDamage>
 
-export const VictimDamage = t.type({
-  basic: t.boolean,
-  magic_damage: t.number,
-  name: t.string,
-  participant_id: t.number,
-  physical_damage: t.number,
-  spell_name: t.string,
-  spell_slot: t.number,
-  true_damage: t.number,
-  type: t.string,
+export const ChampionKillEvent = z.object({
+  timestamp: z.number(),
+  bounty: z.number(),
+  shutdown_bounty: z.number(),
+  kill_streak_length: z.number(),
+  killer_id: z.number(),
+  victim_id: z.number(),
+  x: z.number(),
+  y: z.number(),
+
+  victimdamagedealt_set: z.array(VictimDamage),
+  victimdamagereceived_set: z.array(VictimDamage),
+  _type: z.literal('CHAMPION_KILL'),
 })
-export type VictimDamageType = t.TypeOf<typeof VictimDamage>
+export type ChampionKillEventType = z.infer<typeof ChampionKillEvent>
 
-export const ChampionKillEvent = t.type({
-  timestamp: t.number,
-  bounty: t.number,
-  shutdown_bounty: t.number,
-  kill_streak_length: t.number,
-  killer_id: t.number,
-  victim_id: t.number,
-  x: t.number,
-  y: t.number,
+export const Frame = z.object({
+  timestamp: z.number(),
+  participantframes: z.array(ParticipantFrame),
 
-  victimdamagedealt_set: t.array(VictimDamage),
-  victimdamagereceived_set: t.array(VictimDamage),
-  _type: t.literal('CHAMPION_KILL'),
+  wardkillevents: z.array(WardKillEvent),
+  wardplacedevents: z.array(WardPlacedEvent),
+  levelupevents: z.array(LevelUpEvent),
+  skilllevelupevents: z.array(SkillLevelUpEvent),
+  itempurchaseevents: z.array(ItemPurchasedEvent),
+  itemdestroyedevents: z.array(ItemDestroyedEvent),
+  itemundoevents: z.array(ItemUndoEvent),
+  itemsoldevents: z.array(ItemSoldEvent),
+  turretplatedestroyedevents: z.array(TurretPlateDestroyedEvent),
+  elitemonsterkillevents: z.array(EliteMonsterKillEvent),
+  championspecialkillevents: z.array(ChampionSpecialKillEvent),
+  buildingkillevents: z.array(BuildingKillEvent),
+  championkillevents: z.array(ChampionKillEvent),
 })
-export type ChampionKillEventType = t.TypeOf<typeof ChampionKillEvent>
+export type FrameType = z.infer<typeof Frame>
 
-export const Frame = t.type({
-  timestamp: t.number,
-  participantframes: t.array(ParticipantFrame),
-
-  wardkillevents: t.array(WardKillEvent),
-  wardplacedevents: t.array(WardPlacedEvent),
-  levelupevents: t.array(LevelUpEvent),
-  skilllevelupevents: t.array(SkillLevelUpEvent),
-  itempurchaseevents: t.array(ItemPurchasedEvent),
-  itemdestroyedevents: t.array(ItemDestroyedEvent),
-  itemundoevents: t.array(ItemUndoEvent),
-  itemsoldevents: t.array(ItemSoldEvent),
-  turretplatedestroyedevents: t.array(TurretPlateDestroyedEvent),
-  elitemonsterkillevents: t.array(EliteMonsterKillEvent),
-  championspecialkillevents: t.array(ChampionSpecialKillEvent),
-  buildingkillevents: t.array(BuildingKillEvent),
-  championkillevents: t.array(ChampionKillEvent),
+export const AdvancedTimeline = z.object({
+  match: z.number(),
+  frame_interval: z.number(),
+  frames: z.array(Frame),
 })
-export type FrameType = t.TypeOf<typeof Frame>
+export type AdvancedTimelineType = z.infer<typeof AdvancedTimeline>
 
-export const AdvancedTimeline = t.type({
-  match: t.number,
-  frame_interval: t.number,
-  frames: t.array(Frame),
+export const MatchSummary = z.object({
+  content: z.string(),
+  status: z.string(),
 })
-export type AdvancedTimelineType = t.TypeOf<typeof AdvancedTimeline>
-
-export const MatchSummary = t.type({
-  content: t.string,
-  status: t.string,
-})
-export type MatchSummaryType = t.TypeOf<typeof MatchSummary>
+export type MatchSummaryType = z.infer<typeof MatchSummary>

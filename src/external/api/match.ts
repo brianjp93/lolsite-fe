@@ -2,7 +2,6 @@ import axios from "axios";
 import type { AxiosRequestConfig } from "axios";
 import { env } from "@/env/client.mjs";
 import {
-  unwrap,
   FullParticipant,
   SpectateMatch,
   BasicMatch,
@@ -10,7 +9,7 @@ import {
   Ban,
   PaginatedResponse,
 } from "../types";
-import * as t from "io-ts";
+import { z } from "zod";
 import { MatchSummary, SimpleMatch, SimpleSpectate } from "../iotypes/match";
 
 const version = "v1";
@@ -22,7 +21,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 async function timeline(_id: string) {
   const url = `${base}/${_id}/timeline/`;
   const response = await axios.get(url);
-  return unwrap(t.array(Frame).decode(response.data.frames));
+  return z.array(Frame).parse(response.data.frames);
 }
 
 interface ParticipantsData extends AxiosRequestConfig {
@@ -32,7 +31,7 @@ interface ParticipantsData extends AxiosRequestConfig {
 async function participants(data: ParticipantsData) {
   const url = `${base}/participants/`;
   const response = await axios.get(url, { params: data });
-  return { data: unwrap(t.array(FullParticipant).decode(response.data.data)) };
+  return { data: z.array(FullParticipant).parse(response.data.data) };
 }
 
 interface GetSpectateData extends AxiosRequestConfig {
@@ -44,23 +43,19 @@ async function getSpectate(data: GetSpectateData) {
   const response = await axios.get(url, {
     params: { region: data.region, puuid: data.puuid },
   });
-  return unwrap(
-    t.union([SpectateMatch, t.literal("not found")]).decode(response.data)
-  );
+  return z.union([SpectateMatch, z.literal("not found")]).parse(response.data);
 }
 
 async function checkForLiveGame(data: { puuid: string; region: string }) {
   const url = `${base}/check-for-live-game/`;
   const r = await axios.get(url, { params: data });
-  return unwrap(
-    t.union([SimpleSpectate, t.literal("not found")]).decode(r.data)
-  );
+  return z.union([SimpleSpectate, z.literal("not found")]).parse(r.data);
 }
 
 async function getMatch(match_id: string) {
   const url = `${base}/${match_id}/`;
   const response = await axios.get(url);
-  return unwrap(SimpleMatch.decode(response.data));
+  return SimpleMatch.parse(response.data);
 }
 
 async function getMatchesByRiotIdName({
@@ -94,7 +89,7 @@ async function getMatchesByRiotIdName({
     sync_import,
   };
   const response = await axios.get(url, { params });
-  return unwrap(PaginatedResponse(BasicMatch).decode(response.data));
+  return PaginatedResponse(BasicMatch).parse(response.data);
 }
 
 async function setRole(data: any) {
@@ -110,13 +105,13 @@ async function getLatestUnlabeled(data: any) {
 async function bans(match_id: string) {
   const url = `${base}/${match_id}/bans/`;
   const response = await axios.get(url);
-  return unwrap(PaginatedResponse(Ban).decode(response.data));
+  return PaginatedResponse(Ban).parse(response.data);
 }
 
 async function getMatchSummary(match_id: string) {
   const url = `${base}/${match_id}/summary/`;
   const response = await axios.get(url);
-  return unwrap(MatchSummary.decode(response.data));
+  return MatchSummary.parse(response.data);
 }
 
 const exports = {

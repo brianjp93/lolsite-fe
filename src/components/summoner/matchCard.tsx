@@ -257,12 +257,12 @@ export function ItemClump({
     <div className="grid grid-cols-3">
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const key = `item_${i}_image` as keyof typeof part.stats;
-        const itemId: number =
-          part.stats[`item_${i}` as keyof typeof part.stats];
+        const itemId =
+          part.stats[`item_${i}` as 'item_0' | 'item_1' | 'item_2' | 'item_3' | 'item_4' | 'item_5'];
         return (
           <ItemPart
             key={key}
-            itemId={itemId}
+            itemId={itemId || undefined}
             major={version.major}
             minor={version.minor}
           />
@@ -369,7 +369,7 @@ export function ChampionClump({
           height={20}
           alt={`Spell image: ${part?.summoner_2_id}`}
         />
-        {item?.image?.file_30 && (
+        {item && item?.image?.file_30 && (
           <Image
             src={mediaUrl(item.image.file_30)}
             width={20}

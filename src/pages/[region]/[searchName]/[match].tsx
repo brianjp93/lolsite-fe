@@ -249,7 +249,7 @@ function InnerMatch({
             <RunePage
               mypart={mypart}
               participants={participants}
-              match={match}
+              match={{...match, major: match.major ?? 0, minor: match.minor ?? 0}}
               matchCardHeight={400}
             />
           </div>
@@ -309,7 +309,7 @@ function BanList({ bans }: { bans: BanType[] }) {
   return (
     <div className="flex justify-around">
       {bans.map((ban, key) => {
-        const url = mediaUrl(champions[ban.champion_id]?.image?.file_40);
+        const url = mediaUrl(champions[ban.champion_id]?.image?.file_40 ?? '');
         return (
           <Fragment key={`${ban.team}-${ban.pick_turn}`}>
             {!!url && (
@@ -374,8 +374,8 @@ function ParticipantInfo({
             <div className="relative">
               <ChampionClump
                 part={part}
-                major={match.major}
-                minor={match.minor}
+                major={match.major ?? 0}
+                minor={match.minor ?? 0}
               />
               {spectate && (
                 <div className="absolute -left-2 -top-2">
@@ -390,7 +390,7 @@ function ParticipantInfo({
           <div className="my-auto ml-2 h-full">
             <ItemClump
               part={part}
-              version={{ major: match.major, minor: match.minor }}
+              version={{ major: match.major ?? 0, minor: match.minor ?? 0 }}
             />
           </div>
         </div>
@@ -418,7 +418,7 @@ function SecondaryStatClump({
   const cspm =
     (stats.total_minions_killed + stats.neutral_minions_killed) / minutes;
   const format = (x: number, fmt = "0.00") => numeral(x).format(fmt);
-  const rank = convertTier(part.tier) + convertRank(part.rank);
+  const rank = convertTier(part.tier ?? '') + convertRank(part.rank ?? '');
   return (
     <div className="w-fit flex-col text-center">
       <div

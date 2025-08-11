@@ -1,9 +1,8 @@
 import axios from "axios";
 import type { AxiosRequestConfig } from "axios";
-import * as t from "io-ts";
+import { z } from "zod";
 import {
   PositionBin,
-  unwrap,
   TopPlayedWithPlayer,
   Summoner,
   Reputation,
@@ -14,7 +13,6 @@ import {
 } from "../types";
 import { env } from "@/env/client.mjs";
 import {Comment, PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
-import { z } from "zod";
 import {get_default_headers} from "./common";
 
 const version = "v1";
@@ -29,7 +27,7 @@ async function getMyUser() {
   const url = `${base}/me/`;
   const response = await axios.get(url);
   if (response.data.email) {
-    return unwrap(User.decode(response.data));
+    return User.parse(response.data);
   }
   return null;
 }
@@ -37,13 +35,13 @@ async function getMyUser() {
 async function getSummoner(data: {puuid: string, region?: string}) {
   const url = `${base}/summoner/`;
   const response = await axios.post(url, data, get_default_headers());
-  return unwrap(Summoner.decode(response.data.data))
+  return Summoner.parse(response.data.data);
 }
 
 async function getSummonerByRiotId(riotIdName: string, riotIdTagline: string, region: string) {
   const url = `${base}/summoner/by-riot-id/${region}/${riotIdName}/${riotIdTagline}/`
   const response = await axios.get(url);
-  return unwrap(Summoner.decode(response.data));
+  return Summoner.parse(response.data);
 }
 
 interface GetSummonersData extends AxiosRequestConfig {
@@ -53,13 +51,13 @@ interface GetSummonersData extends AxiosRequestConfig {
 async function getSummoners(data: GetSummonersData) {
   const url = `${base}/summoners/`;
   const r = await axios.post(url, data, get_default_headers());
-  return unwrap(t.array(Summoner).decode(r.data.data));
+  return z.array(Summoner).parse(r.data.data);
 }
 
 async function getPositions(data: any) {
   const url = `${base}/positions/`;
   const response = await axios.post(url, data, get_default_headers());
-  return unwrap(t.array(Position).decode(response.data.data))
+  return z.array(Position).parse(response.data.data);
 }
 
 function signUp({email, password, token}: {email: string, password: string, token: string}) {
@@ -93,7 +91,7 @@ async function summonerSearch(params: {
 }) {
   const url = `${base}/summoner-search/`;
   const r = await axios.get(url, { params });
-  return unwrap(t.array(Summoner).decode(r.data.data));
+  return z.array(Summoner).parse(r.data.data);
 }
 
 function isLoggedIn() {
@@ -111,25 +109,25 @@ interface GetRankHistoryData extends AxiosRequestConfig {
 async function getRankHistory(data: GetRankHistoryData) {
   const url = `${base}/rank-history/`;
   const response = await axios.post(url, data, get_default_headers());
-  return unwrap(t.array(PositionBin).decode(response.data.data));
+  return z.array(PositionBin).parse(response.data.data);
 }
 
 async function getFollowList() {
   const url = `${base}/following/`;
   const response = await axios.get(url);
-  return unwrap(t.array(Summoner).decode(response.data))
+  return z.array(Summoner).parse(response.data);
 }
 
 async function setFollow({id}: {id: number}) {
   const url = `${base}/following/`;
   const response = await axios.post(url, {id}, get_default_headers())
-  return unwrap(t.array(Summoner).decode(response.data))
+  return z.array(Summoner).parse(response.data);
 }
 
 async function removeFollow({id}: {id: number}) {
   const url = `${base}/following/`;
   const response = await axios.delete(url, {data: {id}, ...get_default_headers()})
-  return unwrap(t.array(Summoner).decode(response.data))
+  return z.array(Summoner).parse(response.data);
 }
 
 async function getFavorites() {
@@ -180,7 +178,7 @@ function connectAccountWithProfileIcon(data: any) {
 async function getConnectedAccounts() {
   const url = `${base}/get-connected-accounts/`;
   const response = await axios.get(url);
-  return unwrap(t.array(Summoner).decode(response.data.data))
+  return z.array(Summoner).parse(response.data.data);
 }
 
 function changePassword(data: any) {
@@ -202,7 +200,7 @@ interface GetTopPlayedWithData extends AxiosRequestConfig {
 async function getTopPlayedWith(data: GetTopPlayedWithData) {
   const url = `${base}/get-top-played-with/`;
   const r = await axios.post(url, data, get_default_headers());
-  return unwrap(t.array(TopPlayedWithPlayer).decode(r.data.data));
+  return z.array(TopPlayedWithPlayer).parse(r.data.data);
 }
 
 function getComments(data: any) {
@@ -253,13 +251,13 @@ function editDefaultSummoner(data: any) {
 async function getReputation(summoner: number) {
   const url = `${base}/reputation/${summoner}/`;
   const r = await axios.get(url);
-  return unwrap(Reputation.decode(r.data));
+  return Reputation.parse(r.data);
 }
 
 async function createReputation(summoner: number, is_approve: boolean) {
   const url = `${base}/reputation/create/`;
   const r = await axios.post(url, { summoner, is_approve }, get_default_headers());
-  return unwrap(Reputation.decode(r.data));
+  return Reputation.parse(r.data);
 }
 
 async function updateReputation(
@@ -269,13 +267,13 @@ async function updateReputation(
 ) {
   const url = `${base}/reputation/update/${id}/`;
   const r = await axios.put(url, { is_approve, summoner });
-  return unwrap(Reputation.decode(r.data));
+  return Reputation.parse(r.data);
 }
 
 async function getNameChanges(id: number) {
   const url = `${base}/summoner/${id}/name-changes/`;
   const r = await axios.get(url);
-  return unwrap(t.array(NameChange).decode(r.data.results));
+  return z.array(NameChange).parse(r.data.results);
 }
 
 async function login({email, password}: {email: string, password: string}) {
@@ -302,13 +300,13 @@ async function isSuspicious(puuid: string) {
 async function getMatchComments({page, match_id}: {page: number, match_id: number}) {
   const url = `${base}/comment/match/${match_id}`
   const response = await axios.get(url, {params: {page}})
-  return unwrap(PaginatedResponse(Comment).decode(response.data))
+  return PaginatedResponse(Comment).parse(response.data);
 }
 
 async function getComment(pk: number) {
   const url = `${base}/comment/${pk}/`
   const response = await axios.get(url)
-  return unwrap(Comment.decode(response.data))
+  return Comment.parse(response.data);
 }
 
 const exports = {

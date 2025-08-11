@@ -1,20 +1,11 @@
-import * as t from "io-ts";
 import { z } from "zod";
 
-export function maybe(x: t.Mixed) {
-  return t.union([x, t.undefined]);
-}
-
-export function optional(x: t.Mixed) {
-  return t.union([x, t.null]);
-}
-
-export function PaginatedResponse<C extends t.Mixed>(codec: C) {
-  return t.type({
-    next: optional(t.string),
-    previous: optional(t.string),
-    count: t.number,
-    results: t.array(codec),
+export function PaginatedResponse<T extends z.ZodTypeAny>(schema: T) {
+  return z.object({
+    next: z.string().nullable(),
+    previous: z.string().nullable(),
+    count: z.number(),
+    results: z.array(schema),
   });
 }
 export type PaginatedResponseType<T> = {
@@ -24,12 +15,12 @@ export type PaginatedResponseType<T> = {
   results: T[];
 };
 
-export function PaginatedCursorResponse<C extends t.Mixed>(codec: C) {
-  return t.type({
-    next: optional(t.string),
-    previous: optional(t.string),
-    results: t.array(codec),
-  })
+export function PaginatedCursorResponse<T extends z.ZodTypeAny>(schema: T) {
+  return z.object({
+    next: z.string().nullable(),
+    previous: z.string().nullable(),
+    results: z.array(schema),
+  });
 }
 export type PaginatedCursorResponse<T> = {
   next: string | null;
