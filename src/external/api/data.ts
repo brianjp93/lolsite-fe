@@ -37,7 +37,7 @@ function getSimpleItem(
   major: number | string,
   minor: number | string
 ) {
-  const url = `${base}/item/${_id}/${major}/${minor}/`;
+  const url = `${base}/item/${major}/${minor}/${_id}/`;
   return axios.get(url);
 }
 
