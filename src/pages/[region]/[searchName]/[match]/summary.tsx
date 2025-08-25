@@ -7,14 +7,15 @@ export default function MatchSummary() {
   const {
     match: matchId,
   } = router.query as { searchName: string; match: string; region: string };
-  const query = useQuery(['matchSummary', matchId], () => {
-    return api.match.getMatchSummary(matchId)
-  },
-  {
+  const query = useQuery({
+    queryKey: ['matchSummary', matchId],
+    queryFn: () => {
+      return api.match.getMatchSummary(matchId)
+    },
     retry: false,
     enabled: !!matchId,
-    refetchInterval: (data) => {
-      if (!data || data.status === "r") {
+    refetchInterval: (query) => {
+      if (!query.state.data || query.state.data.status === "r") {
         return 3000
       }
       return false

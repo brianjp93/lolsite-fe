@@ -478,9 +478,9 @@ function SkillLevelUp(props: {
 }) {
   const champions = useBasicChampions();
 
-  const spellQuery = useQuery(
-    ["spells", props.selected_participant.champion_id],
-    () =>
+  const spellQuery = useQuery({
+    queryKey: ["spells", props.selected_participant.champion_id],
+    queryFn: () =>
       api.data
         .getChampionSpells({
           champion_id: champions[props.selected_participant.champion_id]!._id,
@@ -495,15 +495,13 @@ function SkillLevelUp(props: {
           }
           return output;
         }),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 10,
-      enabled:
-        Object.keys(champions).length > 0 &&
-        !!props.selected_participant.champion_id,
-    }
-  );
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+    enabled:
+      Object.keys(champions).length > 0 &&
+      !!props.selected_participant.champion_id,
+  });
   const spells = useMemo(() => spellQuery.data || {}, [spellQuery.data]);
 
   const div_width = (props.expanded_width - 65) / 18;

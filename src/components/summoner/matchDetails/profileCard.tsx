@@ -55,12 +55,14 @@ export function FollowButton({ summoner }: { summoner: SummonerType }) {
   const following = followQ.data || [];
   const isFollow = following.map(x => x.id).includes(summoner.id);
 
-  const setFollowM = useMutation(
-    () => api.player.setFollow({ id: summoner.id }), { onSuccess: () => followQ.refetch() }
-  );
-  const removeFollowM = useMutation(
-    () => api.player.removeFollow({ id: summoner.id }), { onSuccess: () => followQ.refetch() }
-  );
+  const setFollowM = useMutation({
+    mutationFn: () => api.player.setFollow({ id: summoner.id }),
+    onSuccess: () => followQ.refetch(),
+  });
+  const removeFollowM = useMutation({
+    mutationFn: () => api.player.removeFollow({ id: summoner.id }),
+    onSuccess: () => followQ.refetch(),
+  });
   if (!user) {
     return null
   }
@@ -87,19 +89,18 @@ export function FavoriteButton({ summoner }: { summoner: SummonerType }) {
   const favorites = favoritesQuery.data || [];
   const isFavorite = !!favorites.filter((x) => x.puuid === summoner.puuid)?.[0];
 
-  const setFavorite = useMutation(() => api.player.setFavorite(summoner.id), {
+  const setFavorite = useMutation({
+    mutationFn: () => api.player.setFavorite(summoner.id),
     onSuccess: () => {
       favoritesQuery.refetch();
     },
   });
-  const removeFavorite = useMutation(
-    () => api.player.removeFavorite(summoner.id),
-    {
-      onSuccess: () => {
-        favoritesQuery.refetch();
-      },
-    }
-  );
+  const removeFavorite = useMutation({
+    mutationFn: () => api.player.removeFavorite(summoner.id),
+    onSuccess: () => {
+      favoritesQuery.refetch();
+    },
+  });
 
   if (!user) {
     return null;

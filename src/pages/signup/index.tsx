@@ -50,20 +50,18 @@ export function SignUpInner() {
 
   const siteKey = useGoogleRecaptchaSiteKey().data;
 
-  const mutation = useMutation(
-    ({ email, password, token }: SignUpSchema & { token: string }) =>
+  const mutation = useMutation({
+    mutationFn: ({ email, password, token }: SignUpSchema & { token: string }) =>
       api.player.signUp({ email, password, token }),
-    {
-      onError: () => {
-        setError("password", {
-          message: "There was a problem while signing up.",
-        });
-      },
-      onSuccess: () => {
-        router.push({ query: { complete: true } });
-      },
-    }
-  );
+    onError: () => {
+      setError("password", {
+        message: "There was a problem while signing up.",
+      });
+    },
+    onSuccess: () => {
+      router.push({ query: { complete: true } });
+    },
+  });
 
   if (!siteKey) {
     return <Orbit className="mx-auto" />;
@@ -113,7 +111,7 @@ export function SignUpInner() {
             });
           }}
           className={clsx("btn btn-primary mt-2 w-full", {
-            disabled: mutation.isLoading,
+            disabled: mutation.isPending,
           })}
         >
           Sign Up

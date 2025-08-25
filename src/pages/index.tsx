@@ -9,14 +9,12 @@ import Image from "next/image";
 Modal.setAppElement("#__next");
 
 const Home: NextPage = () => {
-  const quoteQuery = useQuery(
-    ["inspirational-quote"],
-    () => api.fun.getInspirationalMessage(),
-    {
-      refetchInterval: 1000 * 5,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const quoteQuery = useQuery({
+    queryKey: ["inspirational-quote"],
+    queryFn: () => api.fun.getInspirationalMessage(),
+    refetchInterval: 1000 * 5,
+    refetchOnWindowFocus: false,
+  });
   const quote = quoteQuery.data?.message;
   return (
     <Skeleton>

@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  UseQueryOptions,
-  QueryKey,
-  QueryFunction,
-  UseQueryResult,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/external/api/api";
 
 import type {
@@ -39,7 +33,9 @@ export function useDebounce<V>(value: V, delay: number) {
 
 export const userKey = ["my-user"];
 export function useUser() {
-  const userQuery = useQuery(userKey, api.player.getMyUser, {
+  const userQuery = useQuery({
+    queryKey: userKey,
+    queryFn: api.player.getMyUser,
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 10,
@@ -56,18 +52,16 @@ export function useItem({
   major: number | string;
   minor: number | string;
 }) {
-  return useQuery(
-    ["item", id, major, minor],
-    () =>
+  return useQuery({
+    queryKey: ["item", id, major, minor],
+    queryFn: () =>
       api.data
         .getItem({ item_id: id, major, minor })
         .then((response) => response.data.data),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 10,
-    }
-  );
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+  });
 }
 
 export function useAllItems({
@@ -81,28 +75,24 @@ export function useAllItems({
   patch?: number;
   map_id?: number;
 }) {
-  return useQuery(
-    ["all-items"],
-    () => api.data.items({ major, minor, patch, map_id }),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 10,
-    }
-  );
+  return useQuery({
+    queryKey: ["all-items"],
+    queryFn: () => api.data.items({ major, minor, patch, map_id }),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+  });
 }
 
 export function useItemHistory(itemId: string) {
-  return useQuery(
-    ["item-history", itemId],
-    () => api.data.getItemDiff(itemId),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 10,
-      enabled: !!itemId,
-    }
-  )
+  return useQuery({
+    queryKey: ["item-history", itemId],
+    queryFn: () => api.data.getItemDiff(itemId),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+    enabled: !!itemId,
+  });
 }
 
 export function useSimpleItem({
@@ -114,27 +104,29 @@ export function useSimpleItem({
   major: number | string;
   minor: number | string;
 }) {
-  return useQuery(
-    ["item", id, major, minor],
-    () => id ?
-      api.data
-        .getSimpleItem(id, major, minor)
-        .then((response) => response.data) : null,
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 10,
-      enabled: !!id,
-    }
-  );
+  return useQuery({
+    queryKey: ["item", id, major, minor],
+    queryFn: () =>
+      id
+        ? api.data
+            .getSimpleItem(id, major, minor)
+            .then((response) => response.data)
+        : null,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+    enabled: !!id,
+  });
 }
 
 export function useChampions(): Record<number, ChampionType> {
-  const championQuery = useQuery(
-    ["champions"],
-    () => api.data.getChampions().then((x) => x.data.data),
-    { retry: true, refetchOnWindowFocus: false, staleTime: 1000 * 60 * 10 }
-  );
+  const championQuery = useQuery({
+    queryKey: ["champions"],
+    queryFn: () => api.data.getChampions().then((x) => x.data.data),
+    retry: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+  });
   const champions: Record<number, ChampionType> = {};
   for (const champ of championQuery.data || []) {
     champions[champ.key] = champ;
@@ -146,11 +138,13 @@ export function useBasicChampions(): Record<
   number,
   BasicChampionWithImageType
 > {
-  const championQuery = useQuery(
-    ["basic-champions"],
-    () => api.data.basicChampions().then((x) => x.results),
-    { retry: true, refetchOnWindowFocus: false, staleTime: 1000 * 60 * 10 }
-  );
+  const championQuery = useQuery({
+    queryKey: ["basic-champions"],
+    queryFn: () => api.data.basicChampions().then((x) => x.results),
+    retry: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 10,
+  });
   const champions: Record<number, BasicChampionWithImageType> = {};
   for (const champ of championQuery.data || []) {
     champions[champ.key] = champ;
@@ -159,11 +153,13 @@ export function useBasicChampions(): Record<
 }
 
 export function useRunes(version: string) {
-  const runesQuery = useQuery(
-    ["runes", version],
-    () => api.data.getRunes({ version }),
-    { retry: false, refetchOnWindowFocus: false, staleTime: 1000 * 60 * 60 }
-  );
+  const runesQuery = useQuery({
+    queryKey: ["runes", version],
+    queryFn: () => api.data.getRunes({ version }),
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60,
+  });
   const runes: Record<number, RuneType> = {};
   for (const rune of runesQuery.data || []) {
     runes[rune._id] = rune;
@@ -171,74 +167,55 @@ export function useRunes(version: string) {
   return runes;
 }
 
-export function useQueryWithPrefetch<T>(
-  key: QueryKey,
-  request: QueryFunction<T>,
-  prefetchKey: QueryKey,
-  prefetchRequest: QueryFunction<T>,
-  options: UseQueryOptions<T>
-): UseQueryResult<T, unknown> {
-  const queryClient = useQueryClient();
-  const matchQuery = useQuery(key, request, options);
-  // prefetch next page
-  queryClient.prefetchQuery(prefetchKey, prefetchRequest, options);
-  return matchQuery;
-}
-
 export function useSummonerSearch({
   name,
   region,
-  onSuccess,
 }: {
   name: string;
   region: string;
-  onSuccess?: () => void;
 }) {
   name = name.split(/\s+/).join("");
-  const query = useQuery(
-    ["summoner-search", name, region],
-    () => api.player.summonerSearch({ simple_riot_id__startswith: name.toLowerCase(), region }),
-    {
-      staleTime: 1000 * 60 * 2,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enabled: name.length >= 3,
-      onSuccess: () => onSuccess && onSuccess(),
-    }
-  );
+  const query = useQuery({
+    queryKey: ["summoner-search", name, region],
+    queryFn: () =>
+      api.player.summonerSearch({
+        simple_riot_id__startswith: name.toLowerCase(),
+        region,
+      }),
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: name.length >= 3,
+  });
   return query;
 }
 
 export function useMatch(matchId: string) {
-  const matchQuery = useQuery(
-    ["full-match", matchId],
-    () => api.match.getMatch(matchId),
-    {
-      retry: true,
-      refetchOnWindowFocus: false,
-      enabled: !!matchId,
-      refetchOnMount: false,
-      staleTime: 1000 * 60 * 10,
-    }
-  );
+  const matchQuery = useQuery({
+    queryKey: ["full-match", matchId],
+    queryFn: () => api.match.getMatch(matchId),
+    retry: true,
+    refetchOnWindowFocus: false,
+    enabled: !!matchId,
+    refetchOnMount: false,
+    staleTime: 1000 * 60 * 10,
+  });
   return matchQuery;
 }
 
 export function useParticipants(matchId: string) {
-  const participantQuery = useQuery(
-    ["participants", matchId],
-    () =>
+  const participantQuery = useQuery({
+    queryKey: ["participants", matchId],
+    queryFn: () =>
       api.match
         .participants({ match__id: matchId, apply_ranks: true })
         .then((response) => rankParticipants(response.data)),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      enabled: !!matchId,
-      refetchOnMount: false,
-      staleTime: 1000 * 60 * 10,
-    }
-  );
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: !!matchId,
+    refetchOnMount: false,
+    staleTime: 1000 * 60 * 10,
+  });
   return participantQuery;
 }
 
@@ -269,8 +246,8 @@ export function useMatchList({
   onSettled?: () => void;
   keepPreviousData?: boolean;
 }) {
-  const query = useQuery(
-    [
+  const query = useQuery({
+    queryKey: [
       "matches-with-sync",
       "by-summoner",
       riot_id_name,
@@ -282,7 +259,7 @@ export function useMatchList({
       queue,
       playedWith,
     ],
-    () =>
+    queryFn: () =>
       api.match
         .getMatchesByRiotIdName({
           riot_id_name,
@@ -295,45 +272,37 @@ export function useMatchList({
           sync_import: sync,
         })
         .then((x) => x.results),
-    {
-      retry: true,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      keepPreviousData,
-      staleTime: 1000 * 60 * 3,
-      cacheTime: 1000 * 60 * 3,
-      enabled: !!riot_id_name && !!region && !!riot_id_tagline,
-      onSuccess: () => onSuccess && onSuccess(),
-      onError: () => onError(),
-      onSettled: () => onSettled && onSettled(),
-    }
-  );
+    retry: true,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: keepPreviousData ? (previousData) => previousData : undefined,
+    staleTime: 1000 * 60 * 3,
+    enabled: !!riot_id_name && !!region && !!riot_id_tagline,
+  });
   return query;
 }
 
 export function useTimeline({ matchId }: { matchId: string }) {
-  const query = useQuery(
-    ["timeline", matchId],
-    () =>
+  const query = useQuery({
+    queryKey: ["timeline", matchId],
+    queryFn: () =>
       api.match.timeline(matchId).then((data) => {
         data.sort((a, b) => a.timestamp - b.timestamp);
         return data;
       }),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      enabled: !!matchId,
-      refetchOnMount: false,
-      staleTime: 1000 * 60 * 30,
-    }
-  );
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: !!matchId,
+    refetchOnMount: false,
+    staleTime: 1000 * 60 * 30,
+  });
   return query;
 }
 
 export function useQueues() {
-  return useQuery(
-    ["queues-data"],
-    async () => {
+  return useQuery({
+    queryKey: ["queues-data"],
+    queryFn: async () => {
       const data = await api.data.getQueues();
       const out: Record<number, QueueType> = {};
       for (const x of data) {
@@ -345,13 +314,11 @@ export function useQueues() {
       }
       return out;
     },
-    {
-      retry: false,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 60,
-    }
-  );
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60,
+  });
 }
 
 export function useSummoner({
@@ -363,34 +330,27 @@ export function useSummoner({
   riotIdName: string;
   riotIdTagline: string;
 }) {
-  return useQuery(
-    ["summoner", "name", riotIdName, riotIdTagline, region],
-    () => api.player.getSummonerByRiotId(riotIdName, riotIdTagline, region),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      staleTime: 1000 * 60 * 5,
-      enabled: !!region && !!riotIdName && !!riotIdTagline,
-    }
-  );
+  return useQuery({
+    queryKey: ["summoner", "name", riotIdName, riotIdTagline, region],
+    queryFn: () =>
+      api.player.getSummonerByRiotId(riotIdName, riotIdTagline, region),
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 1000 * 60 * 5,
+    enabled: !!region && !!riotIdName && !!riotIdTagline,
+  });
 }
 
-export function useSummonerByPuuid({
-  puuid,
-}: {
-  puuid: string;
-}) {
-  return useQuery(
-    ["summoner", "puuid", puuid],
-    () => api.player.getSummoner({puuid}),
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      staleTime: 1000 * 60 * 5,
-    }
-  )
+export function useSummonerByPuuid({ puuid }: { puuid: string }) {
+  return useQuery({
+    queryKey: ["summoner", "puuid", puuid],
+    queryFn: () => api.player.getSummoner({ puuid }),
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 1000 * 60 * 5,
+  });
 }
 
 export function usePositions({
@@ -400,33 +360,33 @@ export function usePositions({
   puuid: string;
   region: string;
 }) {
-  const query = useQuery(
-    ["positions", puuid, region],
-    () =>
-      puuid
-        ? api.player.getPositions({ puuid, region })
-        : undefined,
-    { retry: false, refetchOnWindowFocus: false, enabled: !!puuid }
-  );
+  const query = useQuery({
+    queryKey: ["positions", puuid, region],
+    queryFn: () =>
+      puuid ? api.player.getPositions({ puuid, region }) : undefined,
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: !!puuid,
+  });
   return query;
 }
 
 export function useNameChanges(summoner_id: number) {
-  return useQuery(
-    ["name-change", summoner_id],
-    () => api.player.getNameChanges(summoner_id),
-    {
-      enabled: !!summoner_id,
-      retry: false,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+  return useQuery({
+    queryKey: ["name-change", summoner_id],
+    queryFn: () => api.player.getNameChanges(summoner_id),
+    enabled: !!summoner_id,
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 }
 
 const banQueryKey = (match_id: string) => ["match-bans", match_id];
 export function useBans(match_id: string) {
-  return useQuery(banQueryKey(match_id), () => api.match.bans(match_id), {
+  return useQuery({
+    queryKey: banQueryKey(match_id),
+    queryFn: () => api.match.bans(match_id),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 60,
@@ -434,7 +394,9 @@ export function useBans(match_id: string) {
 }
 
 export function useFavorites({ enabled = true }: { enabled?: boolean }) {
-  return useQuery(["favorites"], () => api.player.getFavorites(), {
+  return useQuery({
+    queryKey: ["favorites"],
+    queryFn: () => api.player.getFavorites(),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 60,
@@ -461,8 +423,8 @@ export function usePlayerSummary({
   season?: number;
   queue_in?: number[];
 }) {
-  return useQuery(
-    [
+  return useQuery({
+    queryKey: [
       "player-summary",
       puuid,
       start,
@@ -472,7 +434,7 @@ export function usePlayerSummary({
       season,
       queue_in ? queue_in.join(",") : queue_in,
     ],
-    () =>
+    queryFn: () =>
       api.player.getChampionsOverview({
         puuid,
         start,
@@ -483,60 +445,52 @@ export function usePlayerSummary({
         season,
         queue_in,
       }),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 60,
-      enabled: !!puuid,
-    }
-  );
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60,
+    enabled: !!puuid,
+  });
 }
 
 export function useSimpleSpectate(puuid: string, region: string) {
-  return useQuery(
-    ["simple-spectate", puuid, region],
-    () =>
+  return useQuery({
+    queryKey: ["simple-spectate", puuid, region],
+    queryFn: () =>
       api.match.checkForLiveGame({ puuid, region }).then((response) => {
         if (response === "not found") {
           return null;
         }
         return response;
       }),
-    {
-      refetchInterval: 1000 * 60,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      retry: false,
-      enabled: !!(puuid && region),
-    }
-  );
+    refetchInterval: 1000 * 60,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+    enabled: !!(puuid && region),
+  });
 }
 
 export function useConnectedSummoners() {
-  return useQuery(
-    ["connected-summoners"],
-    () => api.player.getConnectedAccounts(),
-    {
-      retry: false,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 60,
-    }
-  );
+  return useQuery({
+    queryKey: ["connected-summoners"],
+    queryFn: () => api.player.getConnectedAccounts(),
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60,
+  });
 }
 
 export function useSuspiciousAccount(puuid: string, enabled = true) {
-  return useQuery(
-    ["sus-account", puuid],
-    () => api.player.isSuspicious(puuid),
-    {
-      retry: false,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5,
-      enabled: enabled,
-    }
-  );
+  return useQuery({
+    queryKey: ["sus-account", puuid],
+    queryFn: () => api.player.isSuspicious(puuid),
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
+    enabled: enabled,
+  });
 }
 
 export function useSpectate(
@@ -545,40 +499,42 @@ export function useSpectate(
   refetchInterval?: number,
   enabled?: boolean
 ) {
-  return useQuery(
-    ["spectate", region, puuid],
-    () =>
+  return useQuery({
+    queryKey: ["spectate", region, puuid],
+    queryFn: () =>
       api.match.getSpectate({ region, puuid }).then((x) => {
         if (x === "not found") {
           return null;
         }
         return x;
       }),
-    {
-      retry: false,
-      refetchInterval,
-      enabled,
-    }
-  );
+    retry: false,
+    refetchInterval,
+    enabled,
+  });
 }
 
 export function useComment(pk: number) {
-  return useQuery(["comment", pk], () => api.player.getComment(pk), {
+  return useQuery({
+    queryKey: ["comment", pk],
+    queryFn: () => api.player.getComment(pk),
     staleTime: 1000 * 3600 * 24,
   });
 }
 
 export function useGoogleRecaptchaSiteKey() {
-  return useQuery(
-    ["google-recaptcha-site-key"],
-    api.data.getGoogleRecaptchaSiteKey,
-    {
-      retry: true,
-      staleTime: 1000 * 3600,
-    }
-  );
+  return useQuery({
+    queryKey: ["google-recaptcha-site-key"],
+    queryFn: api.data.getGoogleRecaptchaSiteKey,
+    retry: true,
+    staleTime: 1000 * 3600,
+  });
 }
 
-export function useFollowList({enabled}: {enabled?:boolean}) {
-  return useQuery(['followList'], () => api.player.getFollowList(), {enabled})
+export function useFollowList({ enabled }: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["followList"],
+    queryFn: () => api.player.getFollowList(),
+    enabled,
+  });
 }

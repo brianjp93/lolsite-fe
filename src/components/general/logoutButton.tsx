@@ -4,7 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 
 export default function LogoutButton({className=""}: {className?: string}) {
   const userQuery = useUser()
-  const logout = useMutation(() => api.player.logout(), {
+  const logout = useMutation({
+    mutationFn: () => api.player.logout(),
     onSuccess: () => userQuery.refetch(),
   });
 

@@ -11,9 +11,9 @@ export default function Verify() {
   const query = router.query as {code?: string}
   const code = query?.code || ''
 
-  const mutation = useMutation(
-    () => api.player.verify(code || ""),
-  )
+  const mutation = useMutation({
+    mutationFn: () => api.player.verify(code || ""),
+  })
 
   useEffect(() => {
     if (code) {
@@ -23,7 +23,7 @@ export default function Verify() {
 
   return (
     <Skeleton>
-      {mutation.isLoading &&
+      {mutation.isPending &&
         <div>
           Verifying your email...
         </div>

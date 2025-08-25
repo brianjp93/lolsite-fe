@@ -84,7 +84,8 @@ function ConnectedCard({
   onUnlink: () => void;
 }) {
   const [isConfirm, setIsConfirm] = useState(false);
-  const unlink = useMutation(() => api.player.unlinkAccount(summoner.puuid), {
+  const unlink = useMutation({
+    mutationFn: () => api.player.unlinkAccount(summoner.puuid),
     onSuccess: () => onUnlink(),
   });
   return (
@@ -120,7 +121,7 @@ function ConnectedCard({
             <button
               onClick={() => unlink.mutate()}
               className={clsx("btn btn-primary w-1/2 mr-1", {
-                disabled: unlink.isLoading,
+                disabled: unlink.isPending,
               })}
             >
               Unlink
@@ -142,25 +143,23 @@ function ConnectedCard({
 function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
   const [region, setRegion] = useState("na");
-  const mutation = useMutation(
-    ({ simpleRiotId, region }: { simpleRiotId: string; region: string }) =>
+  const mutation = useMutation({
+    mutationFn: ({ simpleRiotId, region }: { simpleRiotId: string; region: string }) =>
       api.player
         .generateCode({ action: "create", simple_riot_id: simpleRiotId, region })
-        .then((response) => response.data)
-  );
+        .then((response) => response.data),
+  });
 
-  const connect = useMutation(
-    () =>
+  const connect = useMutation({
+    mutationFn: () =>
       api.player
         .connectAccountWithProfileIcon({
           simple_riot_id: mutation.data.simple_riot_id,
           region,
         })
         .then((r) => r.data),
-    {
-      onSuccess: () => onSuccess(),
-    }
-  );
+    onSuccess: () => onSuccess(),
+  });
 
   function isInvalid(name: string) {
     const count = name.split('#').length - 1
@@ -211,7 +210,7 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
               <button
                 onClick={() => mutation.mutate({ simpleRiotId: name, region })}
                 className={clsx("btn btn-default mt-2 w-full", {
-                  disabled: mutation.isLoading,
+                  disabled: mutation.isPending,
                 })}
               >
                 Generate Connection Code
@@ -248,7 +247,7 @@ function ConnectAccount({ onSuccess }: { onSuccess: () => void }) {
             <button
               onClick={() => connect.mutate()}
               className={clsx("btn btn-default mt-2 w-full", {
-                disabled: connect.isLoading,
+                disabled: connect.isPending,
               })}
             >
               Verify Account

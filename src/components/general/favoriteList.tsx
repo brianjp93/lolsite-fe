@@ -23,12 +23,10 @@ export function FavoriteList({
     setOrder(favorites);
   }, [favorites]);
 
-  const mutation = useMutation(
-    (puuidList: string[]) => api.player.setFavoriteOrder(puuidList),
-    {
-      onSuccess: () => favoritesQuery.refetch(),
-    }
-  );
+  const mutation = useMutation({
+    mutationFn: (puuidList: string[]) => api.player.setFavoriteOrder(puuidList),
+    onSuccess: () => favoritesQuery.refetch(),
+  });
 
   const onReorder = (newOrder: Favorite[]) => {
     setOrder(newOrder);

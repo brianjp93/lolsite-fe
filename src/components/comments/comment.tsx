@@ -42,14 +42,15 @@ export function CreateComment({
   const connectedQ = useConnectedSummoners();
   const connected = connectedQ.data || [];
 
-  const create = useMutation((puuid: string) =>
-    api.player.createComment({
-      markdown: value,
-      match: match_id,
-      reply_to,
-      summoner: puuid,
-    })
-  );
+  const create = useMutation({
+    mutationFn: (puuid: string) =>
+      api.player.createComment({
+        markdown: value,
+        match: match_id,
+        reply_to,
+        summoner: puuid,
+      }),
+  });
 
   return (
     <>
@@ -91,7 +92,7 @@ export function CreateComment({
             }
           }}
           className={clsx("btn btn-primary", {
-            disabled: !selectedSummoner || !value || create.isLoading,
+            disabled: !selectedSummoner || !value || create.isPending,
           })}
         >
           Create Comment

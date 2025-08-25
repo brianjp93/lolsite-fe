@@ -8,14 +8,18 @@ import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import {signUpRoute} from "@/routes";
+import { signUpRoute } from "@/routes";
 
 export function loginPath() {
   return "/login";
 }
 
 export default function Login() {
-  return <Skeleton><LoginInner /></Skeleton>;
+  return (
+    <Skeleton>
+      <LoginInner />
+    </Skeleton>
+  );
 }
 
 const LoginSchema = z.object({
@@ -36,22 +40,20 @@ function LoginInner() {
   const router = useRouter();
   const userQuery = useUser();
 
-  const login = useMutation(
-    ({ email, password }: { email: string; password: string }) =>
+  const login = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
       api.player.login({ email, password }),
-    {
-      onSuccess: () => {
-        userQuery.refetch();
-        router.push("/");
-      },
-    }
-  );
+    onSuccess: () => {
+      userQuery.refetch();
+      router.push("/");
+    },
+  });
   const onSubmit = ({ email, password }: LoginSchema) => {
     login.mutate({ email, password });
   };
   return (
-    <div className="flex flex-col gap-y-4 mt-11 w-full max-w-prose mx-auto">
-      <div className="text-xl font-bold underline w-full">Login</div>
+    <div className="mx-auto mt-11 flex w-full max-w-prose flex-col gap-y-4">
+      <div className="w-full text-xl font-bold underline">Login</div>
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
         <label>
           <div>email</div>
@@ -68,11 +70,11 @@ function LoginInner() {
         </button>
       </form>
 
-      <div className="flex mt-3">
-        <div className="text-lg my-auto">
-          No account?
-        </div>
-        <Link className="btn btn-link ml-2 inline" href={signUpRoute()}>Sign Up</Link>
+      <div className="mt-3 flex">
+        <div className="my-auto text-lg">No account?</div>
+        <Link className="btn btn-link ml-2 inline" href={signUpRoute()}>
+          Sign Up
+        </Link>
       </div>
     </div>
   );
