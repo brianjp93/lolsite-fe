@@ -20,7 +20,7 @@ export default function PuuidPage() {
       });
       router.replace(url);
     }
-  }, [summoner]);
+  }, [summoner, router]);
   return (
     <Skeleton>
       {summonerQuery.isLoading && <div>Loading...</div>}

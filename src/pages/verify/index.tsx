@@ -19,7 +19,7 @@ export default function Verify() {
     if (code) {
       mutation.mutate()
     }
-  }, [code])
+  }, [code, mutation])
 
   return (
     <Skeleton>

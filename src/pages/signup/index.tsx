@@ -1,5 +1,5 @@
 import Skeleton from "@/components/general/skeleton";
-import { useGoogleRecaptchaSiteKey, useUser } from "@/hooks";
+import { useGoogleRecaptchaSiteKey } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -24,7 +24,6 @@ export interface CustomWindow extends Window {
 declare let window: CustomWindow;
 
 export default function SignUp() {
-  const userQuery = useUser();
   const router = useRouter();
   const query = router.query as { complete?: string };
 

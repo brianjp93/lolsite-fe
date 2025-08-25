@@ -153,8 +153,6 @@ function TeamClump({
   part?: BasicParticipantType;
 }) {
   const champions = useBasicChampions();
-  const router = useRouter();
-  const { region } = router.query as { region: string };
   return (
     <div className="w-32 md:w-44">
       {team.map((teammate) => {
@@ -312,7 +310,7 @@ export function ChampionClump({
   minor: number;
 }) {
   const champions = useBasicChampions();
-  const [pickTurn, setPickTurn] = usePickTurn();
+  const [, setPickTurn] = usePickTurn();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
   const item = useSimpleItem({ id: part.stats.item_6, major, minor }).data;
   const has_perks = !!(

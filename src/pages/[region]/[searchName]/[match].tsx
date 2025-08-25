@@ -305,7 +305,7 @@ function TeamSide({
 
 function BanList({ bans }: { bans: BanType[] }) {
   const champions = useBasicChampions();
-  const [pickTurn, setPickTurn] = usePickTurn();
+  const [,setPickTurn] = usePickTurn();
   return (
     <div className="flex justify-around">
       {bans.map((ban, key) => {

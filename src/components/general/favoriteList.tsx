@@ -1,21 +1,14 @@
 import type { Favorite } from "@/external/types";
-import { profileRoute, puuidRoute } from "@/routes";
+import { puuidRoute } from "@/routes";
 import { Reorder, useDragControls } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useFavorites, useQueues, useSimpleSpectate } from "@/hooks";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
 import numeral from "numeral";
-import {useRouter} from "next/router";
 import Link from "next/link";
 
-export function FavoriteList({
-  favorites,
-  onClick,
-}: {
-  favorites: Favorite[];
-  onClick?: () => void;
-}) {
+export function FavoriteList({ favorites }: { favorites: Favorite[] }) {
   const favoritesQuery = useFavorites({});
   const [order, setOrder] = useState<Favorite[]>([]);
 
@@ -37,7 +30,6 @@ export function FavoriteList({
       {order.map((fav) => {
         return (
           <FavoriteItem
-            onClick={onClick}
             key={fav.puuid}
             fav={fav}
             onPointerUp={() => mutation.mutate(order.map((x) => x.puuid))}
@@ -51,11 +43,9 @@ export function FavoriteList({
 function FavoriteItem({
   fav,
   onPointerUp,
-  onClick,
 }: {
   fav: Favorite;
   onPointerUp: () => void;
-  onClick?: () => void;
 }) {
   const controls = useDragControls();
   const spectate = useSimpleSpectate(fav.puuid, fav.region).data;
@@ -100,12 +90,13 @@ function FavoriteItem({
               startTime={spectate.gameStartTime}
             />
           )}
-          {(fav.riot_id_name && fav.riot_id_tagline) ?
+          {fav.riot_id_name && fav.riot_id_tagline ? (
             <div title={`${fav.riot_id_name}#${fav.riot_id_tagline}`}>
               {fav.riot_id_name}
             </div>
-            : <div>{fav.name}</div>
-          }
+          ) : (
+            <div>{fav.name}</div>
+          )}
         </Link>
       </div>
     </Reorder.Item>

@@ -214,7 +214,7 @@ function BuildOrder(props: {
   let lines = 1;
   return (
     <div style={{ marginLeft: 30 }}>
-      {participants.map((participant, _) => {
+      {participants.map((participant) => {
         return (
           <ChampionImage
             key={`${participant.puuid}-champion-image`}

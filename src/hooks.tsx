@@ -228,9 +228,6 @@ export function useMatchList({
   sync,
   queue,
   playedWith,
-  onSuccess,
-  onError,
-  onSettled,
   keepPreviousData = true,
 }: {
   riot_id_name: string;
@@ -241,9 +238,6 @@ export function useMatchList({
   sync: boolean;
   queue?: number;
   playedWith?: string;
-  onSuccess?: () => void;
-  onError: () => void;
-  onSettled?: () => void;
   keepPreviousData?: boolean;
 }) {
   const query = useQuery({
