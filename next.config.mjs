@@ -47,6 +47,5 @@ const config = {
     remotePatterns,
     unoptimized: true,
   },
-  outputFileTracingRoot: '.',
 };
 export default config;
