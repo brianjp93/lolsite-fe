@@ -71,9 +71,7 @@ export default function NavBar() {
                 </div>
                 <hr className="mb-3 mt-1" />
                 <div className="max-h-[50vh] overflow-y-scroll quiet-scroll">
-                  <FavoriteList
-                    onClick={() => setIsDropdownOpen(false)}
-                    favorites={favorites}
+                  <FavoriteList favorites={favorites}
                   />
                 </div>
                 <div>

@@ -24,8 +24,6 @@ export function SummonerSummary({
     limit: 20,
     sync: true,
     queue: 420,
-    onSuccess: () => undefined,
-    onError: () => undefined,
   });
   const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;

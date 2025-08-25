@@ -77,11 +77,6 @@ export default function Summoner({
     queue: params.queue,
     playedWith: params.playedWith,
     keepPreviousData: searchName === prevSearchName,
-    onError: () => {
-      if (params.page > 1) {
-        setParams({ ...params, page: params.page - 1 });
-      }
-    },
   });
 
   const susAccountQ = useSuspiciousAccount(
