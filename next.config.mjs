@@ -39,7 +39,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 const config = {
   reactStrictMode: true,
-  swcMinify: true,
   i18n: {
     locales: ["en"],
     defaultLocale: "en",
@@ -48,5 +47,6 @@ const config = {
     remotePatterns,
     unoptimized: true,
   },
+  outputFileTracingRoot: '.',
 };
 export default config;
