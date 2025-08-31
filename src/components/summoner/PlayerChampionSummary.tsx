@@ -1,4 +1,4 @@
-import { useBasicChampions, usePlayerSummary } from "@/hooks";
+import { useBasicChampions, usePlayerSummary, useMajorPatches } from "@/hooks";
 import type { PlayerChampionSummaryResponse } from "@/external/iotypes/player";
 import Orbit from "@/components/general/spinner";
 import Image from "next/image";
@@ -12,12 +12,16 @@ type Timing = "30 days" | "60 days" | "season";
 
 export function PlayerChampionSummary({ puuid }: { puuid: string }) {
   const [isShowAll, setIsShowAll] = useState(false);
+  const majorPatchesQuery = useMajorPatches();
 
   const [timing, setTiming] = useState<Timing>("30 days");
   const [season, setSeason] = useState<number>(13);
   const [queue, setQueue] = useState<undefined|number>(420);
 
   const today = startOfDay(Date.now());
+
+  // Get available seasons from major patches
+  const availableSeasons = majorPatchesQuery.data?.results.map(p => p.major).slice(0, 3) || [];
 
   let options;
   switch (timing) {
@@ -30,12 +34,10 @@ export function PlayerChampionSummary({ puuid }: { puuid: string }) {
       break;
     }
     case "season": {
-      options = { season: season };
+      options = { season: season || availableSeasons[0] };
       break;
     }
   }
-
-  const currentSeason = 13;
 
   const query = usePlayerSummary({
     puuid,
@@ -80,7 +82,7 @@ export function PlayerChampionSummary({ puuid }: { puuid: string }) {
           60 days
         </label>
 
-        {[currentSeason, currentSeason - 1, currentSeason - 2].map(
+        {availableSeasons.map(
           (seasonChoice) => {
             return (
               <label key={seasonChoice} className="ml-4 hover:cursor-pointer">

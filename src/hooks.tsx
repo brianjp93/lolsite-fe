@@ -95,6 +95,16 @@ export function useItemHistory(itemId: string) {
   });
 }
 
+export function useMajorPatches() {
+  return useQuery({
+    queryKey: ["major-patches"],
+    queryFn: () => api.match.getMajorPatches(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+}
+
 export function useSimpleItem({
   id,
   major,

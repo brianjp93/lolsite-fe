@@ -2,6 +2,18 @@ import { z } from 'zod'
 import {BasicChampionWithImage} from './data'
 import {Position} from './player'
 
+export const MajorPatch = z.object({
+  major: z.number(),
+  version: z.string(),
+});
+
+export const MajorPatchesResponse = z.object({
+  results: z.array(MajorPatch),
+});
+
+export type MajorPatch = z.infer<typeof MajorPatch>;
+export type MajorPatchesResponse = z.infer<typeof MajorPatchesResponse>;
+
 export const SimpleMatch = z.object({
   id: z.number(),
   _id: z.string(),

@@ -10,7 +10,7 @@ import {
   PaginatedResponse,
 } from "../types";
 import { z } from "zod";
-import { MatchSummary, SimpleMatch, SimpleSpectate } from "../iotypes/match";
+import { MatchSummary, SimpleMatch, SimpleSpectate, MajorPatchesResponse } from "../iotypes/match";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
@@ -114,6 +114,12 @@ async function getMatchSummary(match_id: string) {
   return MatchSummary.parse(response.data);
 }
 
+async function getMajorPatches() {
+  const url = `${base}/major-patches/`;
+  const response = await axios.get(url);
+  return MajorPatchesResponse.parse(response.data);
+}
+
 const exports = {
   timeline,
   participants,
@@ -125,6 +131,7 @@ const exports = {
   bans,
   getMatchesByRiotIdName,
   getMatchSummary,
+  getMajorPatches,
 };
 
 export default exports;
