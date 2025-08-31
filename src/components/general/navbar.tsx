@@ -43,6 +43,8 @@ export default function NavBar() {
             <div
               onClick={() => setIsDropdownOpen((x) => !x)}
               className="flex h-full cursor-pointer items-center"
+              role='button'
+              tabIndex={1}
             >
               {user.email}
               <svg
