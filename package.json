@@ -52,5 +52,6 @@
   },
   "ct3aMetadata": {
     "initVersion": "6.10.1"
-  }
+  },
+  "cacheDirectories": [".next/cache"]
 }
