@@ -1,6 +1,6 @@
 import type {FullParticipantType} from '@/external/types'
 
-export type AppendParticipant = FullParticipantType & {impact?: number; impact_rank?: number}
+export type AppendParticipant = FullParticipantType & {impact?: number; impact_rank_old?: number}
 
 export function rankParticipants(participants: FullParticipantType[]) {
   let out: AppendParticipant[]
@@ -28,18 +28,18 @@ export function rankParticipants(participants: FullParticipantType[]) {
     const team_sort_2 = [...team200]
     team_sort_1.sort((a, b) => b.impact! - a.impact!)
     team_sort_2.sort((a, b) => b.impact! - a.impact!)
-    const score_dict: Record<number, {impact: number; impact_rank: number}> = {}
+    const score_dict: Record<number, {impact: number; impact_rank_old: number}> = {}
     for (let i = 0; i < team_sort_1.length; i++) {
       const p1 = team_sort_1[i]!
       const p2 = team_sort_2[i]!
-      score_dict[p1._id as keyof typeof score_dict] = {impact: p1.impact!, impact_rank: i + 1}
-      score_dict[p2._id as keyof typeof score_dict] = {impact: p2.impact!, impact_rank: i + 1}
+      score_dict[p1._id as keyof typeof score_dict] = {impact: p1.impact!, impact_rank_old: i + 1}
+      score_dict[p2._id as keyof typeof score_dict] = {impact: p2.impact!, impact_rank_old: i + 1}
     }
     for (let i = 0; i < team100.length; i++) {
       team100[i]!.impact = score_dict[team100[i]!._id]!.impact
-      team100[i]!.impact_rank = score_dict[team100[i]!._id]!.impact_rank
+      team100[i]!.impact_rank_old = score_dict[team100[i]!._id]!.impact_rank_old
       team200[i]!.impact = score_dict[team200[i]!._id]!.impact
-      team200[i]!.impact_rank = score_dict[team200[i]!._id]!.impact_rank
+      team200[i]!.impact_rank_old = score_dict[team200[i]!._id]!.impact_rank_old
     }
 
     out = [...team100, ...team200]
@@ -47,7 +47,7 @@ export function rankParticipants(participants: FullParticipantType[]) {
     out = [...participants]
     for (let i = 0; i < out.length; i++) {
       out[i]!.impact = 1
-      out[i]!.impact_rank = 2
+      out[i]!.impact_rank_old = 2
     }
   }
   return out
@@ -94,7 +94,7 @@ export function rankTeam(team: FullParticipantType[]) {
   interface I {
     _id: number
     impact: number
-    impact_rank?: number
+    impact_rank_old?: number
   }
   const newteam: I[] = []
   for (const p of team) {
@@ -128,7 +128,7 @@ export function rankTeam(team: FullParticipantType[]) {
   }
   newteam.sort((a, b) => b.impact - a.impact)
   for (let i = 0; i < newteam.length; i++) {
-    newteam[i]!.impact_rank = i + 1
+    newteam[i]!.impact_rank_old = i + 1
   }
 
   const score_dict: Record<number, I> = {}
@@ -140,7 +140,7 @@ export function rankTeam(team: FullParticipantType[]) {
   for (let i = 0; i < retTeam.length; i++) {
     const _id = retTeam[i]!._id
     retTeam[i]!.impact = score_dict[_id]!.impact
-    retTeam[i]!.impact_rank = score_dict[_id]!.impact_rank
+    retTeam[i]!.impact_rank_old = score_dict[_id]!.impact_rank_old
   }
   return retTeam
 }

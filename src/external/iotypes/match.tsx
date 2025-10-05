@@ -246,6 +246,8 @@ export const FullParticipant = z.object({
   subteam_placement: z.number(),
   riot_id_name: z.string(),
   riot_id_tagline: z.string(),
+  impact_score: z.number(),
+  impact_rank: z.number(),
 })
 export type FullParticipantType = z.infer<typeof FullParticipant>
 

@@ -430,12 +430,12 @@ function SecondaryStatClump({
       >
         {rank ? rank : "NA"}
       </div>
-      <div title={`Impact Score: ${format(part.impact || 0, "0.00")}`}>
+      <div title={`Rank: ${part.impact_rank || 'N/A'}\nOld Rank: ${part.impact_rank_old || 'N/A'}\nImpact Score: ${format(part.impact_score || 0, "0.00")}\nOld Impact: ${format(part.impact || 0, "0.00")}`}>
         {part.impact_rank === 1 ? (
           <div className="mt-1 rounded bg-yellow-600">MVP</div>
         ) : (
           <div>
-            {format(part?.impact || 0, "0.00")}{" "}
+            {format(part?.impact_score || 0, "0.00")}{" "}
             <span className="text-xs">IS</span>
           </div>
         )}
