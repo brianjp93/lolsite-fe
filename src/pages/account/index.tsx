@@ -53,7 +53,7 @@ export function AccountInner({
               return (
                 <div
                   key={x.puuid}
-                  className="mx-2 flex w-64 rounded-md border border-zinc-800 bg-zinc-800/30 p-3"
+                  className="m-2 flex w-64 rounded-md border border-zinc-800 bg-zinc-800/30 p-3"
                 >
                   <ConnectedCard summoner={x} onUnlink={refetch} />
                 </div>
@@ -103,7 +103,7 @@ function ConnectedCard({
             {summoner.region}
           </div>
         </div>
-        <div className="my-auto h-full">{summoner.name}</div>
+        <div className="my-auto h-full">{summoner.riot_id_name}#{summoner.riot_id_tagline}</div>
       </div>
       <div>Level: {summoner.summoner_level}</div>
       <div>
