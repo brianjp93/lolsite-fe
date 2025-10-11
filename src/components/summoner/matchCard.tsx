@@ -279,42 +279,6 @@ export function BountyClump({
         <div className="mr-1 font-bold text-yellow-500">{numeral(bounties.champion_assist_gold).format("0,0")}g</div>
         <div className="ml-auto font-bold">Assists</div>
       </div>
-      <Popover
-        isOpen={isGivenPopoverOpen}
-        positions={['top', 'bottom', 'left', 'right']}
-        containerStyle={{ zIndex: '11', padding: '0' }}
-        content={
-          <div className="rounded-md bg-gray-800 border border-gray-600 px-3 py-2 text-xs text-gray-300 shadow-2xl shadow-black/80">
-            <div className="font-bold text-red-500 mb-2">Gold Given Breakdown</div>
-            <div className="flex justify-between gap-x-4 mb-1">
-              <div>Kill Gold:</div>
-              <div className="font-bold text-red-500">{numeral(bounties.champion_kill_gold_given).format("0,0")}g</div>
-            </div>
-            <div className="flex justify-between gap-x-4 mb-1">
-              <div>Assist Gold:</div>
-              <div className="font-bold text-red-500">{numeral(bounties.champion_assist_gold_given).format("0,0")}g</div>
-            </div>
-            <div className="flex justify-between gap-x-4 mb-1">
-              <div>Kill Bounty:</div>
-              <div className="font-bold text-red-500">{numeral(bounties.champion_kill_bounty_given).format("0,0")}g</div>
-            </div>
-            <div className="flex justify-between gap-x-4 mt-2 pt-2 border-t border-gray-600">
-              <div className="font-bold">Total:</div>
-              <div className="font-bold text-red-500">{numeral(bounties.total_gold_given).format("0,0")}g</div>
-            </div>
-          </div>
-        }
-      >
-        <div
-          className="flex items-end text-xs cursor-help"
-          title="Total gold given to enemy team."
-          onMouseEnter={() => setIsGivenPopoverOpen(true)}
-          onMouseLeave={() => setIsGivenPopoverOpen(false)}
-        >
-          <div className="mr-1 font-bold text-red-700 border-b border-dotted border-gray-500">-{numeral(bounties.total_gold_given).format("0,0")}g</div>
-          <div className="ml-auto font-bold">Given</div>
-        </div>
-      </Popover>
 
       <Popover
         isOpen={isPopoverOpen}
@@ -343,13 +307,50 @@ export function BountyClump({
         }
       >
         <div
-          className="flex items-end text-xs cursor-help border-t border-gray-600"
+          className="flex items-end text-xs cursor-help"
           title="Total bounty gold received."
           onMouseEnter={() => setIsPopoverOpen(true)}
           onMouseLeave={() => setIsPopoverOpen(false)}
         >
           <div className="mr-1 font-bold text-yellow-500 border-b border-dotted border-gray-500">{numeral(bounties.total_bounty_received).format("0,0")}g</div>
           <div className="ml-auto font-bold">Bounty</div>
+        </div>
+      </Popover>
+
+      <Popover
+        isOpen={isGivenPopoverOpen}
+        positions={['top', 'bottom', 'left', 'right']}
+        containerStyle={{ zIndex: '11', padding: '0' }}
+        content={
+          <div className="rounded-md bg-gray-800 border border-gray-600 px-3 py-2 text-xs text-gray-300 shadow-2xl shadow-black/80">
+            <div className="font-bold text-red-500 mb-2">Gold Given Breakdown</div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Kill Gold:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.champion_kill_gold_given).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Assist Gold:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.champion_assist_gold_given).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Kill Bounty:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.champion_kill_bounty_given).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mt-2 pt-2 border-t border-gray-600">
+              <div className="font-bold">Total:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.total_gold_given).format("0,0")}g</div>
+            </div>
+          </div>
+        }
+      >
+        <div
+          className="flex items-end text-xs cursor-help border-t border-gray-600"
+          title="Total gold given to enemy team."
+          onMouseEnter={() => setIsGivenPopoverOpen(true)}
+          onMouseLeave={() => setIsGivenPopoverOpen(false)}
+        >
+          <div className="mr-1 font-bold text-red-700 border-b border-dotted border-gray-500">-{numeral(bounties.total_gold_given).format("0,0")}g</div>
+          <div className="ml-auto font-bold">Given</div>
         </div>
       </Popover>
     </div>
