@@ -16,7 +16,7 @@ import Orbit from "@/components/general/spinner";
 import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
 import { profileRoute, puuidRoute } from "@/routes";
-import type { BanType, FrameType, AdvancedTimelineType } from "@/external/iotypes/match";
+import type { BanType, AdvancedTimelineType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
   convertRank,
