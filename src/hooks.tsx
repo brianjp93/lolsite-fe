@@ -292,7 +292,6 @@ export function useTimeline({ matchId }: { matchId: string }) {
     queryFn: async () => {
       const response = await api.match.timeline(matchId)
       response.frames.sort((a, b) => a.timestamp - b.timestamp)
-      console.log(response)
       return response
     },
     retry: false,
