@@ -325,6 +325,7 @@ function BanList({ bans }: { bans: BanType[] }) {
               <Popover
                 isOpen={hoveredBan === banKey}
                 positions={["top", "bottom"]}
+                containerStyle={{padding: '5px'}}
                 content={
                   <div className="rounded bg-gray-800 px-2 py-1 text-sm text-white shadow-lg">
                     {championName}
