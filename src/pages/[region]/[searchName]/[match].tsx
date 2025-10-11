@@ -249,7 +249,11 @@ function InnerMatch({
             <RunePage
               mypart={mypart}
               participants={participants}
-              match={{...match, major: match.major ?? 0, minor: match.minor ?? 0}}
+              match={{
+                ...match,
+                major: match.major ?? 0,
+                minor: match.minor ?? 0,
+              }}
               matchCardHeight={400}
             />
           </div>
@@ -309,8 +313,8 @@ function BanList({ bans }: { bans: BanType[] }) {
 
   return (
     <div className="flex justify-around">
-      {bans.map(ban => {
-        const url = mediaUrl(champions[ban.champion_id]?.image?.file_40 ?? '');
+      {bans.map((ban) => {
+        const url = mediaUrl(champions[ban.champion_id]?.image?.file_40 ?? "");
         const championName = champions[ban.champion_id]?.name || "";
         const banKey = `${ban.team}-${ban.pick_turn}`;
 
@@ -332,12 +336,7 @@ function BanList({ bans }: { bans: BanType[] }) {
                   }}
                   onMouseLeave={() => setHoveredBan(null)}
                 >
-                  <Image
-                    alt={championName}
-                    src={url}
-                    height={40}
-                    width={40}
-                  />
+                  <Image alt={championName} src={url} height={40} width={40} />
                 </div>
               </Popover>
             )}
@@ -437,7 +436,7 @@ function SecondaryStatClump({
   const cspm =
     (stats.total_minions_killed + stats.neutral_minions_killed) / minutes;
   const format = (x: number, fmt = "0.00") => numeral(x).format(fmt);
-  const rank = convertTier(part.tier ?? '') + convertRank(part.rank ?? '');
+  const rank = convertTier(part.tier ?? "") + convertRank(part.rank ?? "");
   return (
     <div className="w-fit flex-col text-center">
       <div
@@ -449,7 +448,13 @@ function SecondaryStatClump({
       >
         {rank ? rank : "NA"}
       </div>
-      <div title={`Rank: ${part.impact_rank || 'N/A'}\nOld Rank: ${part.impact_rank_old || 'N/A'}\nImpact Score: ${format(part.impact_score || 0, "0.00")}\nOld Impact: ${format(part.impact || 0, "0.00")}`}>
+      <div
+        title={`Rank: ${part.impact_rank || "N/A"}\nOld Rank: ${part.impact_rank_old || "N/A"
+          }\nImpact Score: ${format(
+            part.impact_score || 0,
+            "0.00"
+          )}\nOld Impact: ${format(part.impact || 0, "0.00")}`}
+      >
         {part.impact_rank === 1 ? (
           <div className="mt-1 rounded bg-yellow-600">MVP</div>
         ) : (
