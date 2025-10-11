@@ -127,7 +127,7 @@ export function RunePage({
 
   const rune_stat_height = (matchCardHeight - 20) / 6;
   return (
-    <div>
+    <div className="flex">
       <div
         style={{
           marginRight: 20,
@@ -139,7 +139,7 @@ export function RunePage({
         {partSelection()}
       </div>
       {selectedPart !== undefined && (
-        <div style={{ display: "inline-block" }}>
+        <div className="flex flex-col gap-1 w-[370px]">
           {getPerks(selectedPart).map((perk) => {
             const rune = runes[perk.id as unknown as keyof typeof runes];
             const rune_etc = RUNES.data[perk.id.toString() as keyof typeof RUNES.data];

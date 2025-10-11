@@ -260,6 +260,13 @@ export const RUNEDATA = {
       perkDesc: ["Wards Corrupted"],
       perkFormat: ["{0}"],
     },
+    "8137": {
+      id: 8137,
+      name: "Sixth Sense",
+      perkVars: 1,
+      perkDesc: ["Wards Revealed"],
+      perkFormat: ["{0}"],
+    },
     "8138": {
       id: 8138,
       name: "Eyeball Collection",
@@ -272,6 +279,20 @@ export const RUNEDATA = {
       name: "Taste of Blood",
       perkVars: 1,
       perkDesc: ["Total Healing"],
+      perkFormat: ["{0}"],
+    },
+    "8140": {
+      id: 8140,
+      name: "Grisly Mementos",
+      perkVars: 1,
+      perkDesc: ["Mementos Collected"],
+      perkFormat: ["{0}"],
+    },
+    "8141": {
+      id: 8141,
+      name: "Deep Ward",
+      perkVars: 1,
+      perkDesc: ["Deep Wards Placed"],
       perkFormat: ["{0}"],
     },
     "8143": {
