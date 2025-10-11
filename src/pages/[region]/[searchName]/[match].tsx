@@ -455,8 +455,23 @@ function SecondaryStatClump({
             "0.00"
           )}\nOld Impact: ${format(part.impact || 0, "0.00")}`}
       >
-        {part.impact_rank === 1 ? (
-          <div className="mt-1 rounded bg-yellow-600">MVP</div>
+        {part.impact_rank ? (
+          <div
+            className={clsx("mt-1 rounded font-bold", {
+              "bg-blue-600": part.impact_rank === 1,
+              "bg-orange-600": part.impact_rank === 2,
+              "bg-orange-700": part.impact_rank === 3,
+              "bg-red-600": part.impact_rank === 4,
+              "bg-red-700": part.impact_rank === 5,
+              "bg-red-800": part.impact_rank === 6,
+              "bg-red-900": part.impact_rank === 7,
+              "bg-red-950": part.impact_rank === 8,
+              "bg-stone-800": part.impact_rank === 9,
+              "bg-stone-900": part.impact_rank === 10,
+            })}
+          >
+            {part.impact_rank === 1 ? "MVP" : part.impact_rank}
+          </div>
         ) : (
           <div>
             {format(part?.impact_score || 0, "0.00")}{" "}
