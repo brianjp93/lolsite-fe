@@ -20,6 +20,8 @@ const CONVERT = {
   vision_score: "vision score",
   wards_placed: "wards placed",
   wards_killed: "wards killed",
+  total_heals_on_teammates: "Healing done to teammates",
+  total_damage_shielded_on_teammates: "Damage mitigated with shields on teammates",
   vision_wards_bought_in_game: "control wards",
   dpd: "dmg / death",
   dtpd: "dmg taken / death",
@@ -178,6 +180,8 @@ export function StatOverview({
           </span>
 
           {getBarGraphStat("Healing Done", "Healing Done", "total_heal")}
+          {getBarGraphStat("Teammate Healing", "Teammate Healing", "total_heals_on_teammates")}
+          {getBarGraphStat("Teammate Shielding", "Damage mitigated on teammates with shields", "total_damage_shielded_on_teammates")}
           {getBarGraphStat(
             "Damage Taken",
             "Total Damage Taken",
