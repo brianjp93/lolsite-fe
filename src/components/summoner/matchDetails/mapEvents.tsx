@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { BUILDINGS } from "@/utils/buildings";
 import { useBasicChampions, useParticipants, useTimeline } from "@/hooks";
 import { useTimelineIndex } from "@/stores";
@@ -60,7 +60,7 @@ export function MapEvents() {
   if (!timeline || !participants) return null;
   return (
     <MapEventsInner
-      timeline={timeline}
+      timeline={timeline.frames}
       participants={participants}
       match={{ _id: matchId }}
     />
@@ -92,7 +92,9 @@ export function MapEventsInner({
   const image_size = 500;
   const max_x = 15300;
   const max_y = 15000;
-  const slice = timeline[index] as FrameType;
+  const slice = useMemo(() => {
+    return timeline[index] as FrameType;
+  }, [timeline, index])
 
   function getPosition(x: number, y: number): [number, number] {
     const x_val = (x / max_x) * image_size;

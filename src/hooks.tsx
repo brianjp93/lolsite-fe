@@ -287,20 +287,20 @@ export function useMatchList({
 }
 
 export function useTimeline({ matchId }: { matchId: string }) {
-  const query = useQuery({
+  return useQuery({
     queryKey: ["timeline", matchId],
-    queryFn: () =>
-      api.match.timeline(matchId).then((data) => {
-        data.sort((a, b) => a.timestamp - b.timestamp);
-        return data;
-      }),
+    queryFn: async () => {
+      const response = await api.match.timeline(matchId)
+      response.frames.sort((a, b) => a.timestamp - b.timestamp)
+      console.log(response)
+      return response
+    },
     retry: false,
     refetchOnWindowFocus: false,
     enabled: !!matchId,
     refetchOnMount: false,
     staleTime: 1000 * 60 * 30,
   });
-  return query;
 }
 
 export function useQueues() {

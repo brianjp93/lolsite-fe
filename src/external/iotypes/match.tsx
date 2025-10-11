@@ -587,10 +587,25 @@ export const Frame = z.object({
 })
 export type FrameType = z.infer<typeof Frame>
 
+export const BountiesReceived = z.object({
+  monster_bounty: z.number(),
+  champion_kill_bounty: z.number(),
+  champion_kill_gold: z.number(),
+  champion_assist_gold: z.number(),
+  building_bounty: z.number(),
+  total_bounty_received: z.number(),
+  champion_kill_bounty_given: z.number(),
+  champion_kill_gold_given: z.number(),
+  champion_assist_gold_given: z.number(),
+  total_gold_given: z.number(),
+})
+export type BountiesReceivedType = z.infer<typeof BountiesReceived>
+
 export const AdvancedTimeline = z.object({
-  match: z.number(),
   frame_interval: z.number(),
   frames: z.array(Frame),
+  bounties: z.record(z.string(), BountiesReceived),
+  team_bounties: z.record(z.string(), z.number()),
 })
 export type AdvancedTimelineType = z.infer<typeof AdvancedTimeline>
 

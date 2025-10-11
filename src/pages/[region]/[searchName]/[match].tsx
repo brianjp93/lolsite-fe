@@ -16,7 +16,7 @@ import Orbit from "@/components/general/spinner";
 import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
 import { profileRoute, puuidRoute } from "@/routes";
-import type { BanType, FrameType } from "@/external/iotypes/match";
+import type { BanType, FrameType, AdvancedTimelineType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
   convertRank,
@@ -30,6 +30,7 @@ import {
   ChampionClump,
   ItemClump,
   StatClump,
+  BountyClump,
 } from "@/components/summoner/matchCard";
 import clsx from "clsx";
 import numeral from "numeral";
@@ -141,7 +142,7 @@ function InnerMatch({
 }: {
   match: SimpleMatchType;
   participants: AppendParticipant[];
-  timeline?: FrameType[];
+  timeline?: AdvancedTimelineType;
   summoner: SummonerType;
   bans: BanType[];
 }) {
@@ -199,7 +200,7 @@ function InnerMatch({
         {timeline && (
           <div className="my-2">
             <MapEventsInner
-              timeline={timeline}
+              timeline={timeline.frames}
               participants={participants}
               match={{ _id: match._id }}
             />
@@ -208,7 +209,7 @@ function InnerMatch({
         {timeline && (
           <div className="my-2">
             <Timeline
-              timeline={timeline}
+              timeline={timeline.frames}
               match={match}
               participants={participants}
               summoner={summoner}
@@ -221,7 +222,7 @@ function InnerMatch({
               matchId={match._id}
               participants={participants}
               summoner={summoner}
-              timeline={timeline}
+              timeline={timeline.frames}
               expanded_width={500}
             />
           </div>
@@ -237,7 +238,7 @@ function InnerMatch({
         )}
         <div className="my-2">
           <BuildOrder
-            timeline={timeline}
+            timeline={timeline?.frames}
             expanded_width={500}
             participants={participants}
             summoner={summoner}
@@ -415,6 +416,9 @@ function ParticipantInfo({
       </div>
       <div className="my-auto ml-2 h-full">
         <StatClump part={part} match={match} />
+      </div>
+      <div className="my-auto ml-2 h-full">
+        <BountyClump part={part} match={match} />
       </div>
       <div className="my-auto ml-2 h-full">
         <SecondaryStatClump part={part} match={match} />

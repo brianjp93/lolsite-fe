@@ -5,12 +5,11 @@ import {
   FullParticipant,
   SpectateMatch,
   BasicMatch,
-  Frame,
   Ban,
   PaginatedResponse,
 } from "../types";
 import { z } from "zod";
-import { MatchSummary, SimpleMatch, SimpleSpectate, MajorPatchesResponse } from "../iotypes/match";
+import { MatchSummary, SimpleMatch, SimpleSpectate, MajorPatchesResponse, AdvancedTimeline } from "../iotypes/match";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/match`;
@@ -21,7 +20,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 async function timeline(_id: string) {
   const url = `${base}/${_id}/timeline/`;
   const response = await axios.get(url);
-  return z.array(Frame).parse(response.data.frames);
+  return AdvancedTimeline.parse(response.data);
 }
 
 interface ParticipantsData extends AxiosRequestConfig {

@@ -1,6 +1,6 @@
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
-import { useBasicChampions, useQueues, useSimpleItem } from "@/hooks";
+import { useBasicChampions, useQueues, useSimpleItem, useTimeline } from "@/hooks";
 import { matchRoute } from "@/pages/[region]/[searchName]/[match]";
 import { usePickTurn } from "@/stores";
 import clsx from "clsx";
@@ -9,6 +9,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import numeral from "numeral";
 import { ItemPopover } from "../data/item";
+import { Popover } from "react-tiny-popover";
+import { useState } from "react";
 import {
   formatDatetime,
   formatDatetimeFull,
@@ -219,6 +221,7 @@ export function StatClump({
   const minutes = match.game_duration / 1000 / 60;
   const dpm = part.stats.total_damage_dealt_to_champions / minutes;
   const vspm = part.stats.vision_score / minutes;
+
   return (
     <div className="w-24 rounded-md bg-gray-900 px-2 py-1 leading-tight text-gray-400">
       <div className="mx-auto flex w-fit items-end">
@@ -240,6 +243,115 @@ export function StatClump({
         <div className="mr-2">{numeral(vspm).format("0.00")}</div>
         <div className="ml-auto text-xs font-bold">VS/M</div>
       </div>
+    </div>
+  );
+}
+
+export function BountyClump({
+  part,
+  match,
+}: {
+  part: BasicParticipantType;
+  match: { _id: string };
+}) {
+  const timelineQuery = useTimeline({ matchId: match._id });
+  const timeline = timelineQuery.data;
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isGivenPopoverOpen, setIsGivenPopoverOpen] = useState(false);
+
+  if (!timeline?.bounties) {
+    return null;
+  }
+
+  const bounties = timeline.bounties[part._id];
+
+  if (!bounties) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-y-1 w-28 rounded-md bg-gray-900 px-2 py-1 leading-tight text-gray-400">
+      <div className="flex items-end text-xs" title="Gold received from kills.">
+        <div className="mr-1 font-bold text-yellow-500">{numeral(bounties.champion_kill_gold).format("0,0")}g</div>
+        <div className="ml-auto font-bold">Kills</div>
+      </div>
+      <div className="flex items-end text-xs" title="Gold received from assists.">
+        <div className="mr-1 font-bold text-yellow-500">{numeral(bounties.champion_assist_gold).format("0,0")}g</div>
+        <div className="ml-auto font-bold">Assists</div>
+      </div>
+      <Popover
+        isOpen={isGivenPopoverOpen}
+        positions={['top', 'bottom', 'left', 'right']}
+        containerStyle={{ zIndex: '11', padding: '0' }}
+        content={
+          <div className="rounded-md bg-gray-800 border border-gray-600 px-3 py-2 text-xs text-gray-300 shadow-2xl shadow-black/80">
+            <div className="font-bold text-red-500 mb-2">Gold Given Breakdown</div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Kill Gold:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.champion_kill_gold_given).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Assist Gold:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.champion_assist_gold_given).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Kill Bounty:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.champion_kill_bounty_given).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mt-2 pt-2 border-t border-gray-600">
+              <div className="font-bold">Total:</div>
+              <div className="font-bold text-red-500">{numeral(bounties.total_gold_given).format("0,0")}g</div>
+            </div>
+          </div>
+        }
+      >
+        <div
+          className="flex items-end text-xs cursor-help"
+          title="Total gold given to enemy team."
+          onMouseEnter={() => setIsGivenPopoverOpen(true)}
+          onMouseLeave={() => setIsGivenPopoverOpen(false)}
+        >
+          <div className="mr-1 font-bold text-red-700 border-b border-dotted border-gray-500">-{numeral(bounties.total_gold_given).format("0,0")}g</div>
+          <div className="ml-auto font-bold">Given</div>
+        </div>
+      </Popover>
+
+      <Popover
+        isOpen={isPopoverOpen}
+        positions={['top', 'bottom', 'left', 'right']}
+        containerStyle={{ zIndex: '11', padding: '0' }}
+        content={
+          <div className="rounded-md bg-gray-800 border border-gray-600 px-3 py-2 text-xs text-gray-300 shadow-2xl shadow-black/80">
+            <div className="font-bold text-yellow-500 mb-2">Bounty Breakdown</div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Champion Bounty:</div>
+              <div className="font-bold text-yellow-500">{numeral(bounties.champion_kill_bounty).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Monster Bounty:</div>
+              <div className="font-bold text-yellow-500">{numeral(bounties.monster_bounty).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mb-1">
+              <div>Tower Bounty:</div>
+              <div className="font-bold text-yellow-500">{numeral(bounties.building_bounty).format("0,0")}g</div>
+            </div>
+            <div className="flex justify-between gap-x-4 mt-2 pt-2 border-t border-gray-600">
+              <div className="font-bold">Total:</div>
+              <div className="font-bold text-yellow-500">{numeral(bounties.total_bounty_received).format("0,0")}g</div>
+            </div>
+          </div>
+        }
+      >
+        <div
+          className="flex items-end text-xs cursor-help border-t border-gray-600"
+          title="Total bounty gold received."
+          onMouseEnter={() => setIsPopoverOpen(true)}
+          onMouseLeave={() => setIsPopoverOpen(false)}
+        >
+          <div className="mr-1 font-bold text-yellow-500 border-b border-dotted border-gray-500">{numeral(bounties.total_bounty_received).format("0,0")}g</div>
+          <div className="ml-auto font-bold">Bounty</div>
+        </div>
+      </Popover>
     </div>
   );
 }
