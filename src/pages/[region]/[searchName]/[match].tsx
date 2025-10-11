@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import Skeleton from "@/components/general/skeleton";
 import {
   useBans,
@@ -42,11 +42,11 @@ import { RunePage } from "@/components/summoner/matchDetails/runePage";
 import Image from "next/image";
 import { formatDatetimeFull } from "@/components/utils";
 import { PingStats } from "@/components/summoner/matchDetails/pingStats";
+import { Popover } from "react-tiny-popover";
 import type { GetServerSidePropsContext } from "next";
 import api from "@/external/api/api";
 import type { MetaHead } from "@/external/iotypes/base";
 import Head from "next/head";
-import { usePickTurn } from "@/stores";
 import { InGameDot } from "@/components/general/favoriteList";
 import {
   ARENA_QUEUE,
@@ -305,22 +305,41 @@ function TeamSide({
 
 function BanList({ bans }: { bans: BanType[] }) {
   const champions = useBasicChampions();
-  const [,setPickTurn] = usePickTurn();
+  const [hoveredBan, setHoveredBan] = useState<string | null>(null);
+
   return (
     <div className="flex justify-around">
-      {bans.map((ban, key) => {
+      {bans.map(ban => {
         const url = mediaUrl(champions[ban.champion_id]?.image?.file_40 ?? '');
+        const championName = champions[ban.champion_id]?.name || "";
+        const banKey = `${ban.team}-${ban.pick_turn}`;
+
         return (
-          <Fragment key={`${ban.team}-${ban.pick_turn}`}>
+          <Fragment key={banKey}>
             {!!url && (
-              <Image
-                onMouseOver={() => setPickTurn(ban.pick_turn)}
-                alt={champions[ban.champion_id]?.name || ""}
-                key={key}
-                src={url}
-                height={40}
-                width={40}
-              />
+              <Popover
+                isOpen={hoveredBan === banKey}
+                positions={["top", "bottom"]}
+                content={
+                  <div className="rounded bg-gray-800 px-2 py-1 text-sm text-white shadow-lg">
+                    {championName}
+                  </div>
+                }
+              >
+                <div
+                  onMouseEnter={() => {
+                    setHoveredBan(banKey);
+                  }}
+                  onMouseLeave={() => setHoveredBan(null)}
+                >
+                  <Image
+                    alt={championName}
+                    src={url}
+                    height={40}
+                    width={40}
+                  />
+                </div>
+              </Popover>
             )}
           </Fragment>
         );
