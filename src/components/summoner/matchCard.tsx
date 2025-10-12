@@ -402,18 +402,9 @@ export function ItemClump({
 }) {
   return (
     <div className="grid grid-cols-3">
-      {[0, 1, 2, 3, 4, 5].map((i) => {
+      {([0, 1, 2, 3, 4, 5] as const).map((i) => {
         const key = `item_${i}_image` as keyof typeof part.stats;
-        const itemId =
-          part.stats[
-          `item_${i}` as
-          | "item_0"
-          | "item_1"
-          | "item_2"
-          | "item_3"
-          | "item_4"
-          | "item_5"
-          ];
+        const itemId = part.stats[`item_${i}`];
         return (
           <ItemPart
             key={key}
