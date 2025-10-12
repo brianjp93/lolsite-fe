@@ -254,12 +254,12 @@ export function StatClump({
 
 export function BountyClump({
   part,
-  match,
+  matchId,
 }: {
   part: BasicParticipantType;
-  match: { _id: string };
+  matchId: string;
 }) {
-  const timelineQuery = useTimeline({ matchId: match._id });
+  const timelineQuery = useTimeline({ matchId });
   const timeline = timelineQuery.data;
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isGivenPopoverOpen, setIsGivenPopoverOpen] = useState(false);

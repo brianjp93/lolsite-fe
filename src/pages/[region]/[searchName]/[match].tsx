@@ -419,7 +419,7 @@ function ParticipantInfo({
         <StatClump part={part} match={match} />
       </div>
       <div className="my-auto ml-2 h-full">
-        <BountyClump part={part} match={match} />
+        <BountyClump part={part} matchId={match._id} />
       </div>
       <div className="my-auto ml-2 h-full">
         <SecondaryStatClump part={part} match={match} />
