@@ -4,7 +4,7 @@ import {
   BasicChampionWithImage,
   PaginatedResponse,
 } from "@/external/types";
-import { Item, Queue } from "../iotypes/data";
+import { Item, Queue, SimpleItem } from "../iotypes/data";
 import { env } from "@/env/client.mjs";
 import { z } from "zod";
 import { getCookie } from "./common";
@@ -41,15 +41,24 @@ function getSimpleItem(
   return axios.get(url);
 }
 
+async function getSimpleItemList(
+  major: number | string,
+  minor: number | string
+) {
+  const url = `${base}/items/${major}/${minor}/`;
+  const response = await axios.get(url);
+  return PaginatedResponse(SimpleItem).parse(response.data)
+}
+
 async function items({
   major,
   minor,
   patch,
   map_id,
 }: {
-  major?: number;
-  minor?: number;
-  patch?: number;
+  major?: number | string;
+  minor?: number | string;
+  patch?: number | string;
   map_id?: number;
 }) {
   const url = `${base}/items/`;
@@ -121,5 +130,6 @@ const exports = {
   getQueues,
   getGoogleRecaptchaSiteKey,
   getItemDiff,
+  getSimpleItemList,
 };
 export default exports;

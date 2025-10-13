@@ -22,6 +22,16 @@ export const StatEfficiency = z.record(z.object({
   gold_value: z.number(),
 }).or(z.number()))
 
+export const SimpleItem = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  _id: z.number(),
+  gold: ItemGold,
+  image: ItemImage,
+});
+export type SimpleItem = z.infer<typeof SimpleItem>;
+
 export const Item = z.object({
   id: z.number(),
   gold: ItemGold,

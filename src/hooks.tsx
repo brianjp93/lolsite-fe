@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import api from "@/external/api/api";
 
 import type {
@@ -8,7 +9,7 @@ import type {
   BasicChampionWithImageType,
 } from "@/external/types";
 import { rankParticipants } from "./components/summoner/rankParticipants";
-import type { QueueType } from "./external/iotypes/data";
+import type { QueueType, SimpleItem } from "./external/iotypes/data";
 
 export function useDebounce<V>(value: V, delay: number) {
   // State and setters for debounced value
@@ -69,11 +70,13 @@ export function useAllItems({
   minor,
   patch,
   map_id,
+  options,
 }: {
-  major?: number;
-  minor?: number;
-  patch?: number;
+  major?: number | string;
+  minor?: number | string;
+  patch?: number | string;
   map_id?: number;
+  options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof api.data.items>>>, 'queryKey' | 'queryFn'>;
 }) {
   return useQuery({
     queryKey: ["all-items"],
@@ -81,6 +84,7 @@ export function useAllItems({
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 10,
+    ...options,
   });
 }
 
@@ -105,6 +109,25 @@ export function useMajorPatches() {
   });
 }
 
+export function useSimpleItems({
+  major,
+  minor,
+  options,
+}: {
+  major: number | string,
+  minor: number | string,
+  options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof api.data.getSimpleItemList>>>, 'queryKey' | 'queryFn'>;
+}) {
+  return useQuery({
+    queryKey: ["simple-items", major, minor],
+    queryFn: () => api.data.getSimpleItemList(major, minor),
+    staleTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    ...options,
+  });
+}
+
 export function useSimpleItem({
   id,
   major,
@@ -114,19 +137,24 @@ export function useSimpleItem({
   major: number | string;
   minor: number | string;
 }) {
-  return useQuery({
-    queryKey: ["item", id, major, minor],
-    queryFn: () =>
-      id
-        ? api.data
-            .getSimpleItem(id, major, minor)
-            .then((response) => response.data)
-        : null,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 10,
-    enabled: !!id,
+  const itemsQ = useSimpleItems({
+    major,
+    minor,
+    options: {
+      enabled: !!id,
+    }
   });
+  const output = useMemo(() => {
+    return itemsQ.data?.results.reduce((prev, curr) => {
+      prev[curr._id] = curr;
+      return prev
+    }, {} as Record<number, SimpleItem>)
+  }, [itemsQ.data])
+  const item = output?.[id!]
+  return {
+    ...itemsQ,
+    data: item,
+  }
 }
 
 export function useChampions(): Record<number, ChampionType> {
