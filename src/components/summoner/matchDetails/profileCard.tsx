@@ -177,19 +177,34 @@ export function ProfileCardInner({
               <Popover
                 isOpen={isNameChangeOpen}
                 positions={["bottom"]}
-                containerStyle={{ zIndex: "11" }}
+                containerStyle={{ zIndex: "11", padding: "0" }}
                 content={
-                  <div>
-                    <h1 className="underline">Old Names</h1>
-                    {nameChanges.map((item, key) => {
-                      return <div key={key}>{item.old_name}</div>;
-                    })}
+                  <div className="rounded-lg bg-zinc-800/95 p-3 shadow-xl backdrop-blur-sm">
+                    <div className="mb-2 border-b border-zinc-700 pb-2 text-sm font-bold text-white">
+                      Old Names
+                    </div>
+                    {nameChanges.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {nameChanges.map((item, key) => {
+                          return (
+                            <div
+                              key={key}
+                              className="rounded px-2 py-1 text-sm text-zinc-300 hover:bg-zinc-700/50"
+                            >
+                              {item.old_name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-zinc-400">No previous names</div>
+                    )}
                   </div>
                 }
               >
                 <div
                   onClick={() => setIsNameChangeOpen((x) => !x)}
-                  className="cursor-pointer font-bold underline flex"
+                  className="flex cursor-pointer font-bold underline"
                 >
                   <div>
                     {summoner.riot_id_name}
