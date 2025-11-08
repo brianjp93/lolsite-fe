@@ -94,7 +94,7 @@ export function MapEventsInner({
   const max_y = 15000;
   const slice = useMemo(() => {
     return timeline[index] as FrameType;
-  }, [timeline, index])
+  }, [timeline, index]);
 
   function getPosition(x: number, y: number): [number, number] {
     const x_val = (x / max_x) * image_size;
@@ -193,7 +193,7 @@ export function MapEventsInner({
   }, [index, buildings, slice.buildingkillevents]);
 
   const getPlayers = useCallback(
-    function () {
+    function() {
       const new_players = [];
       for (const pframe of slice.participantframes) {
         const part = part_dict[pframe.participant_id];
@@ -408,16 +408,6 @@ function EventBubble({
     return null;
   }
   const size = 25;
-  const img_style = {
-    height: 35,
-    borderRadius: 8,
-    display: "inline-block",
-  };
-
-  const div_style = {
-    marginTop: 25,
-    display: "inline-block",
-  };
 
   const red =
     "linear-gradient(60deg, rgb(86, 14, 123) 0%, rgb(230, 147, 22) 100%)";
@@ -428,12 +418,6 @@ function EventBubble({
   if (team_id === 100) {
     bubble_color = blue;
   }
-
-  const sword_style = {
-    margin: "5px 10px",
-    height: 20,
-    transform: "scaleX(-1)",
-  };
 
   const getKillAssists = (victimdamagereceived_set: VictimDamageType[]) => {
     const out: Record<string, { name: string; damage: number }> = {};
@@ -457,16 +441,17 @@ function EventBubble({
     <Popover
       key={`event-${ev.x}-${ev.y}`}
       isOpen={isOpen}
+      containerStyle={{ padding: "0" }}
       content={
-        <div>
+        <div className="rounded-lg bg-zinc-800/95 p-3 shadow-xl backdrop-blur-sm">
           {championKillEvent && (
-            <div style={div_style}>
-              {ev.killer_id !== 0 && (
-                <div style={{ display: "inline-block" }}>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-center gap-2">
+                {ev.killer_id !== 0 ? (
                   <Image
-                    style={img_style}
-                    width={img_style.height}
-                    height={img_style.height}
+                    className="rounded-lg"
+                    width={35}
+                    height={35}
                     src={mediaUrl(
                       champions?.[
                         part_dict[ev.killer_id]?.champion_id || 10000000
@@ -474,75 +459,82 @@ function EventBubble({
                     )}
                     alt=""
                   />
+                ) : (
+                  <div className="text-sm font-semibold text-red-400">
+                    Executed
+                  </div>
+                )}
+                <div className="flex items-center justify-center rounded-lg bg-white p-1.5">
+                  <Image
+                    className="scale-x-[-1]"
+                    width={20}
+                    height={20}
+                    src={SWORD}
+                    alt=""
+                  />
                 </div>
-              )}
-              {ev.killer_id === 0 && <div>Executed</div>}
-              <div
-                style={{
-                  display: "inline-block",
-                  background: "white",
-                  borderRadius: 8,
-                  margin: "0px 5px",
-                }}
-              >
                 <Image
-                  style={sword_style}
-                  width={sword_style.height}
-                  height={sword_style.height}
-                  src={SWORD}
+                  className="rounded-lg"
+                  width={35}
+                  height={35}
+                  src={mediaUrl(
+                    champions?.[
+                      part_dict?.[championKillEvent.victim_id]?.champion_id ||
+                      1000000
+                    ]?.image?.file_40
+                  )}
                   alt=""
                 />
               </div>
-              <Image
-                style={img_style}
-                width={img_style.height}
-                height={img_style.height}
-                src={mediaUrl(
-                  champions?.[
-                    part_dict?.[championKillEvent.victim_id]?.champion_id ||
-                      1000000
-                  ]?.image?.file_40
-                )}
-                alt=""
-              />
-              <div>
-                {getKillAssists(championKillEvent.victimdamagereceived_set)
-                  .sort((a, b) => b.damage - a.damage)
-                  .map((item) => {
-                    return (
-                      <div
-                        style={{ marginBottom: 0 }}
-                        className="grid grid-cols-2"
-                        key={item.name}
-                      >
-                        <div>{mapAssistName(item.name)}</div>
-                        <div>: {item.damage}</div>
-                      </div>
-                    );
-                  })}
-              </div>
-              <div>
-                <div>
-                  Kill Gold:{" "}
-                  <b>
+              {championKillEvent.victimdamagereceived_set.length > 0 && (
+                <div className="mt-1 border-t border-zinc-700 pt-2">
+                  <div className="mb-1 text-xs font-semibold text-zinc-400">
+                    Damage Sources:
+                  </div>
+                  {getKillAssists(championKillEvent.victimdamagereceived_set)
+                    .sort((a, b) => b.damage - a.damage)
+                    .map((item) => {
+                      return (
+                        <div
+                          className="flex justify-between gap-3 text-xs"
+                          key={item.name}
+                        >
+                          <div className="text-zinc-300">
+                            {mapAssistName(item.name)}
+                          </div>
+                          <div className="font-mono text-zinc-400">
+                            {item.damage}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+              <div className="mt-1 border-t border-zinc-700 pt-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-400">Kill Gold:</span>
+                  <span className="font-semibold text-yellow-400">
                     {championKillEvent.bounty +
                       championKillEvent.shutdown_bounty}
-                  </b>{" "}
-                  ({championKillEvent.bounty} +{" "}
-                  {championKillEvent.shutdown_bounty})
+                    g
+                  </span>
+                </div>
+                <div className="text-right text-xs text-zinc-500">
+                  ({championKillEvent.bounty}g +{" "}
+                  {championKillEvent.shutdown_bounty}g shutdown)
                 </div>
               </div>
             </div>
           )}
 
           {eliteMonsterKillEvent && (
-            <div style={div_style}>
-              {ev.killer_id !== 0 && (
+            <div className="flex items-center justify-center gap-2">
+              {ev.killer_id !== 0 ? (
                 <>
                   <Image
-                    width={img_style.height}
-                    height={img_style.height}
-                    style={img_style}
+                    className="rounded-lg"
+                    width={35}
+                    height={35}
                     src={mediaUrl(
                       champions?.[
                         part_dict[ev.killer_id]?.champion_id || 1000000
@@ -550,77 +542,67 @@ function EventBubble({
                     )}
                     alt=""
                   />
-                  <div style={{ display: "inline-block", margin: "0px 8px" }}>
-                    {" "}
-                    killed{" "}
-                  </div>
-                  <span>{eliteMonsterKillEvent.monster_type}</span>
+                  <span className="text-sm text-zinc-300">killed</span>
+                  <span className="text-sm font-semibold text-purple-400">
+                    {eliteMonsterKillEvent.monster_type}
+                  </span>
                 </>
-              )}
-              {ev.killer_id === 0 && (
-                <div style={{ display: "inline-block" }}>
-                  {eliteMonsterKillEvent.monster_type} executed
+              ) : (
+                <div className="text-sm">
+                  <span className="font-semibold text-purple-400">
+                    {eliteMonsterKillEvent.monster_type}
+                  </span>
+                  <span className="text-zinc-300"> executed</span>
                 </div>
               )}
             </div>
           )}
 
           {buildingKillEvent && (
-            <div style={div_style}>
-              {ev.killer_id !== 0 && (
+            <div className="flex items-center justify-center gap-2">
+              {ev.killer_id !== 0 ? (
                 <Image
-                  width={img_style.height}
-                  height={img_style.height}
-                  style={img_style}
+                  className="rounded-lg"
+                  width={35}
+                  height={35}
                   src={mediaUrl(
                     champions?.[part_dict[ev.killer_id]?.champion_id || 1000000]
                       ?.image?.file_40
                   )}
                   alt=""
                 />
+              ) : (
+                <span className="text-sm text-zinc-300">minions</span>
               )}
-              {!ev.killer_id && (
-                <div style={{ display: "inline-block" }}>minions</div>
-              )}
-              <div
-                style={{
-                  display: "inline-block",
-                  background: "white",
-                  borderRadius: 8,
-                  margin: "0px 5px",
-                }}
-              >
+              <div className="flex items-center justify-center rounded-lg bg-white p-1.5">
                 <Image
-                  height={sword_style.height}
-                  width={sword_style.height}
-                  style={sword_style}
+                  className="scale-x-[-1]"
+                  width={20}
+                  height={20}
                   src={SWORD}
                   alt=""
                 />
               </div>
-              <span>structure</span>
+              <span className="text-sm font-semibold text-amber-400">
+                structure
+              </span>
             </div>
           )}
 
           {turretPlateDestroyedEvent && (
-            <div style={div_style}>
-              <div
-                style={{
-                  display: "inline-block",
-                  background: "white",
-                  borderRadius: 8,
-                  margin: "0px 5px",
-                }}
-              >
+            <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center rounded-lg bg-white p-1.5">
                 <Image
-                  height={sword_style.height}
-                  width={sword_style.height}
-                  style={sword_style}
+                  className="scale-x-[-1]"
+                  width={20}
+                  height={20}
                   src={SWORD}
                   alt=""
                 />
               </div>
-              <span>Turret Plating</span>
+              <span className="text-sm font-semibold text-orange-400">
+                Turret Plating
+              </span>
             </div>
           )}
         </div>
@@ -629,7 +611,7 @@ function EventBubble({
       <div
         onMouseOver={() => setIsOpen(true)}
         onMouseOut={() => setIsOpen(false)}
-        className="absolute rounded-full"
+        className="absolute rounded-full shadow-lg transition-transform hover:scale-110"
         style={{
           background: bubble_color,
           width: size,
