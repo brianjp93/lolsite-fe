@@ -181,13 +181,13 @@ function InnerMatch({
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
           <div className="my-auto min-w-fit pr-1">
-            <TeamSide team={team100} match={match} bans={team100Bans} />
+            <TeamSide team={team100} match={match} bans={team100Bans} timeline={timeline} />
           </div>
           <div className="my-auto rounded-full bg-gradient-to-r from-cyan-700 to-rose-700 p-3 font-bold">
             VS
           </div>
           <div className="my-auto min-w-fit pl-1">
-            <TeamSide team={team200} match={match} bans={team200Bans} />
+            <TeamSide team={team200} match={match} bans={team200Bans} timeline={timeline} />
           </div>
         </div>
       </div>
@@ -273,10 +273,12 @@ function TeamSide({
   team,
   match,
   bans,
+  timeline,
 }: {
   team: AppendParticipant[];
   match: SimpleMatchType;
   bans: BanType[];
+  timeline?: AdvancedTimelineType;
 }) {
   let isWin: boolean;
   if (match.queue_id === ARENA_QUEUE) {
@@ -284,6 +286,15 @@ function TeamSide({
   } else {
     isWin = !!team[0]?.stats.win;
   }
+
+  // Calculate total bounty for the team
+  const totalBounty = timeline?.bounties
+    ? team.reduce((sum, part) => {
+        const bountyData = timeline.bounties?.[part._id];
+        return sum + (bountyData?.total_bounty_received || 0);
+      }, 0)
+    : 0;
+
   return (
     <div>
       <div
@@ -301,6 +312,12 @@ function TeamSide({
         })}
       </div>
       <div className="text-center">
+        {timeline?.bounties && (
+          <div className="mt-2">
+            <span className="font-bold">Team Bounty Received: </span>
+            <span className="text-yellow-400">{numeral(totalBounty).format("0,0")}g</span>
+          </div>
+        )}
         <div className="mt-2 text-lg font-bold">Bans</div>
         <BanList bans={bans} />
       </div>

@@ -378,7 +378,7 @@ export function BountyClump({
         }
       >
         <div
-          className="flex cursor-help items-end border-t border-gray-600 text-xs"
+          className="flex cursor-help items-end text-xs"
           title="Total gold given to enemy team."
           onMouseEnter={() => setIsGivenPopoverOpen(true)}
           onMouseLeave={() => setIsGivenPopoverOpen(false)}
