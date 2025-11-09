@@ -115,9 +115,8 @@ export default function Summoner({
               return { ...x, page: Math.max(1, (x.page || 1) - 1) };
             })
           }
-          className={clsx("btn btn-default", {
-            disabled: matchQuery.isFetching || params.page <= 1,
-          })}
+          disabled={matchQuery.isFetching || params.page <= 1}
+          className={clsx("btn btn-default flex items-center justify-center box-border")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -140,9 +139,8 @@ export default function Summoner({
               return { ...x, page: (x.page || 1) + 1 };
             })
           }
-          className={clsx("btn btn-default ml-2", {
-            disabled: matchQuery.isFetching,
-          })}
+          disabled={matchQuery.isFetching}
+          className={clsx("btn btn-default ml-2 flex items-center justify-center box-border")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -160,13 +158,17 @@ export default function Summoner({
           </svg>
         </button>
         <div className="mx-2 my-auto">{params.page}</div>
-        {params.page !== 1 && (
-          <div>
-            <button onClick={resetPage} className="btn btn-link">
-              reset
-            </button>
-          </div>
-        )}
+        <div>
+          <button
+            disabled={params.page === 1}
+            onClick={resetPage}
+            className={clsx("btn btn-link", {
+              "opacity-40": params.page === 1,
+            })}
+          >
+            reset
+          </button>
+        </div>
         {matchQuery.isFetching && <Orbit size={25} />}
       </div>
     );
@@ -187,23 +189,23 @@ export default function Summoner({
         )}
       </Head>
       <div style={{ minHeight: 1000 }} className="mx-auto flex-col">
-        {searchName.indexOf("-") === -1 &&
+        {searchName.indexOf("-") === -1 && (
           <div className="mt-4 flex flex-col gap-y-2">
-            <div className="mb-4">
-              Error while searching for summoner.
+            <div className="mb-4">Error while searching for summoner.</div>
+            <div>
+              Riot has updated summoner names to use your RiotIdName +
+              RiotTagline.
             </div>
             <div>
-              Riot has updated summoner names to use your RiotIdName + RiotTagline.
-            </div>
-            <div>
-              Make sure to search for your name, using a &quot;#&quot; between your name and tagline.
+              Make sure to search for your name, using a &quot;#&quot; between
+              your name and tagline.
             </div>
             <div className="mt-4">
               Ex:
-              <span className="font-bold ml-2">yourName#tagline</span>
+              <span className="ml-2 font-bold">yourName#tagline</span>
             </div>
           </div>
-        }
+        )}
         {summoner && (
           <div className="flex">
             <ProfileCardInner
