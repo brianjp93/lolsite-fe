@@ -49,6 +49,13 @@ export const PositionBin = z.object({
 });
 export type PositionBinType = z.infer<typeof PositionBin>;
 
+export const SummonerNote = z.object({
+  note: z.string(),
+  created_date: z.coerce.date(),
+  modified_date: z.coerce.date(),
+});
+export type SummonerNoteType = z.infer<typeof SummonerNote>;
+
 export const Summoner = z.object({
   has_match_overlap: z.number(),
   id: z.number(),
@@ -61,6 +68,7 @@ export const Summoner = z.object({
   summoner_level: z.number(),
   riot_id_name: z.string(),
   riot_id_tagline: z.string(),
+  notes: z.array(SummonerNote).nullable(),
 });
 export type SummonerType = z.infer<typeof Summoner>;
 

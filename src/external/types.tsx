@@ -41,6 +41,7 @@ export {
   Favorite,
   Comment,
   Position,
+  SummonerNote,
 } from './iotypes/player'
 export type {
   SummonerType,
@@ -51,6 +52,7 @@ export type {
   UserType,
   NameChangeType,
   PositionType,
+  SummonerNoteType,
 } from './iotypes/player'
 
 export {
