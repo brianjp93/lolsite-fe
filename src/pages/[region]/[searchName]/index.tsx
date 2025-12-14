@@ -106,6 +106,8 @@ export default function Summoner({
   const nameChangeQuery = useNameChanges(summoner?.id || 0);
   const nameChanges = nameChangeQuery.data || [];
 
+  const isLoading = matchQuery.isLoading || summonerQuery.isLoading;
+
   const pagination = () => {
     return (
       <div className="flex">
@@ -206,7 +208,7 @@ export default function Summoner({
             </div>
           </div>
         )}
-        {summoner && (
+        {!isLoading && summoner && (
           <div className="flex">
             <ProfileCardInner
               summoner={summoner}
@@ -244,7 +246,7 @@ export default function Summoner({
         {!isInitialQuery && matchQuery.isSuccess && summonerQuery.isSuccess && (
           <div className="flex">
             <div>
-              {summoner && (
+              {!isLoading && summoner && (
                 <>
                   <div className="my-2 w-full max-w-[950px] rounded-md bg-zinc-800 p-4">
                     <PlayerChampionSummary puuid={summoner.puuid} />
@@ -264,12 +266,12 @@ export default function Summoner({
               </div>
               <div>
                 {pagination()}
-                {matchQuery.isLoading && (
+                {isLoading && (
                   <div style={{ width: 600 }}>
                     <Orbit size={200} className="m-auto" />
                   </div>
                 )}
-                {!matchQuery.isLoading && summoner && (
+                {!isLoading && summoner && (
                   <div className="flex">
                     <div>
                       <div className="my-2 w-full">
