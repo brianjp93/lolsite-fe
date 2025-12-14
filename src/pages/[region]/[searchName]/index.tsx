@@ -32,6 +32,7 @@ import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSummary";
 import { MatchListSummary } from "@/components/summoner/SummonerSummary";
 import { getRiotIdAndTaglineFromSearchName } from "@/utils/constants";
+import { SummonerNote } from "@/components/summoner/summonerNote";
 
 export default function Summoner({
   meta,
@@ -215,6 +216,7 @@ export default function Summoner({
               positions={positions}
               nameChanges={nameChanges}
             />
+            <SummonerNote summoner={summoner} />
             {flexFFGamePercentage > 0.05 &&
               (susAccount?.quick_ff_count || 0) > 4 && (
                 <div className="ml-2 max-w-fit rounded-md bg-red-800/50 p-2 font-bold">

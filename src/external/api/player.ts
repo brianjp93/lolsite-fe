@@ -309,6 +309,12 @@ async function getComment(pk: number) {
   return Comment.parse(response.data);
 }
 
+async function saveSummonerNote({summoner_id, note}: {summoner_id: number, note: string}) {
+  const url = `${base}/summoner-note/`;
+  const response = await axios.post(url, {summoner_id, note}, get_default_headers());
+  return response.data;
+}
+
 const exports = {
   getSummoner,
   getSummonerByRiotId,
@@ -353,5 +359,6 @@ const exports = {
   getFollowList,
   setFollow,
   removeFollow,
+  saveSummonerNote,
 };
 export default exports;
