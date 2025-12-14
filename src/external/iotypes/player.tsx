@@ -68,7 +68,7 @@ export const Summoner = z.object({
   summoner_level: z.number(),
   riot_id_name: z.string(),
   riot_id_tagline: z.string(),
-  notes: z.array(SummonerNote).nullable(),
+  notes: SummonerNote.nullable(),
 });
 export type SummonerType = z.infer<typeof Summoner>;
 
