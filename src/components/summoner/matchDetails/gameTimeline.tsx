@@ -84,7 +84,7 @@ function Timeline(props: {
         }
       }
     }
-    return big_events;
+    return big_events.sort((a, b) => a.timestamp - b.timestamp);
   }
 
   function getMyTeamDataKey(
