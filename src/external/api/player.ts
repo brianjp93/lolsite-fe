@@ -99,7 +99,7 @@ function isLoggedIn() {
   return axios.post(url, get_default_headers());
 }
 
-interface GetRankHistoryData extends AxiosRequestConfig {
+export interface GetRankHistoryData {
   id: number;
   queue: string;
   group_by?: "day" | "month" | "week";

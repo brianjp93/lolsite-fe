@@ -10,6 +10,7 @@ import type {
 } from "@/external/types";
 import { rankParticipants } from "./components/summoner/rankParticipants";
 import type { QueueType, SimpleItem } from "./external/iotypes/data";
+import { GetRankHistoryData } from "./external/api/player";
 
 export function useDebounce<V>(value: V, delay: number) {
   // State and setters for debounced value
@@ -567,5 +568,12 @@ export function useFollowList({ enabled }: { enabled?: boolean }) {
     queryKey: ["followList"],
     queryFn: () => api.player.getFollowList(),
     enabled,
+  });
+}
+
+export function useRankHistory(params: GetRankHistoryData) {
+  return useQuery({
+    queryKey: ["summoner", "rank-history"],
+    queryFn: () => api.player.getRankHistory(params),
   });
 }
