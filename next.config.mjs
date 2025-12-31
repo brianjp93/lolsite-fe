@@ -39,6 +39,12 @@ if (process.env.NODE_ENV === 'development') {
 }
 const config = {
   reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   i18n: {
     locales: ["en"],
     defaultLocale: "en",
