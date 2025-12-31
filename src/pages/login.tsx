@@ -62,7 +62,12 @@ function LoginInner() {
         <ErrorField message={errors.email?.message} />
         <label>
           <div>password</div>
-          <input className="w-full" type="password" {...register("password")} />
+          <input
+            autoComplete="off"
+            className="w-full"
+            type="password"
+            {...register("password")}
+          />
         </label>
         <ErrorField message={errors.password?.message} />
         <button type="submit" className="btn btn-primary mt-2 w-full">
