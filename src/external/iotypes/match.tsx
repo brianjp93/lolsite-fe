@@ -76,6 +76,7 @@ export const BasicParticipant = z.object({
   team_position: z.string().nullable(),
   placement: z.number(),
   subteam_placement: z.number(),
+  role_bound_item: z.number().nullable(),
 })
 export type BasicParticipantType = z.infer<typeof BasicParticipant>
 
@@ -239,6 +240,7 @@ export const FullParticipant = z.object({
   individual_position: z.string().nullable(),
   team_position: z.string().nullable(),
   role_label: z.number().nullable(),
+  role_bound_item: z.number().nullable(),
   stats: Stats,
   summoner_1_image: z.string(),
   summoner_2_image: z.string(),

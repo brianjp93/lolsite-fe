@@ -461,6 +461,11 @@ export function ChampionClump({
   const [, setPickTurn] = usePickTurn();
   const champion = part?.champion_id ? champions[part?.champion_id] : undefined;
   const item = useSimpleItem({ id: part.stats.item_6, major, minor }).data;
+  const roleBoundItem = useSimpleItem({
+    id: part.role_bound_item,
+    major,
+    minor,
+  }).data;
   const has_perks = !!(
     part.stats.perk_0_image_url && part.stats.perk_sub_style_image_url
   );
@@ -469,13 +474,32 @@ export function ChampionClump({
   return (
     <div className="flex">
       <div>
-        <Image
-          onMouseOver={() => setPickTurn(part._id)}
-          src={mediaUrl(champion.image.file_40)}
-          height={40}
-          width={40}
-          alt={`Champion Image: ${champion.name}`}
-        />
+        <div className="relative">
+          <Image
+            onMouseOver={() => setPickTurn(part._id)}
+            src={mediaUrl(champion.image.file_40)}
+            height={40}
+            width={40}
+            alt={`Champion Image: ${champion.name}`}
+          />
+          {roleBoundItem && roleBoundItem?.image?.file_30 && (
+            <div className="absolute -bottom-1 -left-1">
+              <ItemPopover
+                major={major}
+                minor={minor}
+                item_id={part.role_bound_item}
+              >
+                <Image
+                  className="rounded-sm border border-zinc-600"
+                  src={mediaUrl(roleBoundItem.image.file_30)}
+                  width={18}
+                  height={18}
+                  alt="Role bound item"
+                />
+              </ItemPopover>
+            </div>
+          )}
+        </div>
         <div className="flex">
           {has_perks ? (
             <>

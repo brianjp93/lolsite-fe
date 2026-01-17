@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { Popover } from "react-tiny-popover";
 
+function cleanItemDescription(html: string): string {
+  return html
+    .replace(/<stats><\/stats>/gi, "")
+    .replace(/<maintext>(\s*<br\s*\/?>\s*)+/gi, "<maintext>");
+}
+
 export function Item(props: any) {
   return (
     <div className="rounded-lg bg-zinc-800/95 p-3 shadow-xl backdrop-blur-sm">
@@ -25,7 +31,9 @@ export function Item(props: any) {
           <div className="border-t border-zinc-700 pt-2">
             <div
               className="text-xs leading-relaxed text-zinc-300"
-              dangerouslySetInnerHTML={{ __html: props.item.description }}
+              dangerouslySetInnerHTML={{
+                __html: cleanItemDescription(props.item.description),
+              }}
             />
           </div>
         </div>
