@@ -105,7 +105,7 @@ function BuildOrder(props: {
           const id = event.item_id;
           if ((remove_items[id] || 0) > 0) {
             if (event.count !== undefined) {
-              event.count--;
+              frame[key] = { ...event, count: event.count - 1 };
             }
             remove_items[id]--;
           }
@@ -153,10 +153,9 @@ function BuildOrder(props: {
         }
         const item = group_count[key]
         if (item === undefined) {
-          event.count = 1;
-          group_count[key] = event;
+          group_count[key] = { ...event, count: 1 };
         } else {
-          item.count = (item.count || 1) + 1;
+          group_count[key] = { ...item, count: (item.count || 1) + 1 };
         }
       }
       groups_with_count.push(group_count);

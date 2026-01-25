@@ -199,8 +199,10 @@ export function ChampionTimelinesInner({
           <LineChart
             onMouseMove={(props) => {
               if (props.activeTooltipIndex !== undefined) {
-                const new_timeline_index = props.activeTooltipIndex;
-                setTimelineIndex(new_timeline_index);
+                const new_timeline_index = props.activeTooltipIndex?.toString();
+                if (new_timeline_index !== undefined) {
+                  setTimelineIndex(parseInt(new_timeline_index));
+                }
               }
             }}
             margin={{

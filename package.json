@@ -27,7 +27,7 @@
     "react-modal": "^3.16.1",
     "react-simplemde-editor": "^5.2.0",
     "react-tiny-popover": "^7.2.0",
-    "recharts": "^2.10.1",
+    "recharts": "^3.7.0",
     "recoil": "^0.7.7",
     "superjson": "1.9.1",
     "use-query-params": "^2.2.1",
@@ -53,5 +53,7 @@
   "ct3aMetadata": {
     "initVersion": "6.10.1"
   },
-  "cacheDirectories": [".next/cache"]
+  "cacheDirectories": [
+    ".next/cache"
+  ]
 }

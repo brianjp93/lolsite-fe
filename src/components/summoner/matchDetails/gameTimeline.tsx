@@ -27,6 +27,8 @@ interface AugmentedEliteMonsterKillEventType extends EliteMonsterKillEventType {
   frame_timestamp: number;
 }
 interface AugmentedFrameType extends FrameType {
+  team100_gold: number;
+  team200_gold: number;
   team100_adv: number;
   team200_adv: number;
   team100_perc_adv: number;
@@ -88,7 +90,7 @@ function Timeline(props: {
   }
 
   function getMyTeamDataKey(
-    style?: string
+    style?: 'perc' | 'gold'
   ): "team100_adv" | "team200_adv" | "team100_perc_adv" | "team200_perc_adv" {
     if (!mypart) {
       return "team100_adv";
@@ -121,8 +123,7 @@ function Timeline(props: {
       events = getBigEvents(i);
       for (const event of events) {
         if (event._type === "ELITE_MONSTER_KILL") {
-          event.frame_timestamp = frame.timestamp;
-          reference_lines.push(event);
+          reference_lines.push({ ...event, frame_timestamp: frame.timestamp });
         }
       }
     }
@@ -165,23 +166,20 @@ function Timeline(props: {
     if (!timeline?.events) {
       return timeline;
     }
-    for (let i = 0; i < timeline.length; i++) {
-      timeline[i].events = timeline[i].events.sort((a: any, b: any) => {
-        return a.timestamp - b.timestamp;
-      });
-    }
-    return timeline;
+    return timeline.map((frame: any) => ({
+      ...frame,
+      events: frame.events ? [...frame.events].sort((a: any, b: any) => a.timestamp - b.timestamp) : frame.events,
+    }));
   }, []);
 
   function combineTimelineCS(timeline: any) {
-    for (let i = 0; i < timeline.length; i++) {
-      for (let j = 0; j < timeline[i].participantframes.length; j++) {
-        timeline[i].participantframes[j].cs =
-          timeline[i].participantframes[j].jungle_minions_killed +
-          timeline[i].participantframes[j].minions_killed;
-      }
-    }
-    return timeline;
+    return timeline.map((frame: any) => ({
+      ...frame,
+      participantframes: frame.participantframes.map((pframe: any) => ({
+        ...pframe,
+        cs: pframe.jungle_minions_killed + pframe.minions_killed,
+      })),
+    }));
   }
 
   const addTeamGoldToTimeline = useCallback(
@@ -197,7 +195,9 @@ function Timeline(props: {
       }
       let team100_total;
       let team200_total;
-      for (const frame of timeline) {
+      const newTimeline = [];
+      for (let i = 0; i < timeline.length; i++) {
+        const frame = timeline[i];
         team100_total = 0;
         team200_total = 0;
         for (const pframe of frame.participantframes) {
@@ -209,21 +209,31 @@ function Timeline(props: {
             }
           }
         }
-        frame.team100_gold = team100_total;
-        frame.team200_gold = team200_total;
 
-        frame.team100_adv = frame.team100_gold - frame.team200_gold;
-        frame.team200_adv = frame.team200_gold - frame.team100_gold;
+        const team100_adv = team100_total - team200_total;
+        const team200_adv = team200_total - team100_total;
 
-        if (frame.team100_adv >= 0) {
-          frame.team100_perc_adv = (frame.team100_adv / team200_total) * 100;
-          frame.team200_perc_adv = -frame.team100_perc_adv;
+        let team100_perc_adv;
+        let team200_perc_adv;
+        if (team100_adv >= 0) {
+          team100_perc_adv = (team100_adv / team200_total) * 100;
+          team200_perc_adv = -team100_perc_adv;
         } else {
-          frame.team200_perc_adv = (frame.team200_adv / team100_total) * 100;
-          frame.team100_perc_adv = -frame.team200_perc_adv;
+          team200_perc_adv = (team200_adv / team100_total) * 100;
+          team100_perc_adv = -team200_perc_adv;
         }
+
+        newTimeline.push({
+          ...frame,
+          team100_gold: team100_total,
+          team200_gold: team200_total,
+          team100_adv,
+          team200_adv,
+          team100_perc_adv,
+          team200_perc_adv,
+        });
       }
-      return timeline;
+      return newTimeline;
     },
     []
   );
@@ -270,13 +280,24 @@ function Timeline(props: {
   };
 
   const div_width = 600;
+  const chartData = timeline.map(frame => {
+    const mutableFrame = { ...frame };
+    mutableFrame.team100_gold = frame.team100_gold || 0;
+    mutableFrame.team200_gold = frame.team200_gold || 0;
+    mutableFrame.team100_adv = frame.team100_adv || 0;
+    mutableFrame.team200_adv = frame.team200_adv || 0;
+    mutableFrame.team100_perc_adv = frame.team100_perc_adv || 0;
+    mutableFrame.team200_perc_adv = frame.team200_perc_adv || 0;
+    return mutableFrame;
+  });
+
   return (
     <div>
       <div className="align-center">
         <ComposedChart
           width={div_width}
           height={300}
-          data={props.timeline}
+          data={chartData}
           margin={{
             top: 10,
             right: 15,
@@ -285,8 +306,10 @@ function Timeline(props: {
           }}
           onMouseMove={(props) => {
             if (props.activeTooltipIndex !== undefined) {
-              const new_timeline_index = props.activeTooltipIndex;
-              setTimelineIndex(new_timeline_index);
+              const new_timeline_index = props.activeTooltipIndex?.toString();
+              if (new_timeline_index !== undefined) {
+                setTimelineIndex(parseInt(new_timeline_index));
+              }
             }
           }}
         >
