@@ -19,8 +19,8 @@ import type {
   SimpleMatchType,
   FrameType,
   EliteMonsterKillEventType,
+  FullParticipantType,
 } from "@/external/types";
-import type { AppendParticipant } from "../rankParticipants";
 import Image from "next/image";
 
 interface AugmentedEliteMonsterKillEventType extends EliteMonsterKillEventType {
@@ -38,7 +38,7 @@ interface AugmentedFrameType extends FrameType {
 function Timeline(props: {
   summoner: SummonerType;
   match: SimpleMatchType;
-  participants: AppendParticipant[];
+  participants: FullParticipantType[];
   timeline: FrameType[];
 }) {
   const [timelineIndex, setTimelineIndex] = useTimelineIndex(props.match._id);
@@ -48,7 +48,7 @@ function Timeline(props: {
   const match = props.match;
   const champions = useBasicChampions();
 
-  const [mypart, setMypart] = useState<AppendParticipant>();
+  const [mypart, setMypart] = useState<FullParticipantType>();
   const big_events = timelineIndex !== null ? getBigEvents(timelineIndex) : [];
 
   function getEvents(index: number | null) {
@@ -185,7 +185,7 @@ function Timeline(props: {
   }
 
   const addTeamGoldToTimeline = useCallback(
-    (timeline: any, participants: AppendParticipant[]) => {
+    (timeline: any, participants: FullParticipantType[]) => {
       const team100 = [];
       const team200 = [];
       for (const part of participants) {

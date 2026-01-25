@@ -1,4 +1,4 @@
-import type { BasicParticipantType } from "@/external/iotypes/match";
+import type { BasicParticipantType, FullParticipantType } from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
 import {
   useBasicChampions,
@@ -25,8 +25,8 @@ import {
   mediaUrl,
   queueColor,
 } from "../utils";
-import type { AppendParticipant } from "./rankParticipants";
 import { puuidRoute } from "@/routes";
+import { ImpactRank } from "./impactRank";
 
 export default function MatchCard({
   match,
@@ -92,10 +92,17 @@ export default function MatchCard({
                 </div>
               )}
             </div>
-            <div
-              className={clsx("text-xs font-bold", queueColor(match.queue_id))}
-            >
-              {queue?.description || match.queue_id}
+            <div className="flex items-center gap-1">
+              <div
+                className={clsx("text-xs font-bold", queueColor(match.queue_id))}
+              >
+                {queue?.description || match.queue_id}
+              </div>
+              {part && (
+                <div className="w-11 text-center">
+                  <ImpactRank impact_rank={part.impact_rank} impact_score={part.impact_score} />
+                </div>
+              )}
             </div>
           </div>
           {part && (
@@ -397,7 +404,7 @@ export function ItemClump({
   part,
   version,
 }: {
-  part: BasicParticipantType | AppendParticipant;
+  part: BasicParticipantType | FullParticipantType;
   version: { major: number; minor: number };
 }) {
   return (
@@ -453,7 +460,7 @@ export function ChampionClump({
   major,
   minor,
 }: {
-  part: AppendParticipant | BasicParticipantType;
+  part: FullParticipantType | BasicParticipantType;
   major: number;
   minor: number;
 }) {

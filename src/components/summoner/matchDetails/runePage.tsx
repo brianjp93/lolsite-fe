@@ -5,7 +5,6 @@ import numeral from "numeral";
 import { StatModTable } from "./statMod";
 import { useRunes, useBasicChampions } from "@/hooks";
 import type { FullParticipantType, RuneType } from "@/external/types";
-import type { AppendParticipant } from "../rankParticipants";
 
 import { RUNEDATA as RUNES } from "@/utils/constants";
 import Image from "next/image";
@@ -17,7 +16,7 @@ export function RunePage({
   match,
   matchCardHeight,
 }: {
-  mypart: AppendParticipant;
+  mypart: FullParticipantType;
   participants: FullParticipantType[];
   match: { major: number; minor: number; id: number; _id: string };
   matchCardHeight: number;

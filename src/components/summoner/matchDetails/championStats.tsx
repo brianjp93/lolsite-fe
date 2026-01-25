@@ -5,7 +5,6 @@ import { useBasicChampions } from "@/hooks";
 import type { FullParticipantType } from "@/external/types";
 import Image from "next/image";
 import { mediaUrl } from "@/components/utils";
-import type { AppendParticipant } from "../rankParticipants";
 
 const CONVERT = {
   total_damage_dealt_to_champions: "total",
@@ -36,7 +35,7 @@ export function StatOverview({
   match,
   mypart,
 }: {
-  participants: AppendParticipant[];
+  participants: FullParticipantType[];
   match: { _id: string; game_duration: number, id: number };
   mypart: FullParticipantType;
 }) {

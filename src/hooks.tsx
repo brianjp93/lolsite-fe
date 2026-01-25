@@ -8,7 +8,6 @@ import type {
   RuneType,
   BasicChampionWithImageType,
 } from "@/external/types";
-import { rankParticipants } from "./components/summoner/rankParticipants";
 import type { QueueType, SimpleItem } from "./external/iotypes/data";
 
 export function useDebounce<V>(value: V, delay: number) {
@@ -247,7 +246,7 @@ export function useParticipants(matchId: string) {
     queryFn: () =>
       api.match
         .participants({ match__id: matchId, apply_ranks: true })
-        .then((response) => rankParticipants(response.data)),
+        .then((response) => response.data),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: !!matchId,

@@ -4,7 +4,6 @@ import type { BasicMatchType, FullParticipantType } from "@/external/types";
 import { useItem } from "@/hooks";
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import { env } from "@/env/client.mjs";
-import type { AppendParticipant } from "./summoner/rankParticipants";
 import { ARENA_QUEUE } from "@/utils/constants";
 
 export function formatDatetime(epoch: number) {
@@ -108,7 +107,7 @@ export function Item(id: number, image_url: string, match: BasicMatchType) {
 }
 
 export function getMyPart<
-  T extends FullParticipantType[] | BasicParticipantType[] | AppendParticipant[]
+  T extends FullParticipantType[] | BasicParticipantType[]
 >(participants: T, puuid: string): T[number] | undefined {
   for (const part of participants) {
     if (part.puuid === puuid) {

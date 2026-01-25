@@ -180,7 +180,7 @@ export default function Summoner({
   return (
     <Skeleton topPad={0}>
       <Head>
-        <title>{searchName.trim()} | hardstuck.club</title>
+        <title>{`${searchName.trim()} | hardstuck.club`}</title>
         {meta && (
           <>
             <meta property="og:type" content={meta.type} />

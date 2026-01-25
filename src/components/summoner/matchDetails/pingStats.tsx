@@ -1,16 +1,16 @@
 import { mediaUrl } from "@/components/utils";
+import type { FullParticipantType } from "@/external/types";
 import { useBasicChampions } from "@/hooks";
 import clsx from "clsx";
 import Image from "next/image";
 import { useState } from "react";
-import type { AppendParticipant } from "../rankParticipants";
 
 export function PingStats({
   mypart,
   participants,
 }: {
-  mypart: AppendParticipant;
-  participants: AppendParticipant[];
+  mypart: FullParticipantType;
+  participants: FullParticipantType[];
 }) {
   const [selected, setSelected] = useState(mypart._id);
   const part = participants.filter((x) => x._id === selected)[0];
@@ -93,7 +93,7 @@ export function ChampionSelection({
   className = "",
 }: {
   selected: number;
-  participants: AppendParticipant[];
+  participants: FullParticipantType[];
   onClick: (participantId: number) => void;
   className?: string;
 }) {

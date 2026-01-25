@@ -15,9 +15,9 @@ import type {
   SummonerType,
   FrameType,
   ParticipantFrameType,
+  FullParticipantType,
 } from "@/external/types";
 import { useTimelineIndex } from "@/stores";
-import type { AppendParticipant } from "../rankParticipants";
 import { getMyPart, mediaUrl } from "@/components/utils";
 import Image from "next/image";
 
@@ -82,7 +82,7 @@ export function ChampionTimelinesInner({
 }: {
   matchId: string;
   summoner: SummonerType;
-  participants: AppendParticipant[];
+  participants: FullParticipantType[];
   timeline: FrameType[];
   expanded_width: number;
 }) {
@@ -105,7 +105,7 @@ export function ChampionTimelinesInner({
     ];
   }, [participants]);
   const participant_ids = participants.map(
-    (participant: AppendParticipant) => participant._id
+    (participant: FullParticipantType) => participant._id
   );
   const colors = [
     "#d94630",
@@ -336,7 +336,7 @@ export function ChampionTimelinesInner({
   );
 }
 
-function getParticipant(participants: AppendParticipant[], id: number) {
+function getParticipant(participants: FullParticipantType[], id: number) {
   for (const part of participants) {
     if (part._id === id) {
       return part;

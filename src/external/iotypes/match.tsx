@@ -77,6 +77,8 @@ export const BasicParticipant = z.object({
   placement: z.number(),
   subteam_placement: z.number(),
   role_bound_item: z.number().nullable(),
+  impact_score: z.number(),
+  impact_rank: z.number(),
 })
 export type BasicParticipantType = z.infer<typeof BasicParticipant>
 

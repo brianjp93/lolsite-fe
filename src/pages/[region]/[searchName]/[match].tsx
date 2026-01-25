@@ -13,10 +13,9 @@ import {
 import { useRouter } from "next/router";
 import type { SimpleMatchType, SummonerType } from "@/external/types";
 import Orbit from "@/components/general/spinner";
-import type { AppendParticipant } from "@/components/summoner/rankParticipants";
 import Link from "next/link";
 import { profileRoute, puuidRoute } from "@/routes";
-import type { BanType, AdvancedTimelineType } from "@/external/iotypes/match";
+import type { BanType, AdvancedTimelineType, FullParticipantType } from "@/external/iotypes/match";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
   convertRank,
@@ -32,6 +31,7 @@ import {
   StatClump,
   BountyClump,
 } from "@/components/summoner/matchCard";
+import { ImpactRank } from "@/components/summoner/impactRank";
 import clsx from "clsx";
 import numeral from "numeral";
 import { MapEventsInner } from "@/components/summoner/matchDetails/mapEvents";
@@ -141,7 +141,7 @@ function InnerMatch({
   bans,
 }: {
   match: SimpleMatchType;
-  participants: AppendParticipant[];
+  participants: FullParticipantType[];
   timeline?: AdvancedTimelineType;
   summoner: SummonerType;
   bans: BanType[];
@@ -275,7 +275,7 @@ function TeamSide({
   bans,
   timeline,
 }: {
-  team: AppendParticipant[];
+  team: FullParticipantType[];
   match: SimpleMatchType;
   bans: BanType[];
   timeline?: AdvancedTimelineType;
@@ -370,7 +370,7 @@ function ParticipantInfo({
   part,
   match,
 }: {
-  part: AppendParticipant;
+  part: FullParticipantType;
   match: SimpleMatchType;
 }) {
   const router = useRouter();
@@ -449,7 +449,7 @@ function SecondaryStatClump({
   part,
   match,
 }: {
-  part: AppendParticipant;
+  part: FullParticipantType;
   match: SimpleMatchType;
 }) {
   const minutes = match.game_duration / 1000 / 60 || 1;
@@ -460,7 +460,7 @@ function SecondaryStatClump({
   const format = (x: number, fmt = "0.00") => numeral(x).format(fmt);
   const rank = convertTier(part.tier ?? "") + convertRank(part.rank ?? "");
   return (
-    <div className="w-fit flex-col text-center">
+    <div className="w-fit flex flex-col text-center gap-y-1">
       <div
         className={clsx("w-full rounded px-2 font-bold", {
           "bg-gradient-to-tr from-purple-800 via-fuchsia-700 to-violet-700":
@@ -471,41 +471,18 @@ function SecondaryStatClump({
         {rank ? rank : "NA"}
       </div>
       <div
-        title={`Rank: ${part.impact_rank || "N/A"}\nOld Rank: ${part.impact_rank_old || "N/A"
-          }\nImpact Score: ${format(
-            part.impact_score || 0,
-            "0.00"
-          )}\nOld Impact: ${format(part.impact || 0, "0.00")}`}
+        title={`Rank: ${part.impact_rank || "N/A"}\nImpact Score: ${format(
+          part.impact_score || 0,
+          "0.00"
+        )}`}
       >
-        {part.impact_rank ? (
-          <div
-            className={clsx("mt-1 rounded font-bold", {
-              "bg-blue-600": part.impact_rank === 1,
-              "bg-orange-600": part.impact_rank === 2,
-              "bg-orange-700": part.impact_rank === 3,
-              "bg-red-600": part.impact_rank === 4,
-              "bg-red-700": part.impact_rank === 5,
-              "bg-red-800": part.impact_rank === 6,
-              "bg-red-900": part.impact_rank === 7,
-              "bg-red-950": part.impact_rank === 8,
-              "bg-stone-800": part.impact_rank === 9,
-              "bg-stone-900": part.impact_rank === 10,
-            })}
-          >
-            {part.impact_rank === 1 ? "MVP" : part.impact_rank}
-          </div>
-        ) : (
-          <div>
-            {format(part?.impact_score || 0, "0.00")}{" "}
-            <span className="text-xs">IS</span>
-          </div>
-        )}
+        <ImpactRank impact_rank={part.impact_rank} impact_score={part.impact_score} />
       </div>
-      <div>
+      <div className="leading-none">
         {format(gpm, "0")}
         <span className="text-xs">GPM</span>
       </div>
-      <div>
+      <div className="leading-none">
         {format(cspm, "0.0")}
         <span className="text-xs">CS/M</span>
       </div>
