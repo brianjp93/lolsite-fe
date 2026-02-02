@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import {puuidRoute} from '@/routes'
 import Link from 'next/link'
@@ -57,40 +57,30 @@ export class RecentlyPlayedWith extends Component {
   }
   render() {
     return (
-      <div
-        style={{
-          width: 270,
-          height: 150,
-          padding: 15,
-        }}
-        className={`card-panel`}
-      >
+      <div className='card-panel h-[200px] w-[270px] p-2'>
         <div className='underline inline'>
           Players In These Games
         </div>{' '}
         <small>{this.props.matches.length} games</small>
         <br />
-        <div className="quiet-scroll" style={{overflowY: 'scroll', maxHeight: '85%'}}>
-          <table>
+        <div className="quiet-scroll overflow-y-scroll">
+          <div className='flex flex-wrap w-full'>
             {this.sortPlayers().map((data) => {
-              var td_style = {padding: '3px 5px'}
               return (
-                <tbody key={`row-for-${data.summoner_name}`} style={{fontSize: 'small'}}>
-                  <tr>
-                    <td style={td_style}>
-                      <Link
-                        href={puuidRoute(data.puuid)}
-                        className="cursor-pointer hover:underline"
-                      >
-                        {data.summoner_name}
-                      </Link>
-                    </td>
-                    <td style={td_style}>{data.count}</td>
-                  </tr>
-                </tbody>
+                <Fragment key={`${data.puuid}`}>
+                  <div className='text-sm p-1 w-3/4'>
+                    <Link
+                      href={puuidRoute(data.puuid)}
+                      className="cursor-pointer hover:underline"
+                    >
+                      {data.summoner_name}
+                    </Link>
+                  </div>
+                  <div className='text-sm p-1 w-1/4'>{data.count}</div>
+                </Fragment>
               )
             })}
-          </table>
+          </div>
         </div>
       </div>
     )
