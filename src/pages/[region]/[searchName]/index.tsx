@@ -12,13 +12,6 @@ import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
 import clsx from "clsx";
-import {
-  useQueryParams,
-  NumberParam,
-  withDefault,
-  StringParam,
-} from "use-query-params";
-
 import type { BasicMatchType } from "@/external/types";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -45,11 +38,29 @@ export default function Summoner({
   const [riot_id_name, riot_id_tagline] =
     getRiotIdAndTaglineFromSearchName(searchName);
   const [prevSearchName, setPrevSearchName] = useState("");
-  const [params, setParams] = useQueryParams({
-    page: withDefault(NumberParam, 1),
-    queue: withDefault(NumberParam, undefined),
-    playedWith: withDefault(StringParam, ""),
-  });
+  const params = {
+    page: Number(router.query.page) || 1,
+    queue: router.query.queue ? Number(router.query.queue) : undefined,
+    playedWith: (router.query.playedWith as string) || "",
+  };
+  const setParams = useCallback(
+    (
+      updater:
+        | Partial<typeof params>
+        | ((prev: typeof params) => Partial<typeof params>),
+    ) => {
+      const next = typeof updater === "function" ? updater(params) : updater;
+      const query = { ...router.query, ...next };
+      // Remove undefined/empty values to keep URL clean
+      for (const key of Object.keys(query)) {
+        if (query[key] === undefined || query[key] === "") {
+          delete query[key];
+        }
+      }
+      void router.replace({ query }, undefined, { shallow: true });
+    },
+    [router, params],
+  );
   const limit = 10;
 
   function resetPage() {

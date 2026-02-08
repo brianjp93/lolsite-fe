@@ -16,7 +16,6 @@ import Orbit from "@/components/general/spinner";
 import Link from "next/link";
 import { profileRoute, puuidRoute } from "@/routes";
 import type { BanType, AdvancedTimelineType, FullParticipantType } from "@/external/iotypes/match";
-import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import {
   convertRank,
   convertTier,
@@ -65,10 +64,7 @@ export default function Match({ meta }: { meta: MetaHead | null }) {
     match: matchId,
     region,
   } = router.query as { searchName: string; match: string; region: string };
-  const [returnPath] = useQueryParam(
-    "returnPath",
-    withDefault(StringParam, "")
-  );
+  const returnPath = (router.query.returnPath as string) || "";
   const [riotIdName, riotIdTagline] =
     getRiotIdAndTaglineFromSearchName(searchName);
   const matchQuery = useMatch(matchId);
