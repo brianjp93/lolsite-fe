@@ -42,10 +42,7 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  i18n: {
+i18n: {
     locales: ["en"],
     defaultLocale: "en",
   },
