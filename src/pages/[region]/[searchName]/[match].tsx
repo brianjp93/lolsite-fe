@@ -179,7 +179,7 @@ function InnerMatch({
           <div className="my-auto min-w-fit pr-1">
             <TeamSide team={team100} match={match} bans={team100Bans} timeline={timeline} />
           </div>
-          <div className="my-auto rounded-full bg-gradient-to-r from-cyan-700 to-rose-700 p-3 font-bold">
+          <div className="my-auto rounded-full bg-linear-to-r from-cyan-700 to-rose-700 p-3 font-bold">
             VS
           </div>
           <div className="my-auto min-w-fit pl-1">
@@ -295,7 +295,7 @@ function TeamSide({
     <div>
       <div
         className={clsx("rounded", {
-          "bg-gradient-to-tr from-emerald-600/0 via-teal-700/20 to-emerald-600/30":
+          "bg-linear-to-tr from-emerald-600/0 via-teal-700/20 to-emerald-600/30":
             isWin,
         })}
       >
@@ -459,7 +459,7 @@ function SecondaryStatClump({
     <div className="w-fit flex flex-col text-center gap-y-1">
       <div
         className={clsx("w-full rounded px-2 font-bold", {
-          "bg-gradient-to-tr from-purple-800 via-fuchsia-700 to-violet-700":
+          "bg-linear-to-tr from-purple-800 via-fuchsia-700 to-violet-700":
             !!rank,
           "bg-zinc-800": !rank,
         })}
