@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   useMatchList,
   useNameChanges,
@@ -37,12 +37,13 @@ export default function Summoner({
   };
   const [riot_id_name, riot_id_tagline] =
     getRiotIdAndTaglineFromSearchName(searchName);
-  const [prevSearchName, setPrevSearchName] = useState("");
-  const params = {
-    page: Number(router.query.page) || 1,
-    queue: router.query.queue ? Number(router.query.queue) : undefined,
-    playedWith: (router.query.playedWith as string) || "",
-  };
+  const params = useMemo(() => {
+    return {
+      page: Number(router.query.page) || 1,
+      queue: router.query.queue ? Number(router.query.queue) : undefined,
+      playedWith: (router.query.playedWith as string) || "",
+    }
+  }, [router.query]);
   const setParams = useCallback(
     (
       updater:
@@ -52,7 +53,7 @@ export default function Summoner({
       const next = typeof updater === "function" ? updater(params) : updater;
       const query = { ...router.query, ...next };
       // Remove undefined/empty values to keep URL clean
-      for (const key of Object.keys(query)) {
+      for (const key of (Object.keys(query) as Array<keyof typeof query>)) {
         if (query[key] === undefined || query[key] === "") {
           delete query[key];
         }
@@ -75,9 +76,11 @@ export default function Summoner({
   });
   const summoner = summonerQuery.data;
 
-  if (summoner?.summoner_level === 0) {
-    setTimeout(summonerQuery.refetch, 3000);
-  }
+  useEffect(() => {
+    if (summoner?.summoner_level === 0) {
+      setTimeout(summonerQuery.refetch, 3000);
+    }
+  }, [summoner, summonerQuery.refetch])
 
   const matchQuery = useMatchList({
     riot_id_name,
@@ -88,7 +91,6 @@ export default function Summoner({
     sync: true,
     queue: params.queue,
     playedWith: params.playedWith,
-    keepPreviousData: searchName === prevSearchName,
   });
 
   const susAccountQ = useSuspiciousAccount(
@@ -101,11 +103,6 @@ export default function Summoner({
     ? susAccount.quick_ff_count / (susAccount.total || 1)
     : 0;
 
-  useEffect(() => {
-    if (matchQuery.isSuccess) {
-      setPrevSearchName(searchName);
-    }
-  }, [searchName, matchQuery.isSuccess]);
   const isInitialQuery = !matchQuery.data;
 
   const matches: BasicMatchType[] = matchQuery.data || [];
@@ -113,10 +110,8 @@ export default function Summoner({
     region,
     puuid: summoner?.puuid || "",
   });
-  const positions = positionQuery.data;
 
   const nameChangeQuery = useNameChanges(summoner?.id || 0);
-  const nameChanges = nameChangeQuery.data || [];
 
   const isLoading = matchQuery.isLoading || summonerQuery.isLoading;
 
@@ -224,8 +219,8 @@ export default function Summoner({
           <div className="flex">
             <ProfileCardInner
               summoner={summoner}
-              positions={positions}
-              nameChanges={nameChanges}
+              positions={positionQuery.data}
+              nameChanges={nameChangeQuery.data}
             />
             <SummonerNote summoner={summoner} />
             {flexFFGamePercentage > 0.05 &&
@@ -261,7 +256,7 @@ export default function Summoner({
             <div>
               {!isLoading && summoner && (
                 <>
-                  <div className="my-2 w-full max-w-[950px] rounded-md bg-zinc-800 p-4">
+                  <div className="my-2 w-full max-w-237.5 rounded-md bg-zinc-800 p-4">
                     <PlayerChampionSummary puuid={summoner.puuid} />
                   </div>
                 </>
@@ -373,7 +368,7 @@ function MatchFilter({
         </label>
         <select
           {...register("queue", { onChange })}
-          className="default w-full rounded !py-2"
+          className="default w-full rounded py-2!"
         >
           <option value={undefined}>Any</option>
           {Object.keys(QUEUEFILTER).map((x) => {

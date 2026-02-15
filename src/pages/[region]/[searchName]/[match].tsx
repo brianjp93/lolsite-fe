@@ -53,6 +53,7 @@ import {
   getRiotIdAndTaglineFromSearchName,
 } from "@/utils/constants";
 
+
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
 };

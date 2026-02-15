@@ -1,6 +1,4 @@
-import "easymde/dist/easymde.min.css";
 import { useState } from "react";
-import dynamic from "next/dynamic";
 import { useConnectedSummoners } from "@/hooks";
 import Orbit from "../general/spinner";
 import { useMutation } from "@tanstack/react-query";
@@ -8,25 +6,6 @@ import api from "@/external/api/api";
 import Link from "next/link";
 import { myAccount } from "@/routes";
 import clsx from "clsx";
-
-// need to make sure this import happens client side
-const SimpleMdeReact = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
-
-export function Editor({
-  value,
-  setValue,
-}: {
-  value: string;
-  setValue: (x: string) => void;
-}) {
-  return (
-    <>
-      <SimpleMdeReact value={value} onChange={(value) => setValue(value)} />
-    </>
-  );
-}
 
 export function CreateComment({
   onCancel,
@@ -53,25 +32,39 @@ export function CreateComment({
   });
 
   return (
-    <>
-      <Editor {...{ value, setValue }} />
+    <div className="flex w-full flex-col gap-y-4 rounded bg-zinc-900/50 p-4">
+      <textarea
+        className="min-h-25 w-full rounded border border-zinc-700 bg-zinc-800 p-2 text-gray-200 outline-none focus:border-blue-500"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder="Write a comment..."
+      />
       {connectedQ.isLoading && (
-        <>
-          <Orbit />
-          <div>Loading connected summoners.</div>
-        </>
+        <div className="flex items-center gap-2 text-gray-400">
+          <Orbit size={20} />
+          <div>Loading connected summoners...</div>
+        </div>
       )}
       {!connectedQ.isLoading && connected.length === 0 && (
-        <div>
+        <div className="text-sm text-gray-400">
           No Summoners connected. Please connect an account at
-          <Link href={myAccount()} className="ml-1" />
+          <Link
+            href={myAccount()}
+            className="ml-1 text-blue-400 hover:underline"
+          >
+            my account
+          </Link>
         </div>
       )}
       {!connectedQ.isLoading && connected.length > 0 && (
         <select
-          value={selectedSummoner}
+          className="w-full rounded border border-zinc-700 bg-zinc-800 p-2 text-gray-200 outline-none focus:border-blue-500"
+          value={selectedSummoner || ""}
           onChange={(event) => setSelectedSummoner(event.currentTarget.value)}
         >
+          <option value="" disabled>
+            Select Summoner
+          </option>
           {connected.map((x) => {
             return (
               <option key={x.puuid} value={x.puuid}>
@@ -81,7 +74,7 @@ export function CreateComment({
           })}
         </select>
       )}
-      <div className="flex">
+      <div className="flex justify-end gap-x-2">
         <button onClick={() => onCancel()} className="btn btn-default">
           Cancel
         </button>
@@ -98,7 +91,7 @@ export function CreateComment({
           Create Comment
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
