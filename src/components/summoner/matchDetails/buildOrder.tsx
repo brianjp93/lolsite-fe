@@ -6,7 +6,6 @@ import {
 } from "react";
 import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
-import ReactDOMServer from "react-dom/server";
 import numeral from "numeral";
 import api from "@/external/api/api";
 import { useBasicChampions, useMatch, useSimpleItem } from "@/hooks";
@@ -453,6 +452,15 @@ function ChampionImage(props: {
   );
 }
 
+const SKILL_COLORS: Record<string, { bg: string; text: string }> = {
+  q: { bg: "bg-sky-500/80", text: "text-sky-300" },
+  w: { bg: "bg-emerald-500/80", text: "text-emerald-300" },
+  e: { bg: "bg-amber-500/80", text: "text-amber-300" },
+  r: { bg: "bg-rose-500/80", text: "text-rose-300" },
+};
+
+const SKILL_KEYS = ["q", "w", "e", "r"] as const;
+
 function SkillLevelUp(props: {
   selected_participant: FullParticipantType;
   expanded_width: number;
@@ -486,137 +494,73 @@ function SkillLevelUp(props: {
   });
   const spells = useMemo(() => spellQuery.data || {}, [spellQuery.data]);
 
-  const div_width = (props.expanded_width - 65) / 18;
-  const div_height = 30;
-  return (
-    <div>
-      {props.skills !== undefined &&
-        [...Array(19).keys()].map((num) => {
-          const skill = props.skills[num - 1];
-          return (
-            <div key={num} style={{ display: "inline-block" }}>
-              {["lvl", "q", "w", "e", "r"].map((skill_num, key) => {
-                let output: any = ".";
-                let div_style: any = {
-                  height: div_height,
-                  width: div_width,
-                  borderStyle: "solid",
-                  borderColor: "grey",
-                  borderWidth: 1,
-                };
-                if (num === 0) {
-                  div_style = {
-                    height: div_height,
-                    width: 30,
-                    borderStyle: "solid",
-                    borderColor: "grey",
-                    borderWidth: 0,
-                  };
-                  if (["q", "w", "e", "r"].indexOf(skill_num) >= 0) {
-                    output = (
-                      <span>
-                        <div
-                          data-html
-                          data-tip={ReactDOMServer.renderToString(
-                            <div
-                              style={{
-                                maxWidth: 500,
-                                wordBreak: "normal",
-                                whiteSpace: "normal",
-                              }}
-                            >
-                              {spells[skill_num] !== undefined && (
-                                <div>
-                                  <div>
-                                    <div
-                                      style={{
-                                        display: "inline-block",
-                                      }}
-                                    >
-                                      <Image
-                                        className="rounded-sm"
-                                        src={mediaUrl(
-                                          spells[skill_num].image_url
-                                        )}
-                                        height={50}
-                                        width={50}
-                                        alt=""
-                                      />
-                                    </div>
-                                    <h4
-                                      style={{
-                                        display: "inline-block",
-                                        marginLeft: 10,
-                                      }}
-                                    >
-                                      {spells[skill_num].name}
-                                    </h4>
-                                  </div>
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: spells[skill_num].description,
-                                    }}
-                                  ></div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          style={{
-                            width: 30,
-                            height: 30,
-                            position: "relative",
-                          }}
-                        >
-                          {skill_num}
+  if (!props.skills) return null;
 
-                          {spells[skill_num] !== undefined && (
-                            <Image
-                              src={mediaUrl(spells[skill_num].image_url)}
-                              alt=""
-                              height={30}
-                              width={30}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                borderStyle: "solid",
-                                borderColor: "grey",
-                                borderWidth: 2,
-                              }}
-                            />
-                          )}
-                        </div>
-                      </span>
-                    );
-                  } else {
-                    output = ".";
-                  }
-                } else if (skill_num === "lvl") {
-                  div_style = {
-                    ...div_style,
-                    borderStyle: "none",
-                    borderWidth: 0,
-                  };
-                  output = `${num}`;
-                } else if (skill !== undefined && skill.skill_slot === key) {
-                  div_style = {
-                    ...div_style,
-                    textAlign: "center",
-                    background: "#196893",
-                  };
-                  output = skill_num;
-                } else {
-                  output = ".";
-                }
-                return (
-                  <div key={key} style={div_style}>
-                    <span>{output}</span>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
+  const levels = Array.from({ length: 18 }, (_, i) => i + 1);
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="border-separate border-spacing-[2px] text-center text-xs">
+        <thead>
+          <tr>
+            <th className="w-8" />
+            {levels.map((lvl) => (
+              <th
+                key={lvl}
+                className="w-6 pb-1 font-normal text-zinc-500"
+              >
+                {lvl}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {SKILL_KEYS.map((skill, slotIndex) => {
+            const spell = spells[skill];
+            const colors = SKILL_COLORS[skill]!;
+            return (
+              <tr key={skill}>
+                <td className="pr-1">
+                  {spell ? (
+                    <Image
+                      src={mediaUrl(spell.image_url)}
+                      alt={spell.name ?? skill}
+                      title={spell.name}
+                      height={24}
+                      width={24}
+                      className="rounded"
+                    />
+                  ) : (
+                    <span className={clsx("text-sm font-bold uppercase", colors.text)}>
+                      {skill}
+                    </span>
+                  )}
+                </td>
+                {levels.map((lvl) => {
+                  const event = props.skills[lvl - 1];
+                  const isSkilled = event?.skill_slot === slotIndex + 1;
+                  return (
+                    <td key={lvl}>
+                      <div
+                        className={clsx(
+                          "flex h-6 w-6 items-center justify-center rounded",
+                          isSkilled
+                            ? clsx(colors.bg, "font-bold text-white")
+                            : "bg-zinc-800/40"
+                        )}
+                      >
+                        {isSkilled && (
+                          <span className="text-[11px] uppercase">{skill}</span>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
