@@ -1,4 +1,4 @@
-import { useCallback, Fragment } from "react";
+import { useCallback } from "react";
 import type { SummonerType } from "@/external/types";
 import type { BasicParticipantType } from "@/external/iotypes/match";
 import { puuidRoute } from "@/routes";
@@ -74,15 +74,19 @@ export function RecentlyPlayedWith({
   }, [countPlayers]);
 
   return (
-    <div className="card-panel h-[200px] w-[270px] p-2">
-      <div className="inline underline">Players In These Games</div>{" "}
-      <small>{matches.length} games</small>
-      <br />
-      <div className="quiet-scroll overflow-y-scroll">
+    <div className="card-panel flex h-[200px] w-[270px] flex-col p-2">
+      <div className="shrink-0">
+        <span className="inline underline">Players In These Games</span>{" "}
+        <small>{matches.length} games</small>
+      </div>
+      <div className="quiet-scroll mt-1 min-h-0 flex-1 overflow-y-auto">
         <div className="flex w-full flex-wrap">
-          {sortPlayers().map((data) => {
+          {sortPlayers().map((data, i) => {
             return (
-              <Fragment key={data.puuid}>
+              <div
+                key={data.puuid}
+                className={`flex w-full ${i % 2 === 0 ? "bg-white/5" : ""}`}
+              >
                 <div className="w-3/4 p-1 text-sm">
                   <Link
                     href={puuidRoute(data.puuid)}
@@ -92,7 +96,7 @@ export function RecentlyPlayedWith({
                   </Link>
                 </div>
                 <div className="w-1/4 p-1 text-sm">{data.count}</div>
-              </Fragment>
+              </div>
             );
           })}
         </div>
