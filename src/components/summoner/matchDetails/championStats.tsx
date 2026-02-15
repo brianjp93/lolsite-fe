@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback} from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, type RectangleProps } from "recharts";
 import numeral from "numeral";
 import { useBasicChampions } from "@/hooks";
 import type { FullParticipantType } from "@/external/types";
@@ -40,17 +40,16 @@ export function StatOverview({
   match: { _id: string; game_duration_minutes: number, id: number };
   mypart: FullParticipantType;
 }) {
-  const [selected, setSelected] = useState<Set<keyof typeof CONVERT>>(
-    new Set(["total_damage_dealt_to_champions"])
+  const [selected, setSelected] = useState<keyof typeof CONVERT>(
+    "total_damage_dealt_to_champions"
   );
+  const [hoveredBar, setHoveredBar] = useState<{
+    value: number;
+    key: string;
+    barX: number;
+    barY: number;
+  } | null>(null);
   const champions = useBasicChampions();
-
-  const toggle = (value: keyof typeof CONVERT) => {
-    const select = new Set(selected);
-    select.clear();
-    select.add(value);
-    setSelected(select);
-  };
 
   const team100 = useMemo(
     () => participants.filter((item) => item.team_id === 100),
@@ -84,15 +83,14 @@ export function StatOverview({
   }, [team100, team200, getKP, match.game_duration_minutes]);
 
   const statButton = (title: string, tooltip: string, value: string) => {
-    const isActive = selected.has(value as keyof typeof CONVERT);
     return (
       <button
         key={value}
         title={tooltip}
-        onClick={() => toggle(value as keyof typeof CONVERT)}
+        onClick={() => setSelected(value as keyof typeof CONVERT)}
         className={clsx(
           "cursor-pointer rounded border px-1.5 py-0.5 text-left text-[11px] transition-colors",
-          isActive
+          selected === value
             ? "border-sky-500/50 bg-sky-900/40 font-medium text-sky-200"
             : "border-zinc-700/50 bg-zinc-800/40 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-700/50 hover:text-zinc-200"
         )}
@@ -210,43 +208,59 @@ export function StatOverview({
               domain={[0, "dataMax"]}
               type="number"
             />
-            <Tooltip
-              formatter={(value: string, name: string) => {
-                if (CONVERT[name as keyof typeof CONVERT]) {
-                  name = CONVERT[name as keyof typeof CONVERT];
-                }
-
-                if (value.toString().indexOf(".") >= 0) {
-                  value = numeral(value).format("0,0.00");
+            <Bar
+              key={`${selected}-bar`}
+              dataKey={selected}
+              isAnimationActive={false}
+              shape={(props: RectangleProps & { payload?: (typeof data)[number] }) => {
+                const { x, y, width, height, payload } = props;
+                let fill: string;
+                if (payload?.puuid === mypart.puuid) {
+                  fill = "#7cb3d4";
+                } else if (payload?.team_id === mypart.team_id) {
+                  fill = "#437296";
                 } else {
-                  value = numeral(value).format("0,0");
+                  fill = "#b05656";
                 }
-                return [value, name];
+                const value = payload?.[selected] as number;
+                return (
+                  <rect
+                    x={x}
+                    y={y}
+                    width={width ?? 0}
+                    height={height ?? 0}
+                    fill={fill}
+                    rx={4}
+                    ry={4}
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        value,
+                        key: selected,
+                        barX: (x ?? 0) + (width ?? 0),
+                        barY: (y ?? 0) + (height ?? 0) / 2,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                  />
+                );
               }}
             />
-            {[...selected].map((key) => {
-              return (
-                <Bar key={`${key}-bar`} dataKey={key} radius={[0, 4, 4, 0]}>
-                  {data.map((part) => {
-                    let fill: string;
-                    if (part.puuid === mypart.puuid) {
-                      fill = "#7cb3d4";
-                    } else if (part.team_id === mypart.team_id) {
-                      fill = "#437296";
-                    } else {
-                      fill = "#b05656";
-                    }
-                    return (
-                      <Cell
-                        key={`${match.id}-${part._id}-cell`}
-                        fill={fill}
-                      />
-                    );
-                  })}
-                </Bar>
-              );
-            })}
           </BarChart>
+          {hoveredBar && (
+            <div
+              className="pointer-events-none absolute z-20 rounded bg-zinc-900/95 px-3 py-1.5 text-sm text-white shadow-lg"
+              style={{
+                left: hoveredBar.barX + 8,
+                top: hoveredBar.barY - 16,
+              }}
+            >
+              {CONVERT[hoveredBar.key as keyof typeof CONVERT] || hoveredBar.key}
+              {" : "}
+              {hoveredBar.value % 1 !== 0
+                ? numeral(hoveredBar.value).format("0,0.00")
+                : numeral(hoveredBar.value).format("0,0")}
+            </div>
+          )}
         </div>
       </div>
     </div>
