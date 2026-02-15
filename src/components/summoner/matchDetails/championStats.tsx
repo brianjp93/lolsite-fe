@@ -5,6 +5,7 @@ import { useBasicChampions } from "@/hooks";
 import type { FullParticipantType } from "@/external/types";
 import Image from "next/image";
 import { mediaUrl } from "@/components/utils";
+import clsx from "clsx";
 
 const CONVERT = {
   total_damage_dealt_to_champions: "total",
@@ -88,252 +89,171 @@ export function StatOverview({
     });
   }, [team100, team200, getKP, match.game_duration]);
 
-  const getBarGraphStat = (title: string, tooltip: string, value: string) => {
+  const statButton = (title: string, tooltip: string, value: string) => {
+    const isActive = selected.has(value as keyof typeof CONVERT);
     return (
-      <label
-        data-tip={tooltip}
-        className="flex"
-        htmlFor={`${value}-${match._id}`}
+      <button
+        key={value}
+        title={tooltip}
+        onClick={() => toggle(value as keyof typeof CONVERT)}
+        className={clsx(
+          "cursor-pointer rounded border px-1.5 py-0.5 text-left text-[11px] transition-colors",
+          isActive
+            ? "border-sky-500/50 bg-sky-900/40 font-medium text-sky-200"
+            : "border-zinc-700/50 bg-zinc-800/40 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-700/50 hover:text-zinc-200"
+        )}
       >
-        <input
-          value={value}
-          checked={selected.has(value as keyof typeof CONVERT)}
-          onChange={() => toggle(value as keyof typeof CONVERT)}
-          id={`${value}-${match._id}`}
-          type="checkbox"
-        />
-        <div className="text-xs text-gray-200 ml-1">{title}</div>
-      </label>
+        {title}
+      </button>
     );
   };
+
+  const sectionHeader = (title: string) => (
+    <div className="mt-2 mb-1 border-b border-zinc-700/50 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 first:mt-0">
+      {title}
+    </div>
+  );
 
   const parts = [...team100, ...team200];
   const bargraph_height = 420;
   return (
-    <div className="relative min-w-fit ml-4">
-      <div
-        className="quiet-scroll inline-block overflow-y-auto"
-        style={{
-          height: 420,
-          width: 115,
-        }}
-      >
-        <div className="flex flex-col">
-          <div style={{ fontSize: "small" }}>
-            Damage to <br />
-            Champions
-            <hr />
-          </div>
+    <div className="flex items-start gap-1">
+      <div className="quiet-scroll flex h-[420px] w-[120px] shrink-0 flex-col overflow-y-auto pr-1">
+        {sectionHeader("Champion Damage")}
+        {statButton("Total", "Total Damage to Champions", "total_damage_dealt_to_champions")}
+        {statButton("Dmg / Min", "Damage Per Minute", "dpm")}
+        {statButton("Dmg / Gold", "Damage Per Gold", "dpg")}
+        {statButton("Dmg / Death", "Damage Per Death", "dpd")}
+        {statButton("KP", "Kill Participation", "kp")}
+        {statButton("Physical", "Physical Damage to Champions", "physical_damage_dealt_to_champions")}
+        {statButton("Magic", "Magic Damage to Champions", "magic_damage_dealt_to_champions")}
+        {statButton("True", "True Damage to Champions", "true_damage_dealt_to_champions")}
+        {statButton("CC Time", "Time CCing Others", "time_ccing_others")}
 
-          {getBarGraphStat(
-            "Total",
-            "Total Damage to Champions",
-            "total_damage_dealt_to_champions"
-          )}
-          {getBarGraphStat("Dmg / Min", "Damage Per Minute", "dpm")}
-          {getBarGraphStat("Dmg / Gold", "Damage Per Gold", "dpg")}
-          {getBarGraphStat("Dmg / Death", "Damage Per Death", "dpd")}
-          {getBarGraphStat("KP", "Kill Participation", "kp")}
-          {getBarGraphStat(
-            "Physical",
-            "Physical Damage to Champions",
-            "physical_damage_dealt_to_champions"
-          )}
-          {getBarGraphStat(
-            "Magic",
-            "Magic Damage to Champions",
-            "magic_damage_dealt_to_champions"
-          )}
-          {getBarGraphStat(
-            "True",
-            "True Damage to Champions",
-            "true_damage_dealt_to_champions"
-          )}
-          {getBarGraphStat("CC Time", "Time CCing Others", "time_ccing_others")}
-        </div>
+        {sectionHeader("Structure Damage")}
+        {statButton("Turrets", "Damage Dealt to Turrets", "damage_dealt_to_turrets")}
+        {statButton("Objectives", "Damage Dealt to Objectives", "damage_dealt_to_objectives")}
 
-        <div>
-          <span style={{ fontSize: "small" }}>
-            Damage to <br />
-            Structures
-            <hr />
-          </span>
+        {sectionHeader("Sustain")}
+        {statButton("Healing", "Healing Done", "total_heal")}
+        {statButton("Team Healing", "Teammate Healing", "total_heals_on_teammates")}
+        {statButton("Team Shielding", "Damage mitigated on teammates with shields", "total_damage_shielded_on_teammates")}
+        {statButton("Damage Taken", "Total Damage Taken", "total_damage_taken")}
+        {statButton("Dmg / Death", "Damage Taken Per Death", "dtpd")}
+        {statButton("Self Mitigated", "Damage Self Mitigated", "damage_self_mitigated")}
 
-          {getBarGraphStat(
-            "Turrets",
-            "Damage Dealt to Turrets",
-            "damage_dealt_to_turrets"
-          )}
-          {getBarGraphStat(
-            "Objectives",
-            "Damage Dealt to Objectives",
-            "damage_dealt_to_objectives"
-          )}
-        </div>
+        {sectionHeader("Vision")}
+        {statButton("Vision Score", "Vision Score", "vision_score")}
+        {statButton("Wards Placed", "Wards Placed", "wards_placed")}
+        {statButton("Wards Killed", "Wards Killed", "wards_killed")}
+        {statButton("Control Wards", "# of Control Wards purchased", "vision_wards_bought_in_game")}
 
-        <div>
-          <span style={{ fontSize: "small" }}>
-            Damage Taken <br />
-            and Healed
-            <hr />
-          </span>
+        {sectionHeader("Farming")}
+        {statButton("Total CS", "Total CS", "cs")}
+        {statButton("CS / Min", "CS Per Minute", "cspm")}
+        {statButton("Ally JG CS", "Ally Jungle Minions Killed", "total_ally_jungle_minions_killed")}
+        {statButton("Enemy JG CS", "Enemy Jungle Minions Killed", "total_enemy_jungle_minions_killed")}
 
-          {getBarGraphStat("Healing Done", "Healing Done", "total_heal")}
-          {getBarGraphStat("Teammate Healing", "Teammate Healing", "total_heals_on_teammates")}
-          {getBarGraphStat("Teammate Shielding", "Damage mitigated on teammates with shields", "total_damage_shielded_on_teammates")}
-          {getBarGraphStat(
-            "Damage Taken",
-            "Total Damage Taken",
-            "total_damage_taken"
-          )}
-          {getBarGraphStat("Dmg / Death", "Damage Taken Per Death", "dtpd")}
-          {getBarGraphStat(
-            "Self Mitigated",
-            "Damage Self Mitigated",
-            "damage_self_mitigated"
-          )}
-        </div>
-
-        <div>
-          <span style={{ fontSize: "small" }}>
-            Vision
-            <hr />
-          </span>
-
-          {getBarGraphStat("Vision Score", "Vision Score", "vision_score")}
-          {getBarGraphStat("Wards Placed", "Wards Placed", "wards_placed")}
-          {getBarGraphStat("Wards Killed", "Wards Killed", "wards_killed")}
-          {getBarGraphStat(
-            "Control Wards",
-            "# of Control Wards purchased",
-            "vision_wards_bought_in_game"
-          )}
-        </div>
-
-        <div>
-          <span style={{ fontSize: "small" }}>
-            Minions and <br />
-            Monsters
-            <hr />
-          </span>
-
-          {getBarGraphStat("Total CS", "Total CS", "cs")}
-          {getBarGraphStat("CS / Min", "CS Per Minute", "cspm")}
-          {getBarGraphStat("Ally JG CS", "Ally Jungle Minions Killed", "total_ally_jungle_minions_killed")}
-          {getBarGraphStat("Enemy JG CS", "Enemy Jungle Minions Killed", "total_enemy_jungle_minions_killed")}
-        </div>
-
-        <div style={{ marginBottom: 80 }}></div>
+        <div className="pb-16" />
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          top: 12,
-          left: 140,
-          zIndex: 5,
-          marginTop: (10 - parts.length) * 2.6,
-        }}
-      >
-        {parts.map((part) => {
-          const heights = (bargraph_height - 40) / parts.length;
-          return (
-            <div
-              key={`${match._id}-${part._id}`}
-              style={{ height: heights, width: 30 }}
-            >
-              {champions?.[part.champion_id]?.image.file_30 ?
-                <Image
-                  title={part.summoner_name}
-                  width={20}
-                  height={20}
-                  src={mediaUrl(champions?.[part.champion_id]?.image.file_30)}
-                  alt={champions?.[part.champion_id]?.name || "Champion Image"}
-                /> :
-                <div className="w-[20px] h-[20px] border border-white"/>
-              }
-            </div>
-          );
-        })}
-      </div>
-
-      <div style={{ display: "inline-block", marginLeft: 50 }}>
-        <BarChart
-          layout="vertical"
-          width={500}
-          height={bargraph_height}
-          data={data}
+      <div className="relative">
+        <div
+          className="absolute z-10 flex flex-col"
+          style={{
+            top: 12,
+            left: 0,
+            marginTop: (10 - parts.length) * 2.6,
+          }}
         >
-          <YAxis
-            width={0}
-            type="category"
-            dataKey="summoner_name"
-            interval={0}
-            tickFormatter={() => ""}
-          />
-          <XAxis
-            tickFormatter={(value) => {
-              if (value.toString().indexOf(".") >= 0) {
-                return numeral(value).format("0,0.00");
-              } else {
-                return numeral(value).format("0,0");
-              }
-            }}
-            domain={[0, "dataMax"]}
-            type="number"
-          />
-          <Tooltip
-            formatter={(value: string, name: string) => {
-              if (CONVERT[name as keyof typeof CONVERT]) {
-                name = CONVERT[name as keyof typeof CONVERT];
-              }
-
-              if (value.toString().indexOf(".") >= 0) {
-                value = numeral(value).format("0,0.00");
-              } else {
-                value = numeral(value).format("0,0");
-              }
-              return [value, name];
-            }}
-          />
-          {[...selected].map((key) => {
+          {parts.map((part) => {
+            const h = (bargraph_height - 40) / parts.length;
             return (
-              <Bar key={`${key}-bar`} dataKey={key}>
-                {data.map((part) => {
-                  if (part.puuid === mypart.puuid) {
-                    return (
-                      <Cell
-                        key={`${match.id}-${part._id}-cell`}
-                        fill="#a7bed0"
-                      />
-                    );
-                  } else if (part.team_id === mypart.team_id) {
-                    return (
-                      <Cell
-                        key={`${match.id}-${part._id}-cell`}
-                        fill="#437296"
-                      />
-                    );
-                  } else if (part.team_id !== mypart.team_id) {
-                    return (
-                      <Cell
-                        key={`${match.id}-${part._id}-cell`}
-                        fill="#954e4e"
-                      />
-                    );
-                  } else {
-                    return (
-                      <Cell
-                        key={`${match.id}-${part._id}-cell`}
-                        fill="#5e7ca7"
-                      />
-                    );
-                  }
-                })}
-              </Bar>
+              <div
+                key={`${match._id}-${part._id}`}
+                className="flex items-start"
+                style={{ height: h }}
+              >
+                {champions?.[part.champion_id]?.image.file_40 ? (
+                  <Image
+                    title={part.summoner_name}
+                    width={22}
+                    height={22}
+                    className="rounded"
+                    src={mediaUrl(champions[part.champion_id]!.image.file_40)}
+                    alt={champions[part.champion_id]?.name || "Champion"}
+                  />
+                ) : (
+                  <div className="h-[22px] w-[22px] rounded border border-zinc-600" />
+                )}
+              </div>
             );
           })}
-        </BarChart>
+        </div>
+
+        <div className="ml-7">
+          <BarChart
+            layout="vertical"
+            width={500}
+            height={bargraph_height}
+            data={data}
+          >
+            <YAxis
+              width={0}
+              type="category"
+              dataKey="summoner_name"
+              interval={0}
+              tickFormatter={() => ""}
+            />
+            <XAxis
+              tickFormatter={(value) => {
+                if (value.toString().indexOf(".") >= 0) {
+                  return numeral(value).format("0,0.00");
+                } else {
+                  return numeral(value).format("0,0");
+                }
+              }}
+              domain={[0, "dataMax"]}
+              type="number"
+            />
+            <Tooltip
+              formatter={(value: string, name: string) => {
+                if (CONVERT[name as keyof typeof CONVERT]) {
+                  name = CONVERT[name as keyof typeof CONVERT];
+                }
+
+                if (value.toString().indexOf(".") >= 0) {
+                  value = numeral(value).format("0,0.00");
+                } else {
+                  value = numeral(value).format("0,0");
+                }
+                return [value, name];
+              }}
+            />
+            {[...selected].map((key) => {
+              return (
+                <Bar key={`${key}-bar`} dataKey={key} radius={[0, 4, 4, 0]}>
+                  {data.map((part) => {
+                    let fill: string;
+                    if (part.puuid === mypart.puuid) {
+                      fill = "#7cb3d4";
+                    } else if (part.team_id === mypart.team_id) {
+                      fill = "#437296";
+                    } else {
+                      fill = "#b05656";
+                    }
+                    return (
+                      <Cell
+                        key={`${match.id}-${part._id}-cell`}
+                        fill={fill}
+                      />
+                    );
+                  })}
+                </Bar>
+              );
+            })}
+          </BarChart>
+        </div>
       </div>
     </div>
   );
