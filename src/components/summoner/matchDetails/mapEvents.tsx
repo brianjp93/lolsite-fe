@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { BUILDINGS } from "@/utils/buildings";
 import { useBasicChampions, useParticipants, useTimeline } from "@/hooks";
 import { useTimelineIndex } from "@/stores";
+import clsx from "clsx";
 
 import type {
   FrameType,
@@ -238,12 +239,12 @@ export function MapEventsInner({
   }, [stepForward, stepBackward, outerTimelineIndex, index]);
 
   return (
-    <div style={{ display: "inline-block" }}>
-      <div style={{ position: "relative" }}>
+    <div className="inline-block">
+      <div className="relative">
         <Image
           height={image_size}
           width={image_size}
-          className="min-w-fit rounded-md"
+          className="min-w-fit rounded-lg"
           src="/gen/map.jpg"
           alt="League Map"
         />
@@ -262,37 +263,33 @@ export function MapEventsInner({
         {players.length > 0 &&
           players.map((player: any) => {
             const [x, y] = getPosition(player.pframe.x, player.pframe.y);
-            let border_color = "red";
-            if (player.part.team_id === 100) {
-              border_color = "blue";
-            }
+            const isBlue = player.part.team_id === 100;
             return (
               <div
                 key={player.part._id}
-                style={{
-                  transitionDuration: ".3s",
-                  position: "absolute",
-                  left: x,
-                  bottom: y,
-                }}
+                className="absolute transition-all duration-300"
+                style={{ left: x, bottom: y }}
               >
-                {champions[player.part.champion_id]?.image?.file_30 ? (
+                {champions[player.part.champion_id]?.image?.file_40 ? (
                   <Image
-                    className="rounded-full"
+                    className={clsx(
+                      "rounded-full ring-2",
+                      isBlue ? "ring-blue-500" : "ring-red-500"
+                    )}
                     width={25}
                     height={25}
-                    style={{
-                      border: `2px solid ${border_color}`,
-                    }}
                     src={mediaUrl(
-                      champions[player.part.champion_id]?.image?.file_30
+                      champions[player.part.champion_id]?.image?.file_40
                     )}
-                    alt="participant bubble"
+                    alt={champions[player.part.champion_id]?.name || ""}
+                    title={player.part.summoner_name}
                   />
                 ) : (
                   <div
-                    className="h-[25px] w-[25px] rounded-full border-2"
-                    style={{ borderColor: border_color }}
+                    className={clsx(
+                      "h-[25px] w-[25px] rounded-full ring-2",
+                      isBlue ? "ring-blue-500" : "ring-red-500"
+                    )}
                   />
                 )}
               </div>
@@ -302,20 +299,20 @@ export function MapEventsInner({
         {displayEvents()}
       </div>
 
-      <div className="mt-1 flex">
+      <div className="mt-2 flex items-center gap-1">
         <button
           onClick={() => {
             if (index > 0) {
-              setOuterTimelineIndex((index) => index - 1);
+              setOuterTimelineIndex((idx) => idx - 1);
             }
           }}
-          className="btn btn-default"
+          className="flex h-7 w-7 items-center justify-center rounded border border-zinc-700/50 bg-zinc-800/60 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            strokeWidth={1.5}
+            strokeWidth={2}
             stroke="currentColor"
             className="h-3 w-3"
           >
@@ -327,19 +324,18 @@ export function MapEventsInner({
           </svg>
         </button>
         <button
-          style={{ marginLeft: 8 }}
           onClick={() => {
             if (index < timeline.length - 1) {
-              setOuterTimelineIndex((index) => index + 1);
+              setOuterTimelineIndex((idx) => idx + 1);
             }
           }}
-          className="btn btn-default"
+          className="flex h-7 w-7 items-center justify-center rounded border border-zinc-700/50 bg-zinc-800/60 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            strokeWidth={1.5}
+            strokeWidth={2}
             stroke="currentColor"
             className="h-3 w-3"
           >
@@ -350,9 +346,9 @@ export function MapEventsInner({
             />
           </svg>
         </button>
-        <div style={{ marginLeft: 8, display: "inline-block" }}>
+        <span className="ml-1 text-sm tabular-nums text-zinc-400">
           {index} min
-        </div>
+        </span>
       </div>
     </div>
   );
@@ -631,27 +627,15 @@ function Building({
   is_alive: boolean;
   pos: [number, number];
 }) {
-  const size = 15;
-
-  const style = {
-    background: "white",
-    border: "3px solid black",
-  };
-  if (!is_alive) {
-    style.background = "#7f3c3c";
-    style.border = "3px solid #541616fa";
-  }
   return (
     <div
-      style={{
-        position: "absolute",
-        left: pos[0],
-        bottom: pos[1],
-        height: size,
-        width: size,
-        borderRadius: "50%",
-        ...style,
-      }}
-    ></div>
+      className={clsx(
+        "absolute h-[15px] w-[15px] rounded-full border-[3px]",
+        is_alive
+          ? "border-black bg-white"
+          : "border-red-950 bg-red-900/70"
+      )}
+      style={{ left: pos[0], bottom: pos[1] }}
+    />
   );
 }
