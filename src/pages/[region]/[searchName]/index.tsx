@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useMatchList,
   useNameChanges,
@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PlayerMultiSelect } from "@/components/general/PlayerMultiSelect";
 import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard";
 import Head from "next/head";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
@@ -263,6 +264,7 @@ export default function Summoner({
               )}
               <div className="my-2 w-full">
                 <MatchFilter
+                  region={region}
                   onSubmit={(data) => {
                     setParams({
                       ...params,
@@ -342,9 +344,11 @@ type MatchFilterSchema = z.infer<typeof MatchFilterSchema>;
 
 function MatchFilter({
   className = "",
+  region,
   onSubmit,
 }: React.PropsWithChildren<{
   className?: string;
+  region: string;
   onSubmit: (data: MatchFilterSchema) => void;
 }>) {
   const { queue, playedWith } = useRouter().query as {
@@ -356,9 +360,21 @@ function MatchFilter({
     defaultValues: { queue, playedWith },
   });
 
+  const [playedWithNames, setPlayedWithNames] = useState<string[]>(() =>
+    playedWith ? playedWith.split(",").filter(Boolean) : [],
+  );
+
   const onChange = useCallback(async () => {
     onSubmit(getValues());
   }, [getValues, onSubmit]);
+
+  const handlePlayedWithChange = useCallback(
+    (names: string[]) => {
+      setPlayedWithNames(names);
+      onSubmit({ ...getValues(), playedWith: names.join(",") });
+    },
+    [getValues, onSubmit],
+  );
 
   return (
     <div className={className}>
@@ -381,14 +397,14 @@ function MatchFilter({
             );
           })}
         </select>
-        <label className="my-2">
-          <div>Played With (comma separated list of names)</div>
-          <input
-            className="w-full"
-            type="text"
-            {...register("playedWith", { onBlur: onChange })}
+        <div className="my-2">
+          <div className="mb-1">Played With</div>
+          <PlayerMultiSelect
+            region={region}
+            value={playedWithNames}
+            onChange={handlePlayedWithChange}
           />
-        </label>
+        </div>
       </form>
     </div>
   );
