@@ -218,6 +218,14 @@ export const Stats = z.object({
   on_my_way_pings: z.number(),
   push_pings: z.number(),
   vision_cleared_pings: z.number(),
+}).transform(obj => {
+  return {
+    ...obj,
+    cs: obj.total_minions_killed + obj.neutral_minions_killed,
+    dtpd: obj.total_damage_taken / (obj.deaths || 1),
+    dpd: obj.total_damage_dealt_to_champions / (obj.deaths || 1),
+    dpg: obj.total_damage_dealt_to_champions / obj.gold_earned,
+  }
 })
 export type StatsType = z.infer<typeof Stats>
 

@@ -78,9 +78,6 @@ export function StatOverview({
         dpm: x.stats.total_damage_dealt_to_champions / match.game_duration / 60,
         dpg: x.stats.total_damage_dealt_to_champions / x.stats.gold_earned,
         kp: getKP(x.team_id, x.stats.kills, x.stats.assists),
-        dpd: x.stats.total_damage_dealt_to_champions / (x.stats.deaths || 1),
-        dtpd: x.stats.total_damage_taken / (x.stats.deaths || 1),
-        cs: x.stats.total_minions_killed + x.stats.neutral_minions_killed,
         cspm:
           (x.stats.total_minions_killed + x.stats.neutral_minions_killed) /
           match.game_duration /
@@ -118,7 +115,7 @@ export function StatOverview({
   const bargraph_height = 420;
   return (
     <div className="flex items-start gap-1">
-      <div className="quiet-scroll flex h-[420px] w-[120px] shrink-0 flex-col overflow-y-auto pr-1">
+      <div className="quiet-scroll flex h-105 w-30 shrink-0 flex-col overflow-y-auto pr-1">
         {sectionHeader("Champion Damage")}
         {statButton("Total", "Total Damage to Champions", "total_damage_dealt_to_champions")}
         {statButton("Dmg / Min", "Damage Per Minute", "dpm")}
@@ -184,7 +181,7 @@ export function StatOverview({
                     alt={champions[part.champion_id]?.name || "Champion"}
                   />
                 ) : (
-                  <div className="h-[22px] w-[22px] rounded border border-zinc-600" />
+                  <div className="h-5.5 w-5.5 rounded border border-zinc-600" />
                 )}
               </div>
             );
