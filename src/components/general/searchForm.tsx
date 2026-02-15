@@ -29,6 +29,7 @@ export function SearchForm({
     resolver: zodResolver(SearchSchema),
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const router = useRouter();
   const name = watch("search") || "";
   const region = watch("region") || "na";
@@ -40,15 +41,7 @@ export function SearchForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (name.length >= 3) {
-      setIsOpen(true);
-    }
-  }, [name]);
-
-  useEffect(() => {
-    if (name.length < 3) {
-      setIsOpen(false);
-    }
+    setHighlightedIndex(-1);
   }, [name]);
 
   useEffect(() => {
@@ -86,6 +79,7 @@ export function SearchForm({
   const handleSelect = (x: SummonerType) => {
     setValue("search", `${x.riot_id_name}#${x.riot_id_tagline}`);
     onSubmit();
+    setIsOpen(false);
   };
 
   return (
@@ -106,15 +100,37 @@ export function SearchForm({
             );
           })}
         </select>
+        <div className="relative flex w-full">
+        {query.isPlaceholderData && (
+          <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
+          </div>
+        )}
         <input
-          onFocus={() => {
-            if (query.data) setIsOpen(true);
+          onFocus={() => setIsOpen(true)}
+          onClick={() => setIsOpen(true)}
+          onKeyDown={(event) => {
+            if (!isOpen || !query.data?.length) return;
+            const count = query.data.length;
+            if (event.key === "ArrowDown" || (event.key === "Tab" && !event.shiftKey)) {
+              event.preventDefault();
+              setHighlightedIndex((i) => (i < count - 1 ? i + 1 : i));
+            } else if (event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey)) {
+              event.preventDefault();
+              setHighlightedIndex((i) => (i > 0 ? i - 1 : -1));
+            } else if (event.key === "Enter" && highlightedIndex >= 0) {
+              event.preventDefault();
+              if (query.data[highlightedIndex]) {
+                handleSelect(query.data[highlightedIndex]);
+              }
+            }
           }}
           type="text"
           placeholder="gameName#tagline"
           className={clsx("w-full", inputClass)}
           {...register("search")}
         />
+        </div>
         {isOpen && (
           <div className="absolute left-0 bottom-0 h-0 w-full">
             <div
@@ -125,18 +141,17 @@ export function SearchForm({
               )}
             >
               {query.isSuccess &&
-                query.data.map((x) => {
+                query.data.map((x, i) => {
                   return (
                     <div
-                      tabIndex={0}
-                      role="button"
+                      role="option"
+                      aria-selected={i === highlightedIndex}
                       onClick={() => handleSelect(x)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          handleSelect(x);
-                        }
-                      }}
-                      className="flex h-fit w-full items-center rounded py-1 hover:cursor-pointer hover:bg-white/10"
+                      onMouseEnter={() => setHighlightedIndex(i)}
+                      className={clsx(
+                        "flex h-fit w-full items-center rounded py-1 hover:cursor-pointer",
+                        i === highlightedIndex ? "bg-white/10" : "hover:bg-white/10",
+                      )}
                       key={x.puuid}
                     >
                       <div className="h-full w-16">

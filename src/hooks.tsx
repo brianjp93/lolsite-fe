@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import api from "@/external/api/api";
 
@@ -219,10 +219,10 @@ export function useSummonerSearch({
         simple_riot_id__startswith: name.toLowerCase(),
         region,
       }),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 10,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: name.length >= 3,
+    placeholderData: keepPreviousData,
   });
   return query;
 }
