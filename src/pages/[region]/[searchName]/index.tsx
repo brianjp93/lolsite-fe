@@ -125,7 +125,7 @@ export default function Summoner({
             })
           }
           disabled={matchQuery.isFetching || params.page <= 1}
-          className={clsx("btn btn-default flex items-center justify-center box-border")}
+          className="btn btn-default flex items-center justify-center box-border hover:cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@ export default function Summoner({
             })
           }
           disabled={matchQuery.isFetching}
-          className={clsx("btn btn-default ml-2 flex items-center justify-center box-border")}
+          className="btn btn-default ml-2 flex items-center justify-center box-border hover:cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +171,7 @@ export default function Summoner({
           <button
             disabled={params.page === 1}
             onClick={resetPage}
-            className={clsx("btn btn-link", {
+            className={clsx("btn btn-link hover:cursor-pointer", {
               "opacity-40": params.page === 1,
             })}
           >
