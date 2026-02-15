@@ -2,9 +2,7 @@ import {
   useState,
   useEffect,
   useMemo,
-  useCallback,
 } from "react";
-import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import numeral from "numeral";
 import api from "@/external/api/api";
@@ -53,10 +51,6 @@ function BuildOrder(props: {
   const [display_page, setDisplayPage] = useState("build");
 
   const image_width = 30;
-  const usable_width = props.expanded_width - 30;
-  const available_width =
-    usable_width - props.participants.length * image_width;
-  const padding_pixels = available_width / props.participants.length;
   const participants = [
     ...props.participants.filter((participant) => participant.team_id === 100),
     ...props.participants.filter((participant) => participant.team_id === 200),
@@ -209,143 +203,116 @@ function BuildOrder(props: {
     }
   }, [props.timeline]);
 
-  let count = 0;
-  let lines = 1;
   return (
-    <div style={{ marginLeft: 30 }}>
-      {participants.map((participant) => {
-        return (
-          <ChampionImage
-            key={`${participant.puuid}-champion-image`}
-            is_me={participant._id === my_part?._id}
-            is_selected={participant._id === participant_selection}
-            image_width={image_width}
-            participant={participant}
-            padding_pixels={padding_pixels}
-            handleClick={() => {
-              if (participant._id !== participant_selection) {
-                setParticipantSelection(participant._id);
-              }
-            }}
-          />
-        );
-      })}
+    <div className="w-[500px]">
+      <div className="flex flex-wrap items-center gap-1">
+        {participants.map((participant) => {
+          return (
+            <ChampionImage
+              key={`${participant.puuid}-champion-image`}
+              is_me={participant._id === my_part?._id}
+              is_selected={participant._id === participant_selection}
+              image_width={image_width}
+              participant={participant}
+              padding_pixels={0}
+              handleClick={() => {
+                if (participant._id !== participant_selection) {
+                  setParticipantSelection(participant._id);
+                }
+              }}
+            />
+          );
+        })}
+      </div>
 
-      <div className="my-2 grid grid-cols-2">
-        <div>
-          <label htmlFor={`${props.match_id}-build-selection`}>
-            <input
-              className="inline"
-              id={`${props.match_id}-build-selection`}
-              onChange={useCallback(() => setDisplayPage("build"), [])}
-              type="radio"
-              tabIndex={1}
-              checked={display_page === "build"}
-            />
-            <div className="ml-1 inline">Build Order</div>
-          </label>
-        </div>
-        <div>
-          <label htmlFor={`${props.match_id}-skill-selection`}>
-            <input
-              id={`${props.match_id}-skill-selection`}
-              onChange={useCallback(() => setDisplayPage("skill"), [])}
-              type="radio"
-              checked={display_page === "skill"}
-              tabIndex={1}
-              className="inline"
-            />
-            <div className="ml-1 inline">Skill Order</div>
-          </label>
-        </div>
+      <div className="my-3 flex gap-1">
+        {[
+          { id: "build", label: "Build Order" },
+          { id: "skill", label: "Skill Order" },
+        ].map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => setDisplayPage(id)}
+            className={clsx(
+              "rounded px-3 py-1 text-xs font-medium transition-colors",
+              display_page === id
+                ? "bg-zinc-600 text-zinc-100"
+                : "bg-zinc-800/60 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
+            )}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {display_page === "build" && (
-        <div
-          className="quiet-scroll"
-          style={{ marginTop: 5, overflowY: "scroll", height: 300, width: 385 }}
-        >
-          {(participant_groups || []).map((group, key) => {
-            const total_seconds =
-              (Object.values(group)[0]?.timestamp || 0) / 1000;
-            const minutes = Math.floor(total_seconds / 60);
-            const seconds = Math.floor(total_seconds % 60);
-            count++;
-            let div_style: CSSProperties = { display: "inline-block" };
-            if (count > lines * 9) {
-              lines++;
-              div_style = { display: "block" };
-            }
-            const some_group = participant_groups[key + 1]
-            return (
-              <span key={`${props.match_id}-${key}`}>
-                <div style={div_style}></div>
-                <div style={{ display: "inline-block" }} key={key}>
-                  {Object.values(group).filter((x) => x._type !== "ITEM_UNDO")
-                    .length > 0 && (
-                    <div style={{ display: "block", color: "grey", width: 50 }}>
+        <div className="quiet-scroll max-h-[300px] overflow-y-auto">
+          <div className="flex flex-wrap items-start gap-x-1 gap-y-2">
+            {(participant_groups || []).map((group, key) => {
+              const items = Object.values(group).filter(
+                (x) => x._type !== "ITEM_UNDO"
+              );
+              if (items.length === 0) return null;
+              const total_seconds =
+                (Object.values(group)[0]?.timestamp || 0) / 1000;
+              const minutes = Math.floor(total_seconds / 60);
+              const seconds = Math.floor(total_seconds % 60);
+              const some_group = participant_groups[key + 1];
+              const hasNext =
+                key < participant_groups.length - 1 &&
+                Object.values(some_group || {}).filter(
+                  (x) => x._type !== "ITEM_UNDO"
+                ).length > 0;
+              return (
+                <div
+                  key={`${props.match_id}-${key}`}
+                  className="flex items-center"
+                >
+                  <div>
+                    <div className="text-[11px] tabular-nums text-zinc-500">
                       {minutes}:{numeral(seconds).format("00")}
                     </div>
-                  )}
-                  <div>
-                    {Object.values(group).map((event, sub_key) => {
-                      if (event._type !== "ITEM_UNDO") {
-                        count++;
+                    <div className="flex items-center">
+                      {items.map((event, sub_key) => {
                         if (!match?.major || !match?.minor) return null;
                         return (
-                          <div key={sub_key} className="inline-block">
-                            <div className="relative inline-block">
-                              <ItemImage major={match.major} minor={match.minor} item_id={event.item_id} event_type={event._type}/>
-                              {(event.count || 1) > 1 && (
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    bottom: 5,
-                                    right: 0,
-                                    width: 15,
-                                    background: "white",
-                                    color: "black",
-                                    opacity: "0.70",
-                                    textAlign: "center",
-                                    fontSize: "75%",
-                                    borderRadius: 5,
-                                  }}
-                                >
-                                  {event.count}
-                                </div>
-                              )}
-                            </div>
+                          <div key={sub_key} className="relative">
+                            <ItemImage
+                              major={match.major}
+                              minor={match.minor}
+                              item_id={event.item_id}
+                              event_type={event._type}
+                            />
+                            {(event.count || 1) > 1 && (
+                              <div className="absolute -bottom-1 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-bold text-zinc-200 ring-1 ring-zinc-700">
+                                {event.count}
+                              </div>
+                            )}
                           </div>
                         );
-                      }
-                      return null;
-                    })}
-                    {key < participant_groups.length - 1 &&
-                      Object.values(some_group || {}).filter(
-                        (x) => x._type !== "ITEM_UNDO"
-                      ).length > 0 && (
-                        <div className="inline-block">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="h-6 w-6"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                            />
-                          </svg>
-                        </div>
-                      )}
+                      })}
+                    </div>
                   </div>
+                  {hasNext && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="mx-0.5 h-4 w-4 shrink-0 text-zinc-600"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      />
+                    </svg>
+                  )}
                 </div>
-              </span>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
       {display_page === "skill" &&
@@ -363,24 +330,13 @@ function BuildOrder(props: {
 
 function ItemImage({major, minor, item_id, event_type}: {major: number, minor: number, item_id: number, event_type: string}) {
   const item = useSimpleItem({id: item_id, major, minor}).data
-  let image_style = {};
-  if (event_type === "ITEM_SOLD") {
-    image_style = {
-      ...image_style,
-      opacity: 0.3,
-      borderWidth: 3,
-      borderStyle: "solid",
-      borderColor: "darkred",
-    };
-  }
   if (!item) return null
   return (
     <ItemPopover major={major} minor={minor} item_id={item_id} >
       <Image
-        style={{
-          borderRadius: 5,
-          ...image_style,
-        }}
+        className={clsx("rounded", {
+          "border-2 border-red-900 opacity-30": event_type === "ITEM_SOLD",
+        })}
         height={30}
         width={30}
         src={mediaUrl(item.image.file_30)}
