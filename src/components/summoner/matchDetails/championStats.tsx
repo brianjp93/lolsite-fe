@@ -37,7 +37,7 @@ export function StatOverview({
   mypart,
 }: {
   participants: FullParticipantType[];
-  match: { _id: string; game_duration: number, id: number };
+  match: { _id: string; game_duration_minutes: number, id: number };
   mypart: FullParticipantType;
 }) {
   const [selected, setSelected] = useState<Set<keyof typeof CONVERT>>(
@@ -75,16 +75,13 @@ export function StatOverview({
       return {
         ...x,
         ...x.stats,
-        dpm: x.stats.total_damage_dealt_to_champions / match.game_duration / 60,
+        dpm: x.stats.total_damage_dealt_to_champions / match.game_duration_minutes,
         dpg: x.stats.total_damage_dealt_to_champions / x.stats.gold_earned,
         kp: getKP(x.team_id, x.stats.kills, x.stats.assists),
-        cspm:
-          (x.stats.total_minions_killed + x.stats.neutral_minions_killed) /
-          match.game_duration /
-          60,
+        cspm: x.stats.cs / match.game_duration_minutes,
       };
     });
-  }, [team100, team200, getKP, match.game_duration]);
+  }, [team100, team200, getKP, match.game_duration_minutes]);
 
   const statButton = (title: string, tooltip: string, value: string) => {
     const isActive = selected.has(value as keyof typeof CONVERT);

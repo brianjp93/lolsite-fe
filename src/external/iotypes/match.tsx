@@ -30,6 +30,11 @@ export const SimpleMatch = z.object({
   minor: z.number().nullable(),
   patch: z.number().nullable(),
   queue_id: z.number(),
+}).transform(obj => {
+  return {
+    ...obj,
+    game_duration_minutes: obj.game_duration / 60000,
+  }
 })
 export type SimpleMatchType = z.infer<typeof SimpleMatch>
 
@@ -296,6 +301,11 @@ export const FullMatch = z.object({
   patch: z.number(),
   participants: z.array(FullParticipant),
   teams: z.array(FullTeam),
+}).transform(obj => {
+  return {
+    ...obj,
+    game_duration_minutes: obj.game_duration / 60000,
+  }
 })
 export type FullMatchType = z.infer<typeof FullMatch>
 
