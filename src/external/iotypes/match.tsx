@@ -332,24 +332,24 @@ export const SpectateParticipant = z.object({
   spell2Id: z.number(),
   teamId: z.number(),
   riotId: z.string(),
-  "puuid": z.string(),
+  puuid: z.string(),
 })
 export type SpectateParticipantType = z.infer<typeof SpectateParticipant>
 
 export const SimpleSpectateParticipant = z.object({
-  "teamId": z.number(),
-  "spell1Id": z.number(),
-  "spell2Id": z.number(),
-  "championId": z.number(),
-  "profileIconId": z.number(),
-  "riotId": z.string(),
-  "puuid": z.string(),
-  "bot": z.boolean(),
-  "gameCustomizationObjects": z.array(z.unknown()),
-  "perks": z.object({
-      "perkIds": z.array(z.number()),
-      "perkStyle": z.number(),
-      "perkSubStyle": z.number()
+  teamId: z.number(),
+  spell1Id: z.number(),
+  spell2Id: z.number(),
+  championId: z.number(),
+  profileIconId: z.number(),
+  riotId: z.string(),
+  puuid: z.string(),
+  bot: z.boolean(),
+  gameCustomizationObjects: z.array(z.unknown()),
+  perks: z.object({
+      perkIds: z.array(z.number()),
+      perkStyle: z.number(),
+      perkSubStyle: z.number()
   }),
 })
 
