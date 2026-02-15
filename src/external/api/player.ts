@@ -238,9 +238,9 @@ function dislikeComment(data: any) {
   return axios.put(url, data);
 }
 
-function getCommentCount(data: any) {
+function getCommentCount(matchIds: number[]) {
   const url = `${base}/comment/count/`;
-  return axios.get(url, { params: data });
+  return axios.get(url, { params: {match_ids: matchIds} });
 }
 
 function editDefaultSummoner(data: any) {
