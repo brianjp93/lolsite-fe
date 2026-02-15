@@ -32,16 +32,28 @@ export function PingStats({
   const [selected, setSelected] = useState(mypart._id);
   const part = participants.find((x) => x._id === selected);
 
-  const { total, maxPing } = useMemo(() => {
-    if (!part) return { total: 0, maxPing: 0 };
-    let sum = 0;
+  const pingTotals = useMemo(() => {
+    const totals: Record<number, number> = {};
+    for (const p of participants) {
+      let sum = 0;
+      for (const { key } of PING_TYPES) {
+        sum += p.stats[key] as number;
+      }
+      totals[p._id] = sum;
+    }
+    return totals;
+  }, [participants]);
+
+  const total = pingTotals[selected] ?? 0;
+
+  const maxPing = useMemo(() => {
+    if (!part) return 0;
     let max = 0;
     for (const { key } of PING_TYPES) {
       const val = part.stats[key] as number;
-      sum += val;
       if (val > max) max = val;
     }
-    return { total: sum, maxPing: max };
+    return max;
   }, [part]);
 
   return (
@@ -49,6 +61,7 @@ export function PingStats({
       <ChampionSelection
         selected={selected}
         participants={participants}
+        pingTotals={pingTotals}
         onClick={(partId: number) => {
           setSelected(partId);
         }}
@@ -68,11 +81,11 @@ export function PingStats({
               return (
                 <div key={key} className="group flex items-center gap-2 text-xs">
                   <span className="w-[100px] shrink-0 text-right text-zinc-400">{label}</span>
-                  <div className="relative h-4 flex-1 overflow-hidden rounded-sm bg-zinc-800">
+                  <div className="relative h-4 flex-1 overflow-hidden rounded-sm bg-zinc-800/50">
                     {value > 0 && (
                       <div
                         className={clsx("h-full rounded-sm transition-all", color)}
-                        style={{ width: `${pct}%`, minWidth: "4px", opacity: 0.75 }}
+                        style={{ width: `${pct}%`, minWidth: "4px" }}
                       />
                     )}
                   </div>
@@ -98,14 +111,19 @@ export function ChampionSelection({
   selected,
   participants,
   onClick,
+  pingTotals,
   className = "",
 }: {
   selected: number;
   participants: FullParticipantType[];
   onClick: (participantId: number) => void;
+  pingTotals?: Record<number, number>;
   className?: string;
 }) {
   const champions = useBasicChampions();
+  const maxTotal = pingTotals
+    ? Math.max(...Object.values(pingTotals), 1)
+    : 0;
   return (
     <div className={className}>
       <div className="flex h-full flex-col justify-around">
@@ -113,12 +131,14 @@ export function ChampionSelection({
           if (!champions[part.champion_id]?.image?.file_40) {
             return null
           }
+          const partTotal = pingTotals?.[part._id] ?? 0;
+          const pct = maxTotal > 0 ? (partTotal / maxTotal) * 100 : 0;
           return (
-            <div key={part._id}>
+            <div key={part._id} className="flex items-center gap-1.5">
               <Image
                 role="button"
                 tabIndex={1}
-                className={clsx("my-0.5 rounded-md hover:cursor-pointer transition-all", {
+                className={clsx("my-0.5 shrink-0 rounded-md hover:cursor-pointer transition-all", {
                   "ring-2 ring-sky-400 brightness-110": selected === part._id,
                   "opacity-50 hover:opacity-80": selected !== part._id,
                 })}
@@ -133,6 +153,27 @@ export function ChampionSelection({
                 width={30}
                 height={30}
               />
+              {pingTotals && (
+                <div className="flex w-16 items-center gap-1">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-800/50"
+                    style={{ backgroundImage: "linear-gradient(to right, #71717a, #71717a)" }}
+                  >
+                    {partTotal > 0 && (
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${pct}%`,
+                          background: `linear-gradient(to right, #71717a, #f97316 60%, #ef4444)`,
+                          backgroundSize: `${maxTotal > 0 ? (100 / pct) * 100 : 100}% 100%`,
+                        }}
+                      />
+                    )}
+                  </div>
+                  <span className="w-5 text-right text-[10px] tabular-nums text-zinc-400">
+                    {partTotal}
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}
