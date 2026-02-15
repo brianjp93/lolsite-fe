@@ -157,24 +157,23 @@ function InnerMatch({
 
   return (
     <div>
-      <div className="flex justify-center">
-        <div className="mr-2 font-bold">
+      <div className="mb-3 text-center">
+        <div className="text-lg font-bold">
           {queues[match.queue_id]?.description || "Unknown Game Type"}
         </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="mr-2 font-bold">Duration:</div>
-        <div>
-          {minutes}:{numeral(seconds).format("00")}
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-x-4 text-sm text-zinc-400">
+          <span>
+            {minutes}:{numeral(seconds).format("00")}
+          </span>
+          <span>{formatDatetimeFull(match.game_creation)}</span>
+          <span>
+            Patch{" "}
+            <span className="font-semibold text-zinc-200">
+              {match.game_version.split(".").slice(0, 2).join(".")}
+            </span>
+            <span className="text-xs">.{match.game_version.split(".").slice(2).join(".")}</span>
+          </span>
         </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="mr-2 font-bold">Game Version:</div>
-        <div>{match.game_version}</div>
-      </div>
-      <div className="flex justify-center">
-        <div className="mr-2 font-bold">Played At:</div>
-        <div>{formatDatetimeFull(match.game_creation)}</div>
       </div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
