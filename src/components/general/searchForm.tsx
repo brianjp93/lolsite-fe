@@ -74,11 +74,11 @@ export function SearchForm({
   }, []);
 
   const onSubmit = handleSubmit((data) => {
-    let search = data.search
+    let search = data.search;
     if (data.search.indexOf("#") < 0) {
-      search = search + '-NA1'
+      search = search + "-NA1";
     } else {
-      search = search.replace("#", "-")
+      search = search.replace("#", "-");
     }
     router.push(`/${data.region}/${search}/`);
   });
@@ -120,8 +120,8 @@ export function SearchForm({
             <div
               className={clsx(
                 "mt-1 max-h-80 w-full overflow-y-auto rounded",
-                "bg-gradient-to-tr from-slate-900/80 quiet-scroll",
-                "via-slate-900/90 to-zinc-900/80 p-3 shadow-md",
+                "bg-linear-to-tr quiet-scroll from-slate-900/80",
+                "via-slate-900/90 to-zinc-900/80 p-3 shadow-md"
               )}
             >
               {query.isSuccess &&
@@ -144,7 +144,9 @@ export function SearchForm({
                           {x.summoner_level}
                         </div>
                       </div>
-                      <div className="">{x.riot_id_name}#{x.riot_id_tagline}</div>
+                      <div className="">
+                        {x.riot_id_name}#{x.riot_id_tagline}
+                      </div>
                     </div>
                   );
                 })}
