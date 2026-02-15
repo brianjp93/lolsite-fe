@@ -256,48 +256,73 @@ export function ProfileCardInner({
           <FollowButton summoner={summoner} />
         </div>
       </div>
-      <div className="mt-2">
-        {positions.map((x) => {
-          const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type;
-          const total = x.wins + x.losses || 1;
-          const percentage = numeral(x.wins / total).format("0.0%");
-          return (
-            <div key={x.id}>
-              <div className="mt-1 flex">
-                <div className="mr-3">
-                  <div className="font-bold">{queue}:</div>
+      {positions.length > 0 && (
+        <div className="mt-3 space-y-1.5">
+          {positions.map((x) => {
+            const queue = QUEUE_CONVERT[x.queue_type] || x.queue_type;
+            const total = x.wins + x.losses || 1;
+            const winPct = (x.wins / total) * 100;
+            return (
+              <div
+                key={x.id}
+                className="rounded-md border border-zinc-700/50 bg-zinc-800/40 px-3 py-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    {queue}
+                  </span>
+                  <span className="text-sm font-bold text-zinc-200">
+                    {x.tier} {x.rank}
+                    <span className="ml-1 font-normal text-zinc-400">
+                      {x.league_points} LP
+                    </span>
+                  </span>
                 </div>
-                <div className="ml-auto mr-3">
-                  {x.tier} {x.rank} {x.league_points}LP
+                <div className="mt-1.5 flex items-center gap-2">
+                  <div className="flex h-1.5 flex-1 overflow-hidden rounded-full">
+                    <div
+                      className="bg-emerald-500/70"
+                      style={{ width: `${winPct}%` }}
+                    />
+                    <div
+                      className="bg-red-500/60"
+                      style={{ width: `${100 - winPct}%` }}
+                    />
+                  </div>
+                  <span className="shrink-0 text-xs tabular-nums text-zinc-400">
+                    <span className="text-emerald-400">{x.wins}W</span>
+                    {" / "}
+                    <span className="text-red-400">{x.losses}L</span>
+                    <span className="ml-1 font-semibold text-zinc-200">
+                      {numeral(winPct).format("0.0")}%
+                    </span>
+                  </span>
                 </div>
                 {x.series_progress && (
-                  <div className="mr-3 flex">
-                    {[...x.series_progress].map((ch: string, key: number) => {
-                      return (
-                        <div
-                          className={clsx(
-                            "my-auto h-3 w-3 rounded-full border-2",
-                            {
-                              "border-green-900 bg-green-600": ch === "W",
-                              "border-red-900 bg-red-600": ch === "L",
-                              "border-gray-700": ch === "N",
-                            }
-                          )}
-                          key={key}
-                        ></div>
-                      );
-                    })}
+                  <div className="mt-1.5 flex items-center gap-1">
+                    <span className="mr-1 text-[10px] uppercase tracking-wider text-zinc-500">
+                      Promos
+                    </span>
+                    {[...x.series_progress].map((ch: string, key: number) => (
+                      <div
+                        key={key}
+                        className={clsx(
+                          "h-3 w-3 rounded-full border-2",
+                          {
+                            "border-green-900 bg-green-600": ch === "W",
+                            "border-red-900 bg-red-600": ch === "L",
+                            "border-zinc-700 bg-zinc-800": ch === "N",
+                          }
+                        )}
+                      />
+                    ))}
                   </div>
                 )}
-                <div className="ml-auto flex">
-                  {x.wins}/{x.losses}
-                  <div className="ml-2 font-bold">{percentage}</div>
-                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
