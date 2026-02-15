@@ -68,7 +68,7 @@ export function CreateComment({
           {connected.map((x) => {
             return (
               <option key={x.puuid} value={x.puuid}>
-                {x.name}
+                {x.riot_id_name}#{x.riot_id_tagline} ({x.region})
               </option>
             );
           })}

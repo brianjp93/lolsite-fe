@@ -3,7 +3,24 @@ import type { FullParticipantType } from "@/external/types";
 import { useBasicChampions } from "@/hooks";
 import clsx from "clsx";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+
+const PING_TYPES = [
+  { key: "on_my_way_pings", label: "On My Way", color: "bg-emerald-500" },
+  { key: "enemy_missing_pings", label: "Enemy Missing", color: "bg-rose-400" },
+  { key: "danger_pings", label: "Danger", color: "bg-red-500" },
+  { key: "assist_me_pings", label: "Assist Me", color: "bg-sky-400" },
+  { key: "command_pings", label: "Command", color: "bg-amber-400" },
+  { key: "get_back_pings", label: "Get Back", color: "bg-orange-400" },
+  { key: "need_vision_pings", label: "Need Vision", color: "bg-violet-400" },
+  { key: "enemy_vision_pings", label: "Enemy Vision", color: "bg-pink-400" },
+  { key: "vision_cleared_pings", label: "Vision Cleared", color: "bg-teal-400" },
+  { key: "push_pings", label: "Push", color: "bg-cyan-400" },
+  { key: "all_in_pings", label: "All In", color: "bg-red-400" },
+  { key: "hold_pings", label: "Hold", color: "bg-yellow-400" },
+  { key: "bait_pings", label: "Bait", color: "bg-lime-400" },
+  { key: "basic_pings", label: "Basic", color: "bg-zinc-400" },
+] as const;
 
 export function PingStats({
   mypart,
@@ -13,29 +30,22 @@ export function PingStats({
   participants: FullParticipantType[];
 }) {
   const [selected, setSelected] = useState(mypart._id);
-  const part = participants.filter((x) => x._id === selected)[0];
+  const part = participants.find((x) => x._id === selected);
 
-  let total = 0;
-  if (part) {
-    total =
-      part.stats.bait_pings +
-      part.stats.hold_pings +
-      part.stats.push_pings +
-      part.stats.basic_pings +
-      part.stats.all_in_pings +
-      part.stats.danger_pings +
-      part.stats.command_pings +
-      part.stats.get_back_pings +
-      part.stats.assist_me_pings +
-      part.stats.on_my_way_pings +
-      part.stats.need_vision_pings +
-      part.stats.enemy_vision_pings +
-      part.stats.enemy_missing_pings +
-      part.stats.vision_cleared_pings;
-  }
+  const { total, maxPing } = useMemo(() => {
+    if (!part) return { total: 0, maxPing: 0 };
+    let sum = 0;
+    let max = 0;
+    for (const { key } of PING_TYPES) {
+      const val = part.stats[key] as number;
+      sum += val;
+      if (val > max) max = val;
+    }
+    return { total: sum, maxPing: max };
+  }, [part]);
 
   return (
-    <div className="flex">
+    <div className="flex gap-3">
       <ChampionSelection
         selected={selected}
         participants={participants}
@@ -44,41 +54,39 @@ export function PingStats({
         }}
       />
       {part && (
-        <div className="ml-2">
-          <div className="font-bold underline">{part.summoner_name}</div>
-          <div className="text-right">
-            <div className="grid grid-cols-2">
-              <div>Total Pings:</div>
-              <div>{total}</div>
-              <div>Bait:</div>
-              <div>{part.stats.bait_pings}</div>
-              <div>Hold:</div>
-              <div>{part.stats.hold_pings}</div>
-              <div>Push:</div>
-              <div>{part.stats.push_pings}</div>
-              <div>Basic:</div>
-              <div>{part.stats.basic_pings}</div>
-              <div>All In:</div>
-              <div>{part.stats.all_in_pings}</div>
-              <div>Danger:</div>
-              <div>{part.stats.danger_pings}</div>
-              <div>Command:</div>
-              <div>{part.stats.command_pings}</div>
-              <div>Get Back:</div>
-              <div>{part.stats.get_back_pings}</div>
-              <div>Assist Me:</div>
-              <div>{part.stats.assist_me_pings}</div>
-              <div>On My Way:</div>
-              <div>{part.stats.on_my_way_pings}</div>
-              <div>Need Vision:</div>
-              <div>{part.stats.need_vision_pings}</div>
-              <div>Enemy Vision:</div>
-              <div>{part.stats.enemy_vision_pings}</div>
-              <div>Enemy Missing:</div>
-              <div>{part.stats.enemy_missing_pings}</div>
-              <div>Vision Cleared:</div>
-              <div>{part.stats.vision_cleared_pings}</div>
-            </div>
+        <div className="min-w-[260px]">
+          <div className="mb-2 flex items-center justify-between border-b border-zinc-600 pb-2">
+            <span className="text-sm font-semibold text-zinc-200">{part.summoner_name}</span>
+            <span className="rounded bg-zinc-700 px-2 py-0.5 text-xs font-bold text-zinc-100">
+              {total} pings
+            </span>
+          </div>
+          <div className="space-y-1">
+            {PING_TYPES.map(({ key, label, color }) => {
+              const value = part.stats[key] as number;
+              const pct = maxPing > 0 ? (value / maxPing) * 100 : 0;
+              return (
+                <div key={key} className="group flex items-center gap-2 text-xs">
+                  <span className="w-[100px] shrink-0 text-right text-zinc-400">{label}</span>
+                  <div className="relative h-4 flex-1 overflow-hidden rounded-sm bg-zinc-800">
+                    {value > 0 && (
+                      <div
+                        className={clsx("h-full rounded-sm transition-all", color)}
+                        style={{ width: `${pct}%`, minWidth: "4px", opacity: 0.75 }}
+                      />
+                    )}
+                  </div>
+                  <span
+                    className={clsx("w-5 text-right tabular-nums", {
+                      "font-medium text-zinc-200": value > 0,
+                      "text-zinc-600": value === 0,
+                    })}
+                  >
+                    {value}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -110,9 +118,9 @@ export function ChampionSelection({
               <Image
                 role="button"
                 tabIndex={1}
-                className={clsx("my-1 hover:cursor-pointer", {
-                  "border-2 border-solid border-white": selected === part._id,
-                  "opacity-60": selected !== part._id,
+                className={clsx("my-0.5 rounded-md hover:cursor-pointer transition-all", {
+                  "ring-2 ring-sky-400 brightness-110": selected === part._id,
+                  "opacity-50 hover:opacity-80": selected !== part._id,
                 })}
                 onClick={() => onClick(part._id)}
                 onKeyDown={(event) => {

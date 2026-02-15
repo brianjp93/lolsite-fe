@@ -165,7 +165,7 @@ export function ProfileCardInner({
             height={40}
             className="rounded"
           />
-          <div className="absolute bottom-[-7px] flex w-full">
+          <div className="absolute bottom-1.75 flex w-full">
             <div className="mx-auto rounded-md bg-zinc-200 px-1 text-xs font-bold text-gray-900">
               {summoner.summoner_level}
             </div>

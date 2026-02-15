@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import type { ReactNode } from "react";
 import Skeleton from "@/components/general/skeleton";
 import {
   useBans,
@@ -188,33 +189,28 @@ function InnerMatch({
           </div>
         </div>
       </div>
-      <div
-        className={clsx(
-          "mt-2 flex flex-wrap justify-center",
-          "m-2 rounded bg-zinc-800/40 p-4"
-        )}
-      >
+      <div className="m-2 mt-2 flex flex-wrap justify-center gap-3">
         {timeline && (
-          <div className="my-2">
+          <SectionCard title="Map Events">
             <MapEventsInner
               timeline={timeline.frames}
               participants={participants}
               match={{ _id: match._id }}
             />
-          </div>
+          </SectionCard>
         )}
         {timeline && (
-          <div className="my-2">
+          <SectionCard title="Game Timeline">
             <Timeline
               timeline={timeline.frames}
               match={match}
               participants={participants}
               summoner={summoner}
             />
-          </div>
+          </SectionCard>
         )}
         {mypart && timeline && (
-          <div className="my-2">
+          <SectionCard title="Champion Timelines">
             <ChampionTimelinesInner
               matchId={match._id}
               participants={participants}
@@ -222,18 +218,18 @@ function InnerMatch({
               timeline={timeline.frames}
               expanded_width={500}
             />
-          </div>
+          </SectionCard>
         )}
         {mypart && (
-          <div className="my-2">
+          <SectionCard title="Stat Comparison">
             <StatOverview
               participants={participants}
               match={match}
               mypart={mypart}
             />
-          </div>
+          </SectionCard>
         )}
-        <div className="my-2">
+        <SectionCard title="Build Order">
           <BuildOrder
             timeline={timeline?.frames}
             expanded_width={500}
@@ -241,9 +237,9 @@ function InnerMatch({
             summoner={summoner}
             match_id={match._id}
           />
-        </div>
+        </SectionCard>
         {mypart && isShowRunes && (
-          <div className="my-2">
+          <SectionCard title="Runes">
             <RunePage
               mypart={mypart}
               participants={participants}
@@ -254,14 +250,25 @@ function InnerMatch({
               }}
               matchCardHeight={400}
             />
-          </div>
+          </SectionCard>
         )}
         {mypart && (
-          <div className="my-2">
+          <SectionCard title="Ping Stats">
             <PingStats mypart={mypart} participants={participants} />
-          </div>
+          </SectionCard>
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="rounded-lg border border-zinc-700/50 bg-zinc-800/60 p-4">
+      <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        {title}
+      </div>
+      {children}
     </div>
   );
 }

@@ -20,6 +20,7 @@ import type {
 } from "@/external/types";
 import { getMyPart, mediaUrl } from "@/components/utils";
 import Image from "next/image";
+import clsx from "clsx";
 import {ItemPopover} from "@/components/data/item";
 
 type EventWithCount = (
@@ -399,37 +400,14 @@ function ChampionImage(props: {
   handleClick: () => void;
 }) {
   const champions = useBasicChampions();
-  let image_style: any = {
-    cursor: "pointer",
-    width: 30,
-    height: 30,
-  };
-  if (!props.is_selected) {
-    image_style = {
-      ...image_style,
-      opacity: 0.3,
-    };
-  } else {
-    image_style = {
-      ...image_style,
-      borderWidth: 3,
-      borderColor: "white",
-      borderStyle: "solid",
-    };
-  }
-
-  const vert_align: CSSProperties = {};
   const champ = champions[props.participant.champion_id];
-  const champ_image = champ?.image?.file_30;
-  if (champ_image === undefined) {
-    vert_align.verticalAlign = "top";
-  }
+  const champ_image = champ?.image?.file_40;
   return (
     <div
+      className="inline-block"
       style={{
-        display: "inline-block",
         paddingRight: props.padding_pixels,
-        ...vert_align,
+        verticalAlign: champ_image === undefined ? "top" : undefined,
       }}
     >
       {champ_image === undefined && (
@@ -441,9 +419,11 @@ function ChampionImage(props: {
               props.handleClick();
             }
           }}
-          className="inline-block"
           onClick={props.handleClick}
-          style={{ ...image_style }}
+          className={clsx("inline-block h-[30px] w-[30px] cursor-pointer rounded-md transition-all", {
+            "ring-2 ring-sky-400 brightness-110": props.is_selected,
+            "opacity-50 hover:opacity-80": !props.is_selected,
+          })}
         >
           NA
         </div>
@@ -458,11 +438,14 @@ function ChampionImage(props: {
               props.handleClick();
             }
           }}
-          style={{ ...image_style }}
+          className={clsx("rounded-md cursor-pointer transition-all", {
+            "ring-2 ring-sky-400 brightness-110": props.is_selected,
+            "opacity-50 hover:opacity-80": !props.is_selected,
+          })}
           height={30}
           width={30}
           aria-label={champ?.name}
-          src={mediaUrl(champ?.image?.file_30)}
+          src={mediaUrl(champ_image)}
           alt={`Champion Image: ${champ?.name}`}
         />
       )}

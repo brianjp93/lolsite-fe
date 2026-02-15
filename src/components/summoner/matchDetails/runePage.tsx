@@ -9,6 +9,7 @@ import type { FullParticipantType, RuneType } from "@/external/types";
 import { RUNEDATA as RUNES } from "@/utils/constants";
 import Image from "next/image";
 import { mediaUrl } from "@/components/utils";
+import clsx from "clsx";
 
 export function RunePage({
   mypart,
@@ -53,28 +54,10 @@ export function RunePage({
   const partSelection = () => {
     return participants.map((part) => {
       const champ = champions[part.champion_id];
-      let select_style: React.CSSProperties = {
-        height: 30,
-        width: 30,
-        cursor: "pointer",
-      };
       const is_selected = selectedPart && part._id === selectedPart._id;
-      if (is_selected) {
-        select_style = {
-          ...select_style,
-          borderStyle: "solid",
-          borderWidth: 3,
-          borderColor: "white",
-        };
-      } else {
-        select_style = {
-          ...select_style,
-          opacity: 0.4,
-        };
-      }
       return (
         <div key={`${match.id}-${part.id}-rune-champ-image`}>
-          {champ?.image?.file_30 === "" && (
+          {champ?.image?.file_40 === "" && (
             <div
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
@@ -84,12 +67,15 @@ export function RunePage({
                   setSelectedPart(part);
                 }
               }}
-              style={{ ...select_style }}
+              className={clsx("my-0.5 h-7.5 w-7.5 cursor-pointer rounded-md transition-all", {
+                "ring-2 ring-sky-400 brightness-110": is_selected,
+                "opacity-50 hover:opacity-80": !is_selected,
+              })}
             >
               NA
             </div>
           )}
-          {champ?.image?.file_30 && (
+          {champ?.image?.file_40 && (
             <Image
               title={part.summoner_name}
               onClick={() => setSelectedPart(part)}
@@ -98,13 +84,15 @@ export function RunePage({
                   setSelectedPart(part);
                 }
               }}
-              style={{ ...select_style }}
               tabIndex={1}
               role='button'
               height={30}
               width={30}
-              className="my-2"
-              src={mediaUrl(champ?.image?.file_30)}
+              className={clsx("my-0.5 rounded-md cursor-pointer transition-all", {
+                "ring-2 ring-sky-400 brightness-110": is_selected,
+                "opacity-50 hover:opacity-80": !is_selected,
+              })}
+              src={mediaUrl(champ?.image?.file_40)}
               alt="Champion"
             />
           )}
@@ -127,18 +115,11 @@ export function RunePage({
   const rune_stat_height = (matchCardHeight - 20) / 6;
   return (
     <div className="flex">
-      <div
-        style={{
-          marginRight: 20,
-          display: "inline-block",
-          marginLeft: 35,
-          verticalAlign: "top",
-        }}
-      >
+      <div className="mr-5 ml-9 flex flex-col justify-around">
         {partSelection()}
       </div>
       {selectedPart !== undefined && (
-        <div className="flex flex-col gap-1 w-[370px]">
+        <div className="flex flex-col gap-1 w-92.5">
           {getPerks(selectedPart).map((perk) => {
             const rune = runes[perk.id as unknown as keyof typeof runes];
             const rune_etc = RUNES.data[perk.id.toString() as keyof typeof RUNES.data];
