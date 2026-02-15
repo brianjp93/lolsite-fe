@@ -420,6 +420,11 @@ export const ParticipantFrame = z.object({
   true_damage_done: z.number(),
   true_damage_done_to_champions: z.number(),
   true_damage_taken: z.number(),
+}).transform(obj => {
+  return {
+    ...obj,
+    cs: obj.minions_killed + obj.jungle_minions_killed,
+  }
 })
 export type ParticipantFrameType = z.infer<typeof ParticipantFrame>
 
