@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { useState } from "react";
 import numeral from "numeral";
+import clsx from "clsx";
 import { getMyPart, mediaUrl } from "@/components/utils";
 import { useBasicChampions } from "@/hooks";
 import { useTimelineIndex } from "@/stores";
@@ -404,166 +405,136 @@ function Timeline(props: {
         </ComposedChart>
       </div>
 
-      {/* EVENTS */}
       <div
-        style={{
-          margin: "10px 10px 10px 30px",
-          borderStyle: "solid",
-          borderWidth: 1,
-          borderRadius: 5,
-          borderColor: "gray",
-          height: 240,
-          width: div_width,
-          overflowY: "hidden",
-        }}
+        className="quiet-scroll mt-2 h-[240px] overflow-y-auto rounded-lg border border-zinc-700/50 bg-zinc-800/30 p-2"
+        style={{ width: div_width }}
       >
         {big_events.length === 0 && (
-          <div style={{ textAlign: "center", paddingTop: 20 }}>
+          <div className="flex h-full items-center justify-center text-sm text-zinc-500">
             Hover over graph to see events.
           </div>
         )}
         {big_events.map((event, key) => {
-          const is_right = getEventTeam(event) === 100;
-
-          const part1 = getPart(event.killer_id);
-          const part2 =
-            event._type === "CHAMPION_KILL"
-              ? getPart(event?.victim_id)
-              : undefined;
-
-          let is_me = false;
-          if (
-            (part1 && part1._id === mypart?._id) ||
-            (part2 && part2._id === mypart?._id)
-          ) {
-            is_me = true;
-          }
-          let is_me_style = {};
-          if (is_me) {
-            is_me_style = {
-              background: "#323042",
-              borderRadius: 5,
-            };
-          }
+          const isRight = getEventTeam(event) === 100;
           return (
             <div
-              className="flex h-5"
-              style={{ ...is_me_style }}
               key={`${match._id}-event-${key}`}
+              className="flex"
             >
-              {is_right && (
-                <div className="w-1/2 h-full"></div>
-              )}
-              <small className="flex w-1/2" >
-                <div className="w-10 align-top ml-2" >
-                  {Math.floor(event.timestamp / 1000 / 60)}:
-                  {numeral((event.timestamp / 1000) % 60).format("00")}
-                </div>{" "}
-                <div className="align-top flex">
-                  {event._type === "CHAMPION_KILL" && (
-                    <>
-                      {part1 && (
-                        <Image
-                          className="h-fit"
-                          height={15}
-                          width={15}
-                          src={mediaUrl(
-                            champions[part1.champion_id]?.image?.file_30
-                          )}
-                          alt="champion image"
-                        />
-                      )}
-                      {part1 === null && <span>minions</span>}
-                      <div className="align-text-bottom mx-2">
-                        killed
-                      </div>
-                      {part2?.champion_id && (
-                        <Image
-                          className="h-fit"
-                          height={15}
-                          width={15}
-                          src={mediaUrl(
-                            champions[part2?.champion_id]?.image?.file_30
-                          )}
-                          alt="champion image"
-                        />
-                      )}
-                    </>
-                  )}
-
-                  {event._type === "BUILDING_KILL" && (
-                    <div className="flex">
-                      <div>
-                        {part1 !== null && (
-                          <Image
-                            className="h-fit"
-                            height={15}
-                            width={15}
-                            src={mediaUrl(
-                              champions[part1?.champion_id]?.image?.file_30
-                            )}
-                            alt=""
-                          />
-                        )}
-                        {part1 === null && <span>minions</span>}
-                      </div>{" "}
-                        <div className="align-text-bottom mx-2" >
-                          destroyed
-                        </div>
-                      <div className="align-bottom">
-                        {event.building_type === "TOWER_BUILDING" && (
-                          <>tower</>
-                        )}
-                        {event.building_type === "INHIBITOR_BUILDING" && (
-                          <>inhib</>
-                        )}
-                        {["TOWER_BUILDING", "INHIBITOR_BUILDING"].includes(
-                          event.building_type
-                        ) && <>structure</>}
-                      </div>
-                    </div>
-                  )}
-
-                  {event._type === "TURRET_PLATE_DESTROYED" && (
-                    <div className="flex">
-                      <>team</>{" "}
-                      <span className="align-text-bottom mx-2">
-                        broke
-                      </span>
-                      <span className="align-text-bottom">
-                        plating
-                      </span>
-                    </div>
-                  )}
-
-                  {event._type === "ELITE_MONSTER_KILL" && (
-                    <div className="flex">
-                      {part1 !== null && (
-                        <Image
-                          className="h-fit"
-                          height={15}
-                          width={15}
-                          src={mediaUrl(
-                            champions[part1?.champion_id]?.image?.file_30
-                          )}
-                          alt="champion image"
-                        />
-                      )}
-                      {part1 === null && <>minions</>}
-                      <div className="align-text-bottom mx-2">
-                        killed
-                      </div>
-                      <div className="align-text-bottom">
-                        {getMonsterLabel(event)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </small>
+              <div className="w-1/2 pr-1">
+                {!isRight && (
+                  <EventRow
+                    event={event}
+                    mypart={mypart}
+                    getPart={getPart}
+                    getMonsterLabel={getMonsterLabel}
+                    champions={champions}
+                  />
+                )}
+              </div>
+              <div className="w-px shrink-0 bg-zinc-700/50" />
+              <div className="w-1/2 pl-1">
+                {isRight && (
+                  <EventRow
+                    event={event}
+                    mypart={mypart}
+                    getPart={getPart}
+                    getMonsterLabel={getMonsterLabel}
+                    champions={champions}
+                  />
+                )}
+              </div>
             </div>
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function EventRow({
+  event,
+  mypart,
+  getPart,
+  getMonsterLabel,
+  champions,
+}: {
+  event: any;
+  mypart?: FullParticipantType;
+  getPart: (id: number) => FullParticipantType | null;
+  getMonsterLabel: (event: EliteMonsterKillEventType) => React.ReactNode;
+  champions: any;
+}) {
+  const part1 = getPart(event.killer_id);
+  const part2 =
+    event._type === "CHAMPION_KILL" ? getPart(event?.victim_id) : undefined;
+
+  const isMe =
+    (part1 && part1._id === mypart?._id) ||
+    (part2 && part2._id === mypart?._id);
+
+  const minutes = Math.floor(event.timestamp / 1000 / 60);
+  const seconds = numeral((event.timestamp / 1000) % 60).format("00");
+
+  const champIcon = (part: FullParticipantType | null) => {
+    if (!part) return <span className="text-zinc-500">minions</span>;
+    const img = champions[part.champion_id]?.image?.file_40;
+    if (!img) return null;
+    return (
+      <Image
+        height={18}
+        width={18}
+        className="rounded"
+        src={mediaUrl(img)}
+        alt={champions[part.champion_id]?.name || ""}
+        title={part.summoner_name}
+      />
+    );
+  };
+
+  return (
+    <div
+      className={clsx(
+        "flex items-center gap-1.5 rounded px-1.5 py-0.5 text-xs",
+        isMe ? "bg-indigo-950/50" : ""
+      )}
+    >
+      <span className="w-9 shrink-0 tabular-nums text-zinc-500">
+        {minutes}:{seconds}
+      </span>
+
+      {event._type === "CHAMPION_KILL" && (
+        <div className="flex items-center gap-1">
+          {champIcon(part1)}
+          <span className="text-zinc-500">killed</span>
+          {champIcon(part2 ?? null)}
+        </div>
+      )}
+
+      {event._type === "BUILDING_KILL" && (
+        <div className="flex items-center gap-1">
+          {champIcon(part1)}
+          <span className="text-zinc-500">destroyed</span>
+          <span>
+            {event.building_type === "TOWER_BUILDING" && "tower"}
+            {event.building_type === "INHIBITOR_BUILDING" && "inhib"}
+          </span>
+        </div>
+      )}
+
+      {event._type === "TURRET_PLATE_DESTROYED" && (
+        <div className="flex items-center gap-1">
+          <span className="text-zinc-500">plate destroyed</span>
+        </div>
+      )}
+
+      {event._type === "ELITE_MONSTER_KILL" && (
+        <div className="flex items-center gap-1">
+          {champIcon(part1)}
+          <span className="text-zinc-500">killed</span>
+          {getMonsterLabel(event)}
+        </div>
+      )}
     </div>
   );
 }
