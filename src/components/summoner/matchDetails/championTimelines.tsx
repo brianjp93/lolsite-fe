@@ -20,6 +20,7 @@ import type {
 import { useTimelineIndex } from "@/stores";
 import { getMyPart, mediaUrl } from "@/components/utils";
 import Image from "next/image";
+import clsx from "clsx";
 
 type GraphType =
   | "total_gold"
@@ -78,13 +79,11 @@ export function ChampionTimelinesInner({
   summoner,
   participants,
   timeline,
-  expanded_width,
 }: {
   matchId: string;
   summoner: SummonerType;
   participants: FullParticipantType[];
   timeline: FrameType[];
-  expanded_width: number;
 }) {
   const my_part = getMyPart(participants, summoner.puuid);
   const [participant_selection, setParticipantSelection] = useState(
@@ -94,10 +93,6 @@ export function ChampionTimelinesInner({
   const champions = useBasicChampions();
   const [timelineIndex, setTimelineIndex] = useTimelineIndex(matchId);
 
-  const image_width = 30;
-  const usable_width = expanded_width - 30;
-  const available_width = usable_width - participants.length * image_width;
-  const padding_pixels = available_width / participants.length;
   participants = useMemo(() => {
     return [
       ...participants.filter((participant) => participant.team_id === 100),
@@ -122,79 +117,131 @@ export function ChampionTimelinesInner({
     "#994352",
   ];
 
-  const getGraphBubbleInput = (
-    _type: GraphType,
-    displayName?: string,
-    tooltip?: string
-  ) => {
+  const statButton = (title: string, value: GraphType, tooltip?: string) => {
+    const isActive = graph_type === value;
     return (
-      <div>
-        <label data-tip={tooltip} htmlFor={`${_type}-champion-graph`}>
-          <input
-            className="inline mr-1"
-            id={`${_type}-champion-graph`}
-            onChange={() => setGraphType(_type)}
-            type="radio"
-            checked={graph_type === _type}
-          />
-          <span>{displayName || _type}</span>
-        </label>
-      </div>
+      <button
+        key={value}
+        title={tooltip}
+        onClick={() => setGraphType(value)}
+        className={clsx(
+          "cursor-pointer rounded border px-1.5 py-0.5 text-left text-[11px] transition-colors",
+          isActive
+            ? "border-sky-500/50 bg-sky-900/40 font-medium text-sky-200"
+            : "border-zinc-700/50 bg-zinc-800/40 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-700/50 hover:text-zinc-200"
+        )}
+      >
+        {title}
+      </button>
     );
   };
 
+  const sectionHeader = (title: string) => (
+    <div className="mt-2 mb-1 border-b border-zinc-700/50 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 first:mt-0">
+      {title}
+    </div>
+  );
+
+  const clearAll = useCallback(() => setParticipantSelection([]), []);
+  const selectAll = useCallback(() => {
+    const parts = participants.map((part) => part._id);
+    setParticipantSelection(parts);
+  }, [participants]);
+
   return (
-    <div>
-      <div className="flex justify-center">
-        {participants.map((participant, index) => {
-          return (
-            <ChampionImage
-              key={`${participant._id}-champion-image`}
-              is_me={participant._id === my_part?._id}
-              color={colors[index]}
-              is_selected={participant_selection.indexOf(participant._id) >= 0}
-              image_width={image_width}
-              participant={participant}
-              padding_pixels={padding_pixels}
-              handleClick={() => {
-                let new_selection = [...participant_selection];
-                if (participant_selection.indexOf(participant._id) >= 0) {
-                  new_selection = new_selection.filter(
-                    (id) => id !== participant._id
-                  );
-                } else {
-                  new_selection.push(participant._id);
-                }
-                setParticipantSelection(new_selection);
-              }}
-            />
-          );
-        })}
+    <div className="flex items-start gap-1">
+      <div className="quiet-scroll flex h-[440px] w-[120px] shrink-0 flex-col overflow-y-auto pr-1">
+        {sectionHeader("Gold & Economy")}
+        {statButton("Total Gold", "total_gold")}
+        {statButton("Current Gold", "current_gold")}
+        {statButton("Gold/Sec", "gold_per_second", "Passive gold generation from support items?")}
+        {statButton("CS", "cs")}
+        {statButton("XP", "xp")}
+        {statButton("Level", "level")}
+
+        {sectionHeader("Damage Dealt")}
+        {statButton("Champ DMG", "total_damage_done_to_champions")}
+        {statButton("Physical", "physical_damage_done_to_champions")}
+        {statButton("Magic", "magic_damage_done_to_champions")}
+        {statButton("True", "true_damage_done_to_champions")}
+
+        {sectionHeader("Damage Taken")}
+        {statButton("Total", "total_damage_taken")}
+        {statButton("Physical", "physical_damage_taken")}
+        {statButton("Magic", "magic_damage_taken")}
+        {statButton("True", "true_damage_taken")}
+
+        {sectionHeader("Defense")}
+        {statButton("Armor", "armor")}
+        {statButton("Magic Resist", "magic_resist")}
+
+        {sectionHeader("Offense")}
+        {statButton("Attack Damage", "attack_damage")}
+        {statButton("Attack Speed", "attack_speed")}
+        {statButton("Ability Power", "ability_power")}
+        {statButton("Armor Pen", "armor_pen")}
+        {statButton("Armor Pen %", "armor_pen_percent")}
+        {statButton("Magic Pen", "magic_pen")}
+        {statButton("Magic Pen %", "magic_pen_percent")}
+
+        {sectionHeader("Health & Sustain")}
+        {statButton("Health", "health")}
+        {statButton("Max Health", "health_max")}
+        {statButton("Lifesteal", "lifesteal")}
+
+        {sectionHeader("Utility")}
+        {statButton("CC Time", "time_enemy_spent_controlled", "Time enemy spent controlled")}
+
+        <div className="pb-16" />
       </div>
 
-      <div className="grid grid-cols-2" style={{ marginLeft: 0, marginRight: 0 }}>
-        <div className="w-full m-1">
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap justify-center">
+          {participants.map((participant, index) => {
+            return (
+              <ChampionImage
+                key={`${participant._id}-champion-image`}
+                is_me={participant._id === my_part?._id}
+                color={colors[index]}
+                is_selected={participant_selection.indexOf(participant._id) >= 0}
+                participant={participant}
+                handleClick={() => {
+                  let new_selection = [...participant_selection];
+                  if (participant_selection.indexOf(participant._id) >= 0) {
+                    new_selection = new_selection.filter(
+                      (id) => id !== participant._id
+                    );
+                  } else {
+                    new_selection.push(participant._id);
+                  }
+                  setParticipantSelection(new_selection);
+                }}
+              />
+            );
+          })}
+        </div>
+
+        <div className="my-1 flex gap-1 px-1">
           <button
-            onClick={useCallback(() => setParticipantSelection([]), [])}
-            className="btn btn-default w-full mr-1"
+            onClick={clearAll}
+            className={clsx(
+              "flex-1 cursor-pointer rounded border px-1.5 py-0.5 text-[11px] transition-colors",
+              "border-zinc-700/50 bg-zinc-800/40 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-700/50 hover:text-zinc-200"
+            )}
           >
             Clear All
           </button>
-        </div>
-        <div className="w-full m-1">
           <button
-            onClick={useCallback(() => {
-              const parts = participants.map((part) => part._id);
-              setParticipantSelection(parts);
-            }, [participants])}
-            className="btn btn-default w-full ml-1"
+            onClick={selectAll}
+            className={clsx(
+              "flex-1 cursor-pointer rounded border px-1.5 py-0.5 text-[11px] transition-colors",
+              "border-zinc-700/50 bg-zinc-800/40 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-700/50 hover:text-zinc-200"
+            )}
           >
             Select All
           </button>
         </div>
-      </div>
 
-      <div>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart
             onMouseMove={(props) => {
@@ -296,44 +343,6 @@ export function ChampionTimelinesInner({
           </LineChart>
         </ResponsiveContainer>
       </div>
-
-      <div className="grid grid-cols-3" style={{ marginLeft: 20, marginRight: 15 }}>
-        {getGraphBubbleInput("total_gold", "Total Gold")}
-        {getGraphBubbleInput("current_gold", "Current Gold")}
-        {getGraphBubbleInput("cs", "CS")}
-        {getGraphBubbleInput("xp", "XP")}
-        {getGraphBubbleInput("level", "Level")}
-        {getGraphBubbleInput("total_damage_done_to_champions", "Champ DMG")}
-        {getGraphBubbleInput("true_damage_done_to_champions", "True DMG")}
-        {getGraphBubbleInput("magic_damage_done_to_champions", "Magic DMG")}
-        {getGraphBubbleInput("physical_damage_done_to_champions", "Physical DMG")}
-        {getGraphBubbleInput(
-          "time_enemy_spent_controlled",
-          "CC Time",
-          "I have no idea what the units of this is supposed to be."
-        )}
-        {getGraphBubbleInput(
-          "gold_per_second",
-          "Gold/Sec",
-          "Passive gold generation from support items?"
-        )}
-        {getGraphBubbleInput("armor", "Armor")}
-        {getGraphBubbleInput("magic_resist", "Magic Resist")}
-        {getGraphBubbleInput("magic_pen", "Magic Pen")}
-        {getGraphBubbleInput("magic_pen_percent", "Magic Pen %")}
-        {getGraphBubbleInput("armor_pen", "Armor Pen")}
-        {getGraphBubbleInput("armor_pen_percent", "Armor Pen %")}
-        {getGraphBubbleInput("ability_power", "Ability Power")}
-        {getGraphBubbleInput("attack_damage", "Attack Damage")}
-        {getGraphBubbleInput("attack_speed", "Attack Speed")}
-        {getGraphBubbleInput("health", "Health")}
-        {getGraphBubbleInput("health_max", "Max Health")}
-        {getGraphBubbleInput("lifesteal", "Lifesteal")}
-        {getGraphBubbleInput("total_damage_taken", "Total Damage Taken")}
-        {getGraphBubbleInput("physical_damage_taken", "Physical Damage Taken")}
-        {getGraphBubbleInput("magic_damage_taken", "Magic Damage Taken")}
-        {getGraphBubbleInput("true_damage_taken", "True Damage Taken")}
-      </div>
     </div>
   );
 }
@@ -364,13 +373,8 @@ function ChampionImage(props: any) {
     };
   }
 
-  const vert_align: React.CSSProperties = {};
-  if (props.participant.champion?.image?.file_30) {
-    vert_align.verticalAlign = "top";
-  }
-
   return (
-    <div style={{ padding: "0px 10px" }}>
+    <div style={{ padding: "0px 4px" }}>
       {mediaUrl(champions[props.participant.champion_id]?.image.file_30) ===
         "" && (
         <div onClick={props.handleClick} style={{ ...image_style }}>

@@ -216,7 +216,6 @@ function InnerMatch({
               participants={participants}
               summoner={summoner}
               timeline={timeline.frames}
-              expanded_width={500}
             />
           </SectionCard>
         )}
