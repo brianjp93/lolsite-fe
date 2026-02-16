@@ -179,9 +179,9 @@ function TeamClump({
                 "font-bold": teammate.puuid === part?.puuid,
               }
             )}
-            title={teammate.riot_id_name || teammate.summoner_name}
+            title={teammate.riot_id_name}
           >
-            {teammate.riot_id_name || teammate.summoner_name}
+            {teammate.riot_id_name} #{teammate.riot_id_tagline}
           </div>
         );
         return (

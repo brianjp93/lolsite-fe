@@ -398,14 +398,10 @@ function ParticipantInfo({
             className="flex cursor-pointer hover:underline"
             href={puuidRoute(part.puuid)}
           >
-            {name ? (
-              <>
-                <div>{name}</div>
-                <div className="text-gray-400">#{part.riot_id_tagline}</div>
-              </>
-            ) : (
-              <>{part.summoner_name}</>
-            )}
+            <>
+              <div>{name}</div>
+              <div className="text-gray-400">#{part.riot_id_tagline}</div>
+            </>
           </Link>
         </div>
         <div className="flex">

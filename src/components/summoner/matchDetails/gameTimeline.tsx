@@ -487,7 +487,7 @@ function EventRow({
         className="rounded"
         src={mediaUrl(img)}
         alt={champions[part.champion_id]?.name || ""}
-        title={part.summoner_name}
+        title={part.riot_id_name}
       />
     );
   };

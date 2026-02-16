@@ -31,10 +31,7 @@ export function RecentlyPlayedWith({
       for (const p of match.participants) {
         const tagline = p.riot_id_tagline;
         const id_name = p.riot_id_name;
-        let name = p.summoner_name;
-        if (tagline && id_name) {
-          name = `${id_name}#${tagline}`;
-        }
+        const name = `${id_name}#${tagline}`;
         if (p.puuid === summoner.puuid) {
           continue;
         }

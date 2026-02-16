@@ -282,7 +282,7 @@ export function MapEventsInner({
                       champions[player.part.champion_id]?.image?.file_40
                     )}
                     alt={champions[player.part.champion_id]?.name || ""}
-                    title={player.part.summoner_name}
+                    title={player.part.riot_id_name}
                   />
                 ) : (
                   <div

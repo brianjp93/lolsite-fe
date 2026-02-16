@@ -69,7 +69,7 @@ export function PingStats({
       {part && (
         <div className="min-w-[260px]">
           <div className="mb-2 flex items-center justify-between border-b border-zinc-600 pb-2">
-            <span className="text-sm font-semibold text-zinc-200">{part.summoner_name}</span>
+            <span className="text-sm font-semibold text-zinc-200">{part.riot_id_name} #{part.riot_id_tagline}</span>
             <span className="rounded bg-zinc-700 px-2 py-0.5 text-xs font-bold text-zinc-100">
               {total} pings
             </span>

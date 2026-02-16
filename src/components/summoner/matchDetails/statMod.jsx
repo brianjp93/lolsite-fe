@@ -15,7 +15,7 @@ export function StatModTable(props) {
     <div>
       {table_rows.map((perks, perk_int) => {
         return (
-          <div key={`${participant.summoner_name}-${perk_int}`}>
+          <div key={`${participant.riot_id_name}-${perk_int}`}>
             {perks.map((perk_id, key) => {
               const perk = statmods[perk_id];
               const is_perk_selected =

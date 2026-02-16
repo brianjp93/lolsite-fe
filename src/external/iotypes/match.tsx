@@ -65,7 +65,6 @@ export type BasicStatsType = z.infer<typeof BasicStats>
 
 export const BasicParticipant = z.object({
   _id: z.number(),
-  summoner_name: z.string(),
   puuid: z.string(),
   lane: z.string(),
   role: z.string(),
@@ -238,8 +237,6 @@ export const FullParticipant = z.object({
   id: z.number(),
   match: z.number(),
   _id: z.number(),
-  summoner_name: z.string(),
-  summoner_name_simplified: z.string(),
   champion_id: z.number(),
   champ_experience: z.number().nullable(),
   summoner_1_id: z.number(),

@@ -59,7 +59,7 @@ export function RunePage({
         <div key={`${match.id}-${part.id}-rune-champ-image`}>
           {champ?.image?.file_40 === "" && (
             <div
-              title={part.summoner_name}
+              title={part.riot_id_name}
               onClick={() => setSelectedPart(part)}
               role='button'
               onKeyDown={(event) => {
@@ -77,7 +77,7 @@ export function RunePage({
           )}
           {champ?.image?.file_40 && (
             <Image
-              title={part.summoner_name}
+              title={part.riot_id_name}
               onClick={() => setSelectedPart(part)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {

@@ -168,7 +168,7 @@ export function StatOverview({
               >
                 {champions?.[part.champion_id]?.image.file_40 ? (
                   <Image
-                    title={part.summoner_name}
+                    title={part.riot_id_name}
                     width={22}
                     height={22}
                     className="rounded"
@@ -193,7 +193,7 @@ export function StatOverview({
             <YAxis
               width={0}
               type="category"
-              dataKey="summoner_name"
+              dataKey="riot_id_name"
               interval={0}
               tickFormatter={() => ""}
             />

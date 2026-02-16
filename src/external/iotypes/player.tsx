@@ -59,12 +59,10 @@ export type SummonerNoteType = z.infer<typeof SummonerNote>;
 export const Summoner = z.object({
   has_match_overlap: z.number(),
   id: z.number(),
-  name: z.string(),
   profile_icon_id: z.number(),
   profile_icon: z.string(),
   puuid: z.string(),
   region: z.string(),
-  simple_name: z.string(),
   summoner_level: z.number(),
   riot_id_name: z.string(),
   riot_id_tagline: z.string(),
