@@ -488,6 +488,7 @@ export function ChampionClump({
             height={40}
             width={40}
             alt={`Champion Image: ${champion.name}`}
+            className="w-auto"
           />
           {roleBoundItem && roleBoundItem?.image?.file_30 && (
             <div className="absolute -bottom-1 -left-1">
@@ -497,7 +498,7 @@ export function ChampionClump({
                 item_id={part.role_bound_item}
               >
                 <Image
-                  className="rounded-sm border border-zinc-600"
+                  className="rounded-sm border border-zinc-600 w-auto"
                   src={mediaUrl(roleBoundItem.image.file_30)}
                   width={18}
                   height={18}

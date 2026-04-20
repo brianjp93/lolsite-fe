@@ -242,6 +242,7 @@ export function MapEventsInner({
     <div className="inline-block">
       <div className="relative">
         <Image
+          loading='eager'
           height={image_size}
           width={image_size}
           className="min-w-fit rounded-lg"
