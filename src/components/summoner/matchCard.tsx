@@ -498,7 +498,7 @@ export function ChampionClump({
                 item_id={part.role_bound_item}
               >
                 <Image
-                  className="rounded-sm border border-zinc-600 w-auto"
+                  className="rounded-sm border border-zinc-600"
                   src={mediaUrl(roleBoundItem.image.file_30)}
                   width={18}
                   height={18}
