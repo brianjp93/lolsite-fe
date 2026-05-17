@@ -10,7 +10,7 @@
     "start": "next start"
   },
   "engines": {
-    "node": "24.x"
+    "node": ">=24.15.0 <25.0.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.10",
