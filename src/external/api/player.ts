@@ -280,7 +280,7 @@ async function login({email, password}: {email: string, password: string}) {
     email,
     password,
   }, get_default_headers())
-  return response.data
+  return response
 }
 
 async function logout() {

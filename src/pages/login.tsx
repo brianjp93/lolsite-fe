@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { signUpRoute } from "@/routes";
+import axios from "axios";
 
 export function loginPath() {
   return "/login";
@@ -32,6 +33,7 @@ function LoginInner() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<LoginSchema>({
     resolver: zodResolver(LoginSchema),
@@ -43,13 +45,29 @@ function LoginInner() {
   const login = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       api.player.login({ email, password }),
-    onSuccess: () => {
-      userQuery.refetch();
+    onSuccess: async () => {
+      await userQuery.refetch();
       router.push("/");
     },
   });
-  const onSubmit = ({ email, password }: LoginSchema) => {
-    login.mutate({ email, password });
+  const onSubmit = async ({ email, password }: LoginSchema) => {
+    try {
+      await login.mutateAsync({ email, password });
+    } catch (error) {
+      const validationErrors = axios.isAxiosError<
+        Partial<Record<keyof LoginSchema, string[]>>
+      >(error)
+        ? error.response?.data
+        : undefined;
+      const emailError = validationErrors?.email?.[0];
+      const passwordError = validationErrors?.password?.[0];
+
+      if (emailError) setError("email", { message: emailError });
+      if (passwordError) setError("password", { message: passwordError });
+      if (!emailError && !passwordError) {
+        setError("password", { message: "Unable to log in." });
+      }
+    }
   };
   return (
     <div className="mx-auto mt-11 flex w-full max-w-prose flex-col gap-y-4">
