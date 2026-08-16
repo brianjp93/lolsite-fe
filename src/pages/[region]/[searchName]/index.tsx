@@ -80,7 +80,8 @@ export default function Summoner({
     {
       refetchInterval: (query) =>
         query.state.data?.summoner_level === 0 ? 3_000 : false,
-      initialData: initialSummoner || undefined,
+      // This needs to be fetched on the frontend so that some of the user-specific data gets loaded from the server
+      placeholderData: initialSummoner || undefined,
     }
   );
   const summoner = summonerQuery.data;
