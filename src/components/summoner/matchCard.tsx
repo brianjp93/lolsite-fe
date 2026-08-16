@@ -1,4 +1,7 @@
-import type { BasicParticipantType, FullParticipantType } from "@/external/iotypes/match";
+import type {
+  BasicParticipantType,
+  FullParticipantType,
+} from "@/external/iotypes/match";
 import type { BasicMatchType, SummonerType } from "@/external/types";
 import {
   useBasicChampions,
@@ -52,8 +55,7 @@ export default function MatchCard({
   const creationFull = formatDatetimeFull(match.game_creation);
   const creation = formatDatetime(match.game_creation);
   const isTie = minutes < 5;
-  const returnPath = window.location.pathname + window.location.search;
-  const params = new URLSearchParams({ returnPath });
+  const params = new URLSearchParams({ returnPath: router.asPath });
   return (
     <>
       <div
@@ -94,13 +96,19 @@ export default function MatchCard({
             </div>
             <div className="flex items-center gap-1">
               <div
-                className={clsx("text-xs font-bold", queueColor(match.queue_id))}
+                className={clsx(
+                  "text-xs font-bold",
+                  queueColor(match.queue_id)
+                )}
               >
                 {queue?.description || match.queue_id}
               </div>
               {part && (
                 <div className="w-11 text-center">
-                  <ImpactRank impact_rank={part.impact_rank} impact_score={part.impact_score} />
+                  <ImpactRank
+                    impact_rank={part.impact_rank}
+                    impact_score={part.impact_score}
+                  />
                 </div>
               )}
             </div>

@@ -262,27 +262,35 @@ export function useParticipants(matchId: string) {
   return participantQuery;
 }
 
-export function useMatchList({
-  riot_id_name,
-  riot_id_tagline,
-  region,
-  start,
-  limit,
-  sync,
-  queue,
-  playedWith,
-  keepPreviousData = true,
-}: {
-  riot_id_name: string;
-  riot_id_tagline: string;
-  region: string;
-  start: number;
-  limit: number;
-  sync: boolean;
-  queue?: number;
-  playedWith?: string;
-  keepPreviousData?: boolean;
-}) {
+export function useMatchList(
+  {
+    riot_id_name,
+    riot_id_tagline,
+    region,
+    start,
+    limit,
+    sync,
+    queue,
+    playedWith,
+    keepPreviousData = true,
+  }: {
+    riot_id_name: string;
+    riot_id_tagline: string;
+    region: string;
+    start: number;
+    limit: number;
+    sync: boolean;
+    queue?: number;
+    playedWith?: string;
+    keepPreviousData?: boolean;
+  },
+  options?: Omit<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof api.match.getMatchesByRiotIdName>>["results"]
+    >,
+    "queryKey" | "queryFn"
+  >
+) {
   const query = useQuery({
     queryKey: [
       "matches-with-sync",
@@ -317,6 +325,7 @@ export function useMatchList({
       : undefined,
     staleTime: 1000 * 60 * 3,
     enabled: !!riot_id_name && !!region && !!riot_id_tagline,
+    ...options,
   });
   return query;
 }
@@ -387,20 +396,26 @@ export function useSummoner(
   });
 }
 
-export function usePositions({
-  puuid,
-  region,
-}: {
-  puuid: string;
-  region: string;
-}) {
+export function usePositions(
+  {
+    puuid,
+    region,
+  }: {
+    puuid: string;
+    region: string;
+  },
+  options?: Omit<
+    UseQueryOptions<Awaited<ReturnType<typeof api.player.getPositions>>>,
+    "queryKey" | "queryFn"
+  >
+) {
   const query = useQuery({
     queryKey: ["positions", puuid, region],
-    queryFn: () =>
-      puuid ? api.player.getPositions({ puuid, region }) : undefined,
+    queryFn: () => api.player.getPositions({ puuid, region }),
     retry: false,
     refetchOnWindowFocus: false,
     enabled: !!puuid,
+    ...options,
   });
   return query;
 }

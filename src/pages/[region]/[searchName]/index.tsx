@@ -4,7 +4,6 @@ import {
   useNameChanges,
   usePositions,
   useSummoner,
-  useSuspiciousAccount,
 } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
@@ -12,7 +11,7 @@ import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
 import clsx from "clsx";
-import type { BasicMatchType } from "@/external/types";
+import type { BasicMatchType, SummonerType } from "@/external/types";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,6 +29,9 @@ import { SummonerNote } from "@/components/summoner/summonerNote";
 
 export default function Summoner({
   meta,
+  initialSummoner,
+  initialMatches,
+  initialPath,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const { region, searchName } = router.query as {
@@ -79,32 +81,26 @@ export default function Summoner({
     {
       refetchInterval: (query) =>
         query.state.data?.summoner_level === 0 ? 3_000 : false,
+      initialData: initialSummoner || undefined,
     }
   );
   const summoner = summonerQuery.data;
 
-  const matchQuery = useMatchList({
-    riot_id_name,
-    riot_id_tagline,
-    region,
-    start,
-    limit,
-    sync: true,
-    queue: params.queue,
-    playedWith: params.playedWith,
-  });
-
-  const susAccountQ = useSuspiciousAccount(
-    summoner?.puuid || "",
-    !!summoner?.puuid && matchQuery.isSuccess
+  const matchQuery = useMatchList(
+    {
+      riot_id_name,
+      riot_id_tagline,
+      region,
+      start,
+      limit,
+      sync: true,
+      queue: params.queue,
+      playedWith: params.playedWith,
+    },
+    {
+      initialData: router.asPath === initialPath ? initialMatches : undefined,
+    }
   );
-  const susAccount = susAccountQ.data;
-
-  const flexFFGamePercentage = susAccount
-    ? susAccount.quick_ff_count / (susAccount.total || 1)
-    : 0;
-
-  const isInitialQuery = !matchQuery.data;
 
   const matches: BasicMatchType[] = matchQuery.data || [];
   const positionQuery = usePositions({
@@ -224,18 +220,9 @@ export default function Summoner({
               nameChanges={nameChangeQuery.data}
             />
             <SummonerNote summoner={summoner} />
-            {flexFFGamePercentage > 0.05 &&
-              (susAccount?.quick_ff_count || 0) > 4 && (
-                <div className="ml-2 max-w-fit rounded-md bg-red-800/50 p-2 font-bold">
-                  This summoner has suspicious activity
-                  <br />
-                  {susAccount?.quick_ff_count} ff&apos;d (&lt;5min games) in{" "}
-                  {susAccount?.total} total games.
-                </div>
-              )}
           </div>
         )}
-        {matchQuery.isFetching && isInitialQuery && (
+        {matchQuery.isFetching && (
           <div>
             <div
               style={{
@@ -252,7 +239,7 @@ export default function Summoner({
           <SummonerNotFound />
         )}
 
-        {!isInitialQuery && matchQuery.isSuccess && summonerQuery.isSuccess && (
+        {matchQuery.isSuccess && summonerQuery.isSuccess && (
           <div className="flex">
             <div>
               {!isLoading && summoner && (
@@ -412,18 +399,55 @@ function MatchFilter({
 
 export const getServerSideProps: GetServerSideProps<{
   meta: MetaHead | null;
+  initialSummoner: SummonerType | null;
+  initialMatches: BasicMatchType[];
+  initialPath: string;
 }> = async (context) => {
   const { region, searchName } = context.query as {
     region: string;
     searchName: string;
   };
-  const isFirstLoad = !(context.req?.url || "").includes("_next/data");
-  let meta = null;
-  if (isFirstLoad) {
-    meta = await api.general.getSummonerMetaData({
-      name: searchName,
+  const limit = 10;
+  const page = Number(context.query.page) || 1;
+  const start = limit * page - limit;
+  const queue = context.query.queue ? Number(context.query.queue) : undefined;
+  const playedWith = (context.query.playedWith as string) || "";
+  const [riot_id_name, riot_id_tagline] =
+    getRiotIdAndTaglineFromSearchName(searchName);
+
+  const summonerQuery = api.player.getSummonerByRiotId(
+    riot_id_name,
+    riot_id_tagline,
+    region
+  );
+  const matchQuery = api.match
+    .getMatchesByRiotIdName({
+      riot_id_name,
+      riot_id_tagline,
       region,
-    });
-  }
-  return { props: { meta } };
+      start,
+      limit,
+      queue,
+      playedWith,
+      sync_import: true,
+    })
+    .then((response) => response.results);
+  const isFirstLoad = !(context.req?.url || "").includes("_next/data");
+  const metaQuery = isFirstLoad
+    ? api.general.getSummonerMetaData({ name: searchName, region })
+    : Promise.resolve(null);
+
+  const [initialSummoner, initialMatches, meta] = await Promise.all([
+    summonerQuery,
+    matchQuery,
+    metaQuery,
+  ]);
+  return {
+    props: {
+      meta,
+      initialSummoner,
+      initialMatches,
+      initialPath: context.resolvedUrl,
+    },
+  };
 };
