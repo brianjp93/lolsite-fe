@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   useMatchList,
   useNameChanges,
@@ -43,25 +43,25 @@ export default function Summoner({
       page: Number(router.query.page) || 1,
       queue: router.query.queue ? Number(router.query.queue) : undefined,
       playedWith: (router.query.playedWith as string) || "",
-    }
+    };
   }, [router.query]);
   const setParams = useCallback(
     (
       updater:
         | Partial<typeof params>
-        | ((prev: typeof params) => Partial<typeof params>),
+        | ((prev: typeof params) => Partial<typeof params>)
     ) => {
       const next = typeof updater === "function" ? updater(params) : updater;
       const query = { ...router.query, ...next };
       // Remove undefined/empty values to keep URL clean
-      for (const key of (Object.keys(query) as Array<keyof typeof query>)) {
+      for (const key of Object.keys(query) as Array<keyof typeof query>) {
         if (query[key] === undefined || query[key] === "") {
           delete query[key];
         }
       }
       void router.replace({ query }, undefined, { shallow: true });
     },
-    [router, params],
+    [router, params]
   );
   const limit = 10;
 
@@ -70,18 +70,18 @@ export default function Summoner({
   }
 
   const start = limit * params.page - limit;
-  const summonerQuery = useSummoner({
-    region,
-    riotIdName: riot_id_name,
-    riotIdTagline: riot_id_tagline,
-  });
-  const summoner = summonerQuery.data;
-
-  useEffect(() => {
-    if (summoner?.summoner_level === 0) {
-      setTimeout(summonerQuery.refetch, 3000);
+  const summonerQuery = useSummoner(
+    {
+      region,
+      riotIdName: riot_id_name,
+      riotIdTagline: riot_id_tagline,
+    },
+    {
+      refetchInterval: (query) =>
+        query.state.data?.summoner_level === 0 ? 3_000 : false,
     }
-  }, [summoner, summonerQuery.refetch])
+  );
+  const summoner = summonerQuery.data;
 
   const matchQuery = useMatchList({
     riot_id_name,
@@ -126,7 +126,7 @@ export default function Summoner({
             })
           }
           disabled={matchQuery.isFetching || params.page <= 1}
-          className="btn btn-default flex items-center justify-center box-border hover:cursor-pointer"
+          className="btn btn-default box-border flex items-center justify-center hover:cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ export default function Summoner({
             })
           }
           disabled={matchQuery.isFetching}
-          className="btn btn-default ml-2 flex items-center justify-center box-border hover:cursor-pointer"
+          className="btn btn-default ml-2 box-border flex items-center justify-center hover:cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -257,7 +257,7 @@ export default function Summoner({
             <div>
               {!isLoading && summoner && (
                 <>
-                  <div className="my-2 w-full max-w-237.5 rounded-md bg-zinc-800 p-4">
+                  <div className="max-w-237.5 my-2 w-full rounded-md bg-zinc-800 p-4">
                     <PlayerChampionSummary puuid={summoner.puuid} />
                   </div>
                 </>
@@ -361,7 +361,7 @@ function MatchFilter({
   });
 
   const [playedWithNames, setPlayedWithNames] = useState<string[]>(() =>
-    playedWith ? playedWith.split(",").filter(Boolean) : [],
+    playedWith ? playedWith.split(",").filter(Boolean) : []
   );
 
   const onChange = useCallback(async () => {
@@ -373,7 +373,7 @@ function MatchFilter({
       setPlayedWithNames(names);
       onSubmit({ ...getValues(), playedWith: names.join(",") });
     },
-    [getValues, onSubmit],
+    [getValues, onSubmit]
   );
 
   return (
@@ -384,7 +384,7 @@ function MatchFilter({
         </label>
         <select
           {...register("queue", { onChange })}
-          className="default w-full rounded py-2!"
+          className="default py-2! w-full rounded"
         >
           <option value={undefined}>Any</option>
           {Object.keys(QUEUEFILTER).map((x) => {

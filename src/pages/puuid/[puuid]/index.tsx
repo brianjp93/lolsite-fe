@@ -1,27 +1,32 @@
-import Skeleton from "@/components/general/skeleton";
-import { useRouter } from "next/router";
-import { useSummonerByPuuid } from "@/hooks";
+import api from "@/external/api/api";
 import { profileRoute } from "@/routes";
+import axios from "axios";
+import type { GetServerSideProps } from "next";
 
-// used as a redirect page so we can link directly to a puuid
 export default function PuuidPage() {
-  const router = useRouter();
-  const { puuid } = router.query as { puuid: string };
-  const summonerQuery = useSummonerByPuuid({ puuid });
-  const summoner = summonerQuery.data;
-
-  if (summoner) {
-    const url = profileRoute({
-      region: summoner.region,
-      riotIdName: summoner.riot_id_name,
-      riotIdTagline: summoner.riot_id_tagline,
-    });
-    router.replace(url);
-  }
-  return (
-    <Skeleton>
-      {summonerQuery.isLoading && <div>Loading...</div>}
-      {summonerQuery.isError && <div>An error has occurred.</div>}
-    </Skeleton>
-  );
+  return null;
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const puuid = params?.puuid;
+  if (typeof puuid !== "string") return { notFound: true };
+
+  try {
+    const summoner = await api.player.getSummoner({ puuid });
+    return {
+      redirect: {
+        destination: profileRoute({
+          region: summoner.region,
+          riotIdName: summoner.riot_id_name,
+          riotIdTagline: summoner.riot_id_tagline,
+        }),
+        permanent: false,
+      },
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return { notFound: true };
+    }
+    throw error;
+  }
+};

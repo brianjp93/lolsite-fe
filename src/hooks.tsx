@@ -75,7 +75,10 @@ export function useAllItems({
   minor?: number | string;
   patch?: number | string;
   map_id?: number;
-  options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof api.data.items>>>, 'queryKey' | 'queryFn'>;
+  options?: Omit<
+    UseQueryOptions<Awaited<ReturnType<typeof api.data.items>>>,
+    "queryKey" | "queryFn"
+  >;
 }) {
   return useQuery({
     queryKey: ["all-items"],
@@ -113,9 +116,12 @@ export function useSimpleItems({
   minor,
   options,
 }: {
-  major: number | string,
-  minor: number | string,
-  options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof api.data.getSimpleItemList>>>, 'queryKey' | 'queryFn'>;
+  major: number | string;
+  minor: number | string;
+  options?: Omit<
+    UseQueryOptions<Awaited<ReturnType<typeof api.data.getSimpleItemList>>>,
+    "queryKey" | "queryFn"
+  >;
 }) {
   return useQuery({
     queryKey: ["simple-items", major, minor],
@@ -141,19 +147,19 @@ export function useSimpleItem({
     minor,
     options: {
       enabled: !!id,
-    }
+    },
   });
   const output = useMemo(() => {
     return itemsQ.data?.results.reduce((prev, curr) => {
       prev[curr._id] = curr;
-      return prev
-    }, {} as Record<number, SimpleItem>)
-  }, [itemsQ.data])
-  const item = output?.[id!]
+      return prev;
+    }, {} as Record<number, SimpleItem>);
+  }, [itemsQ.data]);
+  const item = output?.[id!];
   return {
     ...itemsQ,
     data: item,
-  }
+  };
 }
 
 export function useChampions(): Record<number, ChampionType> {
@@ -306,7 +312,9 @@ export function useMatchList({
     retry: true,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    placeholderData: keepPreviousData ? (previousData) => previousData : undefined,
+    placeholderData: keepPreviousData
+      ? (previousData) => previousData
+      : undefined,
     staleTime: 1000 * 60 * 3,
     enabled: !!riot_id_name && !!region && !!riot_id_tagline,
   });
@@ -317,9 +325,9 @@ export function useTimeline({ matchId }: { matchId: string }) {
   return useQuery({
     queryKey: ["timeline", matchId],
     queryFn: async () => {
-      const response = await api.match.timeline(matchId)
-      response.frames.sort((a, b) => a.timestamp - b.timestamp)
-      return response
+      const response = await api.match.timeline(matchId);
+      response.frames.sort((a, b) => a.timestamp - b.timestamp);
+      return response;
     },
     retry: false,
     refetchOnWindowFocus: false,
@@ -351,15 +359,21 @@ export function useQueues() {
   });
 }
 
-export function useSummoner({
-  region,
-  riotIdName,
-  riotIdTagline,
-}: {
-  region: string;
-  riotIdName: string;
-  riotIdTagline: string;
-}) {
+export function useSummoner(
+  {
+    region,
+    riotIdName,
+    riotIdTagline,
+  }: {
+    region: string;
+    riotIdName: string;
+    riotIdTagline: string;
+  },
+  options?: Omit<
+    UseQueryOptions<Awaited<ReturnType<typeof api.player.getSummonerByRiotId>>>,
+    "queryKey" | "queryFn"
+  >
+) {
   return useQuery({
     queryKey: ["summoner", "name", riotIdName, riotIdTagline, region],
     queryFn: () =>
@@ -369,17 +383,7 @@ export function useSummoner({
     refetchOnMount: false,
     staleTime: 1000 * 60 * 5,
     enabled: !!region && !!riotIdName && !!riotIdTagline,
-  });
-}
-
-export function useSummonerByPuuid({ puuid }: { puuid: string }) {
-  return useQuery({
-    queryKey: ["summoner", "puuid", puuid],
-    queryFn: () => api.player.getSummoner({ puuid }),
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    staleTime: 1000 * 60 * 5,
+    ...options,
   });
 }
 
