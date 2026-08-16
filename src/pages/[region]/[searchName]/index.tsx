@@ -1,10 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  useMatchList,
-  useNameChanges,
-  usePositions,
-  useSummoner,
-} from "@/hooks";
+import { useMatchList, useSummoner } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
 import MatchCard from "@/components/summoner/matchCard";
@@ -21,6 +16,7 @@ import { ProfileCardInner } from "@/components/summoner/matchDetails/profileCard
 import Head from "next/head";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import type { MetaHead } from "@/external/iotypes/base";
+import type { NameChangeType, PositionType } from "@/external/iotypes/player";
 import { RecentlyPlayedWith } from "@/components/summoner/recentlyPlayedWith";
 import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSummary";
 import { MatchListSummary } from "@/components/summoner/SummonerSummary";
@@ -32,6 +28,8 @@ export default function Summoner({
   meta,
   initialSummoner,
   initialMatches,
+  initialPositions,
+  initialNameChanges,
   initialPath,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
@@ -100,17 +98,12 @@ export default function Summoner({
     },
     {
       // use initialMatches if we are on the original route, otherwise keep previous data
-      placeholderData: (x) => router.asPath === initialPath ? initialMatches: keepPreviousData(x),
+      placeholderData: (x) =>
+        router.asPath === initialPath ? initialMatches : keepPreviousData(x),
     }
   );
 
   const matches: BasicMatchType[] = matchQuery.data || [];
-  const positionQuery = usePositions({
-    region,
-    puuid: summoner?.puuid || "",
-  });
-
-  const nameChangeQuery = useNameChanges(summoner?.id || 0);
 
   const isLoading = matchQuery.isLoading || summonerQuery.isLoading;
 
@@ -218,8 +211,8 @@ export default function Summoner({
           <div className="flex">
             <ProfileCardInner
               summoner={summoner}
-              positions={positionQuery.data}
-              nameChanges={nameChangeQuery.data}
+              positions={initialPositions}
+              nameChanges={initialNameChanges}
             />
             <SummonerNote summoner={summoner} />
           </div>
@@ -391,6 +384,8 @@ export const getServerSideProps: GetServerSideProps<{
   meta: MetaHead | null;
   initialSummoner: SummonerType | null;
   initialMatches: BasicMatchType[];
+  initialPositions: PositionType[];
+  initialNameChanges: NameChangeType[];
   initialPath: string;
 }> = async (context) => {
   const { region, searchName } = context.query as {
@@ -423,14 +418,32 @@ export const getServerSideProps: GetServerSideProps<{
       sync_import: false,
     })
     .then((response) => response.results);
+  const positionQuery = api.player.getPositions({
+    riot_id_name,
+    riot_id_tagline,
+    region,
+  });
+  const nameChangeQuery = api.player.getNameChanges({
+    riot_id_name,
+    riot_id_tagline,
+    region,
+  });
   const isFirstLoad = !(context.req?.url || "").includes("_next/data");
   const metaQuery = isFirstLoad
     ? api.general.getSummonerMetaData({ name: searchName, region })
     : Promise.resolve(null);
 
-  const [initialSummoner, initialMatches, meta] = await Promise.all([
+  const [
+    initialSummoner,
+    initialMatches,
+    initialPositions,
+    initialNameChanges,
+    meta,
+  ] = await Promise.all([
     summonerQuery,
     matchQuery,
+    positionQuery,
+    nameChangeQuery,
     metaQuery,
   ]);
   return {
@@ -438,6 +451,8 @@ export const getServerSideProps: GetServerSideProps<{
       meta,
       initialSummoner,
       initialMatches,
+      initialPositions,
+      initialNameChanges,
       initialPath: context.resolvedUrl,
     },
   };

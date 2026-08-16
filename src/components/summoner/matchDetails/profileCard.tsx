@@ -15,7 +15,10 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Popover } from "react-tiny-popover";
 import { useState } from "react";
-import { QUEUE_CONVERT, getRiotIdAndTaglineFromSearchName } from "@/utils/constants";
+import {
+  QUEUE_CONVERT,
+  getRiotIdAndTaglineFromSearchName,
+} from "@/utils/constants";
 import numeral from "numeral";
 import api from "@/external/api/api";
 import { useMutation } from "@tanstack/react-query";
@@ -30,12 +33,21 @@ export function ProfileCard({ className = "" }: { className: string }) {
     searchName: string;
     region: string;
   };
-  const [riotIdName, riotIdTagline] = getRiotIdAndTaglineFromSearchName(searchName)
+  const [riotIdName, riotIdTagline] =
+    getRiotIdAndTaglineFromSearchName(searchName);
   const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;
-  const positionQ = usePositions({ puuid: summoner?.puuid || "", region });
+  const positionQ = usePositions({
+    riot_id_name: riotIdName,
+    riot_id_tagline: riotIdTagline,
+    region,
+  });
   const positions = positionQ.data;
-  const nameChangeQuery = useNameChanges(summoner?.id || 0);
+  const nameChangeQuery = useNameChanges({
+    riot_id_name: riotIdName,
+    riot_id_tagline: riotIdTagline,
+    region,
+  });
   const nameChanges = nameChangeQuery.data || [];
   if (!summoner) return null;
   return (
@@ -53,7 +65,7 @@ export function FollowButton({ summoner }: { summoner: SummonerType }) {
   const user = useUser().data;
   const followQ = useFollowList({ enabled: !!user });
   const following = followQ.data || [];
-  const isFollow = following.map(x => x.id).includes(summoner.id);
+  const isFollow = following.map((x) => x.id).includes(summoner.id);
 
   const setFollowM = useMutation({
     mutationFn: () => api.player.setFollow({ id: summoner.id }),
@@ -64,23 +76,30 @@ export function FollowButton({ summoner }: { summoner: SummonerType }) {
     onSuccess: () => followQ.refetch(),
   });
   if (!user) {
-    return null
+    return null;
   }
-  return <div title="follow">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill={isFollow ? "currentColor" : "none"}
-      onClick={() => {
-        isFollow ? removeFollowM.mutate() : setFollowM.mutate()
-      }}
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke={isFollow ? "black": "currentColor"}
-      className="w-6 h-6 hover:cursor-pointer"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-    </svg>
-  </div>
+  return (
+    <div title="follow">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill={isFollow ? "currentColor" : "none"}
+        onClick={() => {
+          if (isFollow) removeFollowM.mutate();
+          else setFollowM.mutate();
+        }}
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke={isFollow ? "black" : "currentColor"}
+        className="h-6 w-6 hover:cursor-pointer"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+    </div>
+  );
 }
 
 export function FavoriteButton({ summoner }: { summoner: SummonerType }) {
@@ -165,7 +184,7 @@ export function ProfileCardInner({
             height={40}
             className="rounded"
           />
-          <div className="absolute -bottom-1.75 flex w-full">
+          <div className="-bottom-1.75 absolute flex w-full">
             <div className="mx-auto rounded-md bg-zinc-200 px-1 text-xs font-bold text-gray-900">
               {summoner.summoner_level}
             </div>
@@ -197,7 +216,9 @@ export function ProfileCardInner({
                         })}
                       </div>
                     ) : (
-                      <div className="text-sm text-zinc-400">No previous names</div>
+                      <div className="text-sm text-zinc-400">
+                        No previous names
+                      </div>
                     )}
                   </div>
                 }
@@ -206,9 +227,7 @@ export function ProfileCardInner({
                   onClick={() => setIsNameChangeOpen((x) => !x)}
                   className="flex cursor-pointer font-bold underline"
                 >
-                  <div>
-                    {summoner.riot_id_name}
-                  </div>
+                  <div>{summoner.riot_id_name}</div>
                   <div className="text-gray-600">
                     #{summoner.riot_id_tagline}
                   </div>
@@ -306,14 +325,11 @@ export function ProfileCardInner({
                     {[...x.series_progress].map((ch: string, key: number) => (
                       <div
                         key={key}
-                        className={clsx(
-                          "h-3 w-3 rounded-full border-2",
-                          {
-                            "border-green-900 bg-green-600": ch === "W",
-                            "border-red-900 bg-red-600": ch === "L",
-                            "border-zinc-700 bg-zinc-800": ch === "N",
-                          }
-                        )}
+                        className={clsx("h-3 w-3 rounded-full border-2", {
+                          "border-green-900 bg-green-600": ch === "W",
+                          "border-red-900 bg-red-600": ch === "L",
+                          "border-zinc-700 bg-zinc-800": ch === "N",
+                        })}
                       />
                     ))}
                   </div>

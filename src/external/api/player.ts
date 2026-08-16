@@ -12,8 +12,13 @@ import {
   PaginatedResponse,
 } from "../types";
 import { env } from "@/env/client.mjs";
-import {Comment, PlayerChampionSummaryResponse, Position, SuspiciousPlayer} from "../iotypes/player";
-import {get_default_headers} from "./common";
+import {
+  Comment,
+  PlayerChampionSummaryResponse,
+  Position,
+  SuspiciousPlayer,
+} from "../iotypes/player";
+import { get_default_headers } from "./common";
 
 const version = "v1";
 const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
@@ -21,7 +26,6 @@ const base = `${env.NEXT_PUBLIC_BACKEND_URL}/api/${version}/player`;
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
-
 
 async function getMyUser() {
   const url = `${base}/me/`;
@@ -32,14 +36,18 @@ async function getMyUser() {
   return null;
 }
 
-async function getSummoner(data: {puuid: string, region?: string}) {
+async function getSummoner(data: { puuid: string; region?: string }) {
   const url = `${base}/summoner/`;
   const response = await axios.post(url, data, get_default_headers());
   return Summoner.parse(response.data.data);
 }
 
-async function getSummonerByRiotId(riotIdName: string, riotIdTagline: string, region: string) {
-  const url = `${base}/summoner/by-riot-id/${region}/${riotIdName}/${riotIdTagline}/`
+async function getSummonerByRiotId(
+  riotIdName: string,
+  riotIdTagline: string,
+  region: string
+) {
+  const url = `${base}/summoner/by-riot-id/${region}/${riotIdName}/${riotIdTagline}/`;
   const response = await axios.get(url);
   return Summoner.parse(response.data);
 }
@@ -54,30 +62,46 @@ async function getSummoners(data: GetSummonersData) {
   return z.array(Summoner).parse(r.data.data);
 }
 
-async function getPositions(data: any) {
+async function getPositions(data: {
+  puuid?: string;
+  riot_id_name?: string;
+  riot_id_tagline?: string;
+  region?: string;
+  update?: boolean;
+}) {
   const url = `${base}/positions/`;
-  const response = await axios.post(url, data, get_default_headers());
+  const response = await axios.get(url, { params: data });
   return z.array(Position).parse(response.data.data);
 }
 
-function signUp({email, password, token}: {email: string, password: string, token: string}) {
-  const data = {email, password, token}
+function signUp({
+  email,
+  password,
+  token,
+}: {
+  email: string;
+  password: string;
+  token: string;
+}) {
+  const data = { email, password, token };
   const url = `${base}/sign-up/`;
   return axios.post(url, data, get_default_headers());
 }
 
 function verify(code: string) {
   const url = `${base}/verify/`;
-  return axios.post(url, {code}, get_default_headers());
+  return axios.post(url, { code }, get_default_headers());
 }
 
 async function getChampionsOverview(data: any) {
   const url = `${base}/champions-overview/`;
-  const response = await axios.get(url, {params: data});
-  return z.object({
-    count: z.number(),
-    data: z.array(PlayerChampionSummaryResponse)
-  }).parse(response.data)
+  const response = await axios.get(url, { params: data });
+  return z
+    .object({
+      count: z.number(),
+      data: z.array(PlayerChampionSummaryResponse),
+    })
+    .parse(response.data);
 }
 
 async function summonerSearch(params: {
@@ -116,43 +140,62 @@ async function getFollowList() {
   return z.array(Summoner).parse(response.data);
 }
 
-async function setFollow({id}: {id: number}) {
+async function setFollow({ id }: { id: number }) {
   const url = `${base}/following/`;
-  const response = await axios.post(url, {id}, get_default_headers())
+  const response = await axios.post(url, { id }, get_default_headers());
   return z.array(Summoner).parse(response.data);
 }
 
-async function removeFollow({id}: {id: number}) {
+async function removeFollow({ id }: { id: number }) {
   const url = `${base}/following/`;
-  const response = await axios.delete(url, {data: {id}, ...get_default_headers()})
+  const response = await axios.delete(url, {
+    data: { id },
+    ...get_default_headers(),
+  });
   return z.array(Summoner).parse(response.data);
 }
 
 async function getFavorites() {
   const url = `${base}/favorites/`;
   const response = await axios.get(url);
-  return z.array(Favorite).parse(response.data.data)
+  return z.array(Favorite).parse(response.data.data);
 }
 
 async function setFavorite(summoner_id: number) {
   const url = `${base}/favorites/`;
-  const response = await axios.post(url, {verb: 'set', summoner_id}, get_default_headers());
-  return response.status
+  const response = await axios.post(
+    url,
+    { verb: "set", summoner_id },
+    get_default_headers()
+  );
+  return response.status;
 }
 
 async function removeFavorite(summoner_id: number) {
   const url = `${base}/favorites/`;
-  const response = await axios.post(url, {verb: 'remove', summoner_id}, get_default_headers());
-  return response.status
+  const response = await axios.post(
+    url,
+    { verb: "remove", summoner_id },
+    get_default_headers()
+  );
+  return response.status;
 }
 
 async function setFavoriteOrder(favorites: string[]) {
-  const url = `${base}/favorites/`
-  const response = await axios.post(url, {verb: 'order', favorite_ids: favorites}, get_default_headers())
-  return response.status
+  const url = `${base}/favorites/`;
+  const response = await axios.post(
+    url,
+    { verb: "order", favorite_ids: favorites },
+    get_default_headers()
+  );
+  return response.status;
 }
 
-function generateCode(data: {action: string, simple_riot_id?: string, region?: string}) {
+function generateCode(data: {
+  action: string;
+  simple_riot_id?: string;
+  region?: string;
+}) {
   const url = `${base}/generate-code/`;
   return axios.post(url, data, get_default_headers());
 }
@@ -164,8 +207,8 @@ function connectAccount(data: any) {
 
 function unlinkAccount(puuid: string) {
   const url = `${base}/unlink-account/`;
-  const data = get_default_headers()
-  return axios.request({method: 'DELETE', data: {puuid}, url, ...data})
+  const data = get_default_headers();
+  return axios.request({ method: "DELETE", data: { puuid }, url, ...data });
 }
 
 function connectAccountWithProfileIcon(data: any) {
@@ -211,17 +254,22 @@ function getReplies(data: any) {
   return axios.get(url, { params: data });
 }
 
-function createComment(data: {markdown: string, match: number, reply_to?: number, summoner: string}) {
+function createComment(data: {
+  markdown: string;
+  match: number;
+  reply_to?: number;
+  summoner: string;
+}) {
   const url = `${base}/comment/`;
   return axios.post(url, data, get_default_headers());
 }
 
-function updateComment({id, markdown}: {id: number, markdown: string}) {
+function updateComment({ id, markdown }: { id: number; markdown: string }) {
   const url = `${base}/comment/${id}/`;
-  return axios.put(url, {markdown})
+  return axios.put(url, { markdown });
 }
 
-function deleteComment({id}: {id: number}) {
+function deleteComment({ id }: { id: number }) {
   const url = `${base}/comment/${id}/`;
   return axios.delete(url);
 }
@@ -238,7 +286,7 @@ function dislikeComment(data: any) {
 
 function getCommentCount(matchIds: number[]) {
   const url = `${base}/comment/count/`;
-  return axios.get(url, { params: {match_ids: matchIds} });
+  return axios.get(url, { params: { match_ids: matchIds } });
 }
 
 function editDefaultSummoner(data: any) {
@@ -254,7 +302,11 @@ async function getReputation(summoner: number) {
 
 async function createReputation(summoner: number, is_approve: boolean) {
   const url = `${base}/reputation/create/`;
-  const r = await axios.post(url, { summoner, is_approve }, get_default_headers());
+  const r = await axios.post(
+    url,
+    { summoner, is_approve },
+    get_default_headers()
+  );
   return Reputation.parse(r.data);
 }
 
@@ -268,48 +320,73 @@ async function updateReputation(
   return Reputation.parse(r.data);
 }
 
-async function getNameChanges(id: number) {
-  const url = `${base}/summoner/${id}/name-changes/`;
-  const r = await axios.get(url);
+async function getNameChanges(data: {
+  puuid?: string;
+  riot_id_name?: string;
+  riot_id_tagline?: string;
+  region?: string;
+}) {
+  const url = `${base}/name-changes/`;
+  const r = await axios.get(url, { params: data });
   return z.array(NameChange).parse(r.data.results);
 }
 
-async function login({email, password}: {email: string, password: string}) {
-  const url = `${base}/login/`
-  const response = await axios.post(url, {
-    email,
-    password,
-  }, get_default_headers())
-  return response
+async function login({ email, password }: { email: string; password: string }) {
+  const url = `${base}/login/`;
+  const response = await axios.post(
+    url,
+    {
+      email,
+      password,
+    },
+    get_default_headers()
+  );
+  return response;
 }
 
 async function logout() {
-  const url = `${base}/logout/`
-  const response = await axios.post(url, {}, get_default_headers())
-  return response.status
+  const url = `${base}/logout/`;
+  const response = await axios.post(url, {}, get_default_headers());
+  return response.status;
 }
 
 async function isSuspicious(puuid: string) {
-  const url = `${base}/is_suspicious/`
-  const response = await axios.get(url, {params: {puuid}});
-  return SuspiciousPlayer.parse(response.data)
+  const url = `${base}/is_suspicious/`;
+  const response = await axios.get(url, { params: { puuid } });
+  return SuspiciousPlayer.parse(response.data);
 }
 
-async function getMatchComments({page, match_id}: {page: number, match_id: number}) {
-  const url = `${base}/comment/match/${match_id}`
-  const response = await axios.get(url, {params: {page}})
+async function getMatchComments({
+  page,
+  match_id,
+}: {
+  page: number;
+  match_id: number;
+}) {
+  const url = `${base}/comment/match/${match_id}`;
+  const response = await axios.get(url, { params: { page } });
   return PaginatedResponse(Comment).parse(response.data);
 }
 
 async function getComment(pk: number) {
-  const url = `${base}/comment/${pk}/`
-  const response = await axios.get(url)
+  const url = `${base}/comment/${pk}/`;
+  const response = await axios.get(url);
   return Comment.parse(response.data);
 }
 
-async function saveSummonerNote({summoner_id, note}: {summoner_id: number, note: string}) {
+async function saveSummonerNote({
+  summoner_id,
+  note,
+}: {
+  summoner_id: number;
+  note: string;
+}) {
   const url = `${base}/summoner-note/`;
-  const response = await axios.post(url, {summoner_id, note}, get_default_headers());
+  const response = await axios.post(
+    url,
+    { summoner_id, note },
+    get_default_headers()
+  );
   return response.data;
 }
 

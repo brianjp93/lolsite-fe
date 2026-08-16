@@ -399,10 +399,12 @@ export function useSummoner(
 
 export function usePositions(
   {
-    puuid,
+    riot_id_name,
+    riot_id_tagline,
     region,
   }: {
-    puuid: string;
+    riot_id_name: string;
+    riot_id_tagline: string;
     region: string;
   },
   options?: Omit<
@@ -411,21 +413,31 @@ export function usePositions(
   >
 ) {
   const query = useQuery({
-    queryKey: ["positions", puuid, region],
-    queryFn: () => api.player.getPositions({ puuid, region }),
+    queryKey: ["positions", riot_id_name, riot_id_tagline, region],
+    queryFn: () =>
+      api.player.getPositions({ riot_id_name, riot_id_tagline, region }),
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: !!puuid,
+    enabled: !!riot_id_name && !!riot_id_tagline && !!region,
     ...options,
   });
   return query;
 }
 
-export function useNameChanges(summoner_id: number) {
+export function useNameChanges({
+  riot_id_name,
+  riot_id_tagline,
+  region,
+}: {
+  riot_id_name: string;
+  riot_id_tagline: string;
+  region: string;
+}) {
   return useQuery({
-    queryKey: ["name-change", summoner_id],
-    queryFn: () => api.player.getNameChanges(summoner_id),
-    enabled: !!summoner_id,
+    queryKey: ["name-change", riot_id_name, riot_id_tagline, region],
+    queryFn: () =>
+      api.player.getNameChanges({ riot_id_name, riot_id_tagline, region }),
+    enabled: !!riot_id_name && !!riot_id_tagline && !!region,
     retry: false,
     refetchOnMount: false,
     refetchOnWindowFocus: false,

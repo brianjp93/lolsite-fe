@@ -60,6 +60,8 @@ export const QUEUE_CONVERT: Record<string, string> = {
   RANKED_FLEX_TT: "3v3 Flex",
   RANKED_TFT: "TFT",
   RANKED_TFT_DOUBLE_UP: "TFT Double Up",
+  JADE_RANKED_SOLO_5x5: "Classic",
+  RANKED_PREMADE_5x5: "Premade 5x5",
 } as const;
 
 function getStatModImageUrl({ patch = "latest", key = "" }) {
