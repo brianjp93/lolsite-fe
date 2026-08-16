@@ -144,6 +144,12 @@ export default function MatchCard({
             </Link>
           </div>
         </div>
+        {part && (
+          <TeamContributionStrip
+            part={part}
+            participants={match.participants}
+          />
+        )}
       </div>
     </>
   );
@@ -222,6 +228,78 @@ function TeamClump({
               <div className="mx-1 text-gray-500">/</div>
               <div className="text-gray-400">{teammate.stats.assists}</div>
             </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function TeamContributionStrip({
+  part,
+  participants,
+}: {
+  part: BasicParticipantType;
+  participants: BasicParticipantType[];
+}) {
+  const team = participants.filter(({ team_id }) => team_id === part.team_id);
+  const stats = [
+    [
+      "Damage",
+      "Team champion damage",
+      "total_damage_dealt_to_champions",
+      "text-rose-300",
+    ],
+    ["Gold", "Team gold", "gold_earned", "text-amber-300"],
+    ["Vision", "Team vision", "vision_score", "text-cyan-300"],
+    [
+      "Objectives",
+      "Team objective damage",
+      "damage_dealt_to_objectives",
+      "text-violet-300",
+    ],
+  ] as const;
+
+  return (
+    <div
+      aria-label="Team contributions"
+      role="group"
+      className="mt-2 grid grid-cols-4 gap-1.5 text-[10px]"
+    >
+      {stats.map(([label, title, stat, color]) => {
+        const total = team.reduce(
+          (sum, teammate) => sum + teammate.stats[stat],
+          0
+        );
+        const percent = Math.round(
+          total ? (part.stats[stat] / total) * 100 : 0
+        );
+        return (
+          <div
+            key={stat}
+            title={title}
+            className="bg-zinc-950/30 rounded px-2 py-1.5 ring-1 ring-white/5"
+          >
+            <div className="flex items-baseline justify-between gap-1">
+              <span className="font-medium uppercase tracking-wide text-zinc-400">
+                {label}
+              </span>
+              <span className={clsx("font-bold tabular-nums", color)}>
+                {percent}%
+              </span>
+            </div>
+            <progress
+              aria-label={`${title}: ${percent}%`}
+              className={clsx(
+                "mt-1 block h-1.5 w-full appearance-none overflow-hidden rounded-full bg-zinc-700/80",
+                "[&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-zinc-700/80",
+                "[&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-current",
+                "[&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-current",
+                color
+              )}
+              max={100}
+              value={percent}
+            />
           </div>
         );
       })}
