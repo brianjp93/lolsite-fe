@@ -222,18 +222,6 @@ export default function Summoner({
             <SummonerNote summoner={summoner} />
           </div>
         )}
-        {matchQuery.isFetching && (
-          <div>
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: 100,
-              }}
-            >
-              <Orbit size={300} className="m-auto" />
-            </div>
-          </div>
-        )}
 
         {summonerQuery.isError && !summonerQuery.isFetching && (
           <SummonerNotFound />
