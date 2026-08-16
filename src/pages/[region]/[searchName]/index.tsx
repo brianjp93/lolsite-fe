@@ -26,6 +26,7 @@ import { PlayerChampionSummary } from "@/components/summoner/PlayerChampionSumma
 import { MatchListSummary } from "@/components/summoner/SummonerSummary";
 import { getRiotIdAndTaglineFromSearchName } from "@/utils/constants";
 import { SummonerNote } from "@/components/summoner/summonerNote";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export default function Summoner({
   meta,
@@ -98,7 +99,8 @@ export default function Summoner({
       playedWith: params.playedWith,
     },
     {
-      initialData: router.asPath === initialPath ? initialMatches : undefined,
+      // use initialMatches if we are on the original route, otherwise keep previous data
+      placeholderData: (x) => router.asPath === initialPath ? initialMatches: keepPreviousData(x),
     }
   );
 
@@ -417,7 +419,8 @@ export const getServerSideProps: GetServerSideProps<{
       limit,
       queue,
       playedWith,
-      sync_import: true,
+      // only sync on client side, make the server side return data more quickly
+      sync_import: false,
     })
     .then((response) => response.results);
   const isFirstLoad = !(context.req?.url || "").includes("_next/data");

@@ -229,6 +229,7 @@ export function useSummonerSearch({
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     placeholderData: keepPreviousData,
+    enabled: name.length > 0,
   });
   return query;
 }
