@@ -124,7 +124,7 @@ export default function MatchCard({
           <div className="ml-1 w-8">
             <Link
               title="View match details"
-              className="btn btn-default m-auto flex h-full w-full !p-0"
+              className="btn btn-default m-auto flex h-full w-full p-0!"
               href={matchRoute(region, searchName, match._id) + "?" + params}
             >
               <svg
