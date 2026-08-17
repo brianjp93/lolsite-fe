@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { RecoilRoot } from "recoil";
 
 import "../styles/globals.css";
-import Orbit from "@/components/general/spinner";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LoadingScreen } from "@/components/general/loadingScreen";
 
 const queryClient = new QueryClient();
 
@@ -36,15 +36,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <Head>
           <title>hardstuck.club</title>
         </Head>
-        {isNavigating && (
-          <div
-            className="bg-zinc-950/50 fixed inset-0 z-50 grid place-items-center"
-            role="status"
-            aria-label="Loading page"
-          >
-            <Orbit size={100} />
-          </div>
-        )}
+        {isNavigating && <LoadingScreen />}
         <Component {...pageProps} />
       </QueryClientProvider>
     </RecoilRoot>

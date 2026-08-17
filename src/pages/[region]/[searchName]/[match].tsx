@@ -16,7 +16,11 @@ import type { SimpleMatchType, SummonerType } from "@/external/types";
 import Orbit from "@/components/general/spinner";
 import Link from "next/link";
 import { profileRoute, puuidRoute } from "@/routes";
-import type { BanType, AdvancedTimelineType, FullParticipantType } from "@/external/iotypes/match";
+import type {
+  BanType,
+  AdvancedTimelineType,
+  FullParticipantType,
+} from "@/external/iotypes/match";
 import {
   convertRank,
   convertTier,
@@ -53,7 +57,7 @@ import {
   ARENA_QUEUE,
   getRiotIdAndTaglineFromSearchName,
 } from "@/utils/constants";
-
+import { LoadingScreen } from "@/components/general/loadingScreen";
 
 export const matchRoute = (region: string, name: string, matchId: string) => {
   return `/${region}/${name}/${matchId}/`;
@@ -76,7 +80,35 @@ export default function Match({ meta }: { meta: MetaHead | null }) {
   const timelineQuery = useTimeline({ matchId });
   const summonerQ = useSummoner({ region, riotIdName, riotIdTagline });
   const summoner = summonerQ.data;
-  const bans = useBans(matchId).data?.results || [];
+  const banQuery = useBans(matchId);
+  const bans = banQuery.data?.results || [];
+  const queuesQuery = useQueues();
+  const isLoading =
+    matchQuery.isLoading ||
+    participantsQuery.isLoading ||
+    timelineQuery.isLoading ||
+    summonerQ.isLoading ||
+    queuesQuery.isLoading ||
+    banQuery.isLoading;
+
+  function body() {
+    if (isLoading) {
+      return <LoadingScreen />;
+    } else if (!match || !participants || !summoner) {
+      return <div>There was an error loading the match.</div>;
+    } else {
+      return (
+        <InnerMatch
+          match={match}
+          participants={participants}
+          timeline={timelineQuery.data}
+          summoner={summoner}
+          bans={bans}
+          queueName={queuesQuery.data?.[match.queue_id]?.description}
+        />
+      );
+    }
+  }
 
   return (
     <Skeleton topPad={0}>
@@ -117,16 +149,7 @@ export default function Match({ meta }: { meta: MetaHead | null }) {
           profile
         </Link>
       </div>
-      {match && participants && summoner && (
-        <InnerMatch
-          match={match}
-          participants={participants}
-          timeline={timelineQuery.data}
-          summoner={summoner}
-          bans={bans}
-        />
-      )}
-      {matchQuery.isLoading && <Orbit size={50} />}
+      {body()}
     </Skeleton>
   );
 }
@@ -137,19 +160,20 @@ function InnerMatch({
   timeline,
   summoner,
   bans,
+  queueName = "Unknown Game Type",
 }: {
   match: SimpleMatchType;
   participants: FullParticipantType[];
   timeline?: AdvancedTimelineType;
   summoner: SummonerType;
   bans: BanType[];
+  queueName?: string;
 }) {
   const team100 = getWinner(match.queue_id, participants);
   const team200 = getLoser(match.queue_id, participants);
   const mypart = getMyPart(participants, summoner.puuid);
   const team100Bans = bans.filter((x) => x.team === 100);
   const team200Bans = bans.filter((x) => x.team === 200);
-  const queues = useQueues().data || {};
   const minutes = Math.round(match.game_duration / 60_000);
   const seconds = (match.game_duration % 60_000) / 1000;
 
@@ -159,7 +183,7 @@ function InnerMatch({
     <div>
       <div className="mb-3 text-center">
         <div className="text-lg font-bold">
-          {queues[match.queue_id]?.description || "Unknown Game Type"}
+          {queueName}
         </div>
         <div className="mt-1 flex flex-wrap items-center justify-center gap-x-4 text-sm text-zinc-400">
           <span>
@@ -171,20 +195,32 @@ function InnerMatch({
             <span className="font-semibold text-zinc-200">
               {match.game_version.split(".").slice(0, 2).join(".")}
             </span>
-            <span className="text-xs">.{match.game_version.split(".").slice(2).join(".")}</span>
+            <span className="text-xs">
+              .{match.game_version.split(".").slice(2).join(".")}
+            </span>
           </span>
         </div>
       </div>
       <div className="flex justify-center">
         <div className="quiet-scroll flex w-fit overflow-x-auto rounded bg-zinc-800/40 p-2">
           <div className="my-auto min-w-fit pr-1">
-            <TeamSide team={team100} match={match} bans={team100Bans} timeline={timeline} />
+            <TeamSide
+              team={team100}
+              match={match}
+              bans={team100Bans}
+              timeline={timeline}
+            />
           </div>
-          <div className="my-auto rounded-full bg-linear-to-r from-cyan-700 to-rose-700 p-3 font-bold">
+          <div className="bg-linear-to-r my-auto rounded-full from-cyan-700 to-rose-700 p-3 font-bold">
             VS
           </div>
           <div className="my-auto min-w-fit pl-1">
-            <TeamSide team={team200} match={match} bans={team200Bans} timeline={timeline} />
+            <TeamSide
+              team={team200}
+              match={match}
+              bans={team200Bans}
+              timeline={timeline}
+            />
           </div>
         </div>
       </div>
@@ -260,7 +296,13 @@ function InnerMatch({
   );
 }
 
-function SectionCard({ title, children }: { title: string; children: ReactNode }) {
+function SectionCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
   return (
     <div className="rounded-lg border border-zinc-700/50 bg-zinc-800/60 p-4">
       <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -317,7 +359,9 @@ function TeamSide({
         {timeline?.bounties && (
           <div className="mt-2">
             <span className="font-bold">Team Bounty Received: </span>
-            <span className="text-yellow-400">{numeral(totalBounty).format("0,0")}g</span>
+            <span className="text-yellow-400">
+              {numeral(totalBounty).format("0,0")}g
+            </span>
           </div>
         )}
         <div className="mt-2 text-lg font-bold">Bans</div>
@@ -344,7 +388,7 @@ function BanList({ bans }: { bans: BanType[] }) {
               <Popover
                 isOpen={hoveredBan === banKey}
                 positions={["top", "bottom"]}
-                containerStyle={{padding: '5px'}}
+                containerStyle={{ padding: "5px" }}
                 content={
                   <div className="rounded bg-gray-800 px-2 py-1 text-sm text-white shadow-lg">
                     {championName}
@@ -458,7 +502,7 @@ function SecondaryStatClump({
   const format = (x: number, fmt = "0.00") => numeral(x).format(fmt);
   const rank = convertTier(part.tier ?? "") + convertRank(part.rank ?? "");
   return (
-    <div className="w-fit flex flex-col text-center gap-y-1">
+    <div className="flex w-fit flex-col gap-y-1 text-center">
       <div
         className={clsx("w-full rounded px-2 font-bold", {
           "bg-linear-to-tr from-purple-800 via-fuchsia-700 to-violet-700":
@@ -474,7 +518,10 @@ function SecondaryStatClump({
           "0.00"
         )}`}
       >
-        <ImpactRank impact_rank={part.impact_rank} impact_score={part.impact_score} />
+        <ImpactRank
+          impact_rank={part.impact_rank}
+          impact_score={part.impact_score}
+        />
       </div>
       <div className="leading-none">
         {format(gpm, "0")}
