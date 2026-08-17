@@ -13,7 +13,6 @@ import {
 } from "@/hooks";
 import { useRouter } from "next/router";
 import type { SimpleMatchType, SummonerType } from "@/external/types";
-import Orbit from "@/components/general/spinner";
 import Link from "next/link";
 import { profileRoute, puuidRoute } from "@/routes";
 import type {
