@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from "react";
 import { useMatchList, useSummoner } from "@/hooks";
 import Skeleton from "@/components/general/skeleton";
 import Orbit from "@/components/general/spinner";
+import { Pagination } from "@/components/general/Pagination";
 import MatchCard from "@/components/summoner/matchCard";
 import SummonerNotFound from "@/components/summoner/summonerNotFound";
 import api from "@/external/api/api";
-import clsx from "clsx";
 import type { BasicMatchType, SummonerType } from "@/external/types";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -65,11 +65,6 @@ export default function Summoner({
     [router, params]
   );
   const limit = 10;
-
-  function resetPage() {
-    setParams({ ...params, page: 1 });
-  }
-
   const start = limit * params.page - limit;
   const summonerQuery = useSummoner(
     {
@@ -107,74 +102,6 @@ export default function Summoner({
   const matches: BasicMatchType[] = matchQuery.data || [];
 
   const isLoading = matchQuery.isLoading || summonerQuery.isLoading;
-
-  const pagination = () => {
-    return (
-      <div className="flex">
-        <button
-          onClick={() =>
-            setParams((x) => {
-              return { ...x, page: Math.max(1, (x.page || 1) - 1) };
-            })
-          }
-          disabled={matchQuery.isFetching || params.page <= 1}
-          className="btn btn-default box-border flex items-center justify-center hover:cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-3 w-3"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 19.5L8.25 12l7.5-7.5"
-            />
-          </svg>
-        </button>
-        <button
-          onClick={() =>
-            setParams((x) => {
-              return { ...x, page: (x.page || 1) + 1 };
-            })
-          }
-          disabled={matchQuery.isFetching}
-          className="btn btn-default ml-2 box-border flex items-center justify-center hover:cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-3 w-3"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8.25 4.5l7.5 7.5-7.5 7.5"
-            />
-          </svg>
-        </button>
-        <div className="mx-2 my-auto">{params.page}</div>
-        <div>
-          <button
-            disabled={params.page === 1}
-            onClick={resetPage}
-            className={clsx("btn btn-link hover:cursor-pointer", {
-              "opacity-40": params.page === 1,
-            })}
-          >
-            reset
-          </button>
-        </div>
-        {matchQuery.isFetching && <Orbit size={25} />}
-      </div>
-    );
-  };
 
   return (
     <Skeleton topPad={0}>
@@ -246,7 +173,11 @@ export default function Summoner({
                 />
               </div>
               <div>
-                {pagination()}
+                <Pagination
+                  page={params.page}
+                  loading={matchQuery.isFetching}
+                  onPageChange={(page) => setParams({ ...params, page })}
+                />
                 {isLoading && (
                   <div style={{ width: 600 }}>
                     <Orbit size={200} className="m-auto" />
@@ -283,7 +214,11 @@ export default function Summoner({
                     </div>
                   </div>
                 )}
-                {pagination()}
+                <Pagination
+                  page={params.page}
+                  loading={matchQuery.isFetching}
+                  onPageChange={(page) => setParams({ ...params, page })}
+                />
               </div>
             </div>
           </div>
